@@ -1,0 +1,1221 @@
+@extends('layouts.admin.app')
+@push('css')
+<style>
+    .image-preview-container,
+    #image-previewdd{
+        position: relative;
+        display: inline-block;
+        color: red;
+    }
+    .cancel-icon {
+        position: absolute;
+        top: 0;
+        right: 0;
+        cursor: pointer;
+        font-size: 16px;
+    }
+</style>
+
+@endpush
+@section('title', 'Settings')
+@section('content')
+    @php
+        $units = App\Helpers\Constant::UNIT;
+        $activeStatus = App\Helpers\Constant::STATUS;
+        $sizes = App\Helpers\Constant::SIZES;
+        $colors = App\Helpers\Constant::COLORS;
+        $conditions = App\Helpers\Constant::CONDITIONS;
+        $product_type = App\Helpers\Constant::PRODUCT_TYPE;
+        $returns = App\Helpers\Constant::PRODUCT_RETURNS;
+        $warranties = App\Helpers\Constant::PRODUCT_WARRANTY;
+    @endphp
+
+    <!-- BEGIN #content -->
+    <div id="content" class="app-content">
+        <!-- BEGIN row -->
+        <div class="row">
+            <!-- BEGIN col-12 -->
+            <div class="col-xl-12">
+                <x-breadcrumbs :items="$breadcrumbs" />
+
+                <div class="d-flex justify-content-between">
+                    <h1 class="page-header text-capitalize mb-0">{{ $pageTitle }}</h1>
+                    <div class="btn-group">
+                        <a href="{{ route('admin.products.index') }}" class="btn btn-outline-success">Product list</a>
+                    </div>
+                </div>
+
+                <hr class="mb-4">
+
+                <!-- BEGIN Users Form -->
+                <div class="card">
+                    <div class="card-body pb-2">
+                        <form id="userForm">
+                            <div class="row">
+                                <!-- Product Title -->
+                                <div class="col-xl-6">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="name">Product Name <span class="text-danger">*</span></label>
+                                        <input type="hidden" id="update_id" value="{{ $data->id ?? '' }}">
+                                        <input type="text" name="name" class="form-control" id="name" placeholder="Enter Product Name..." value="{{ $data->name ?? '' }}">
+                                        <span class="text-danger" id="nameError"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Buy Price -->
+                                <div class="col-xl-6">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="buy_price">Buy Price <span class="text-danger">*</span></label>
+                                        <input type="number" name="buy_price" class="form-control" id="buy_price" placeholder="Enter Buy Price..." value="{{ $data->buy_price ?? '' }}">
+                                        <span class="text-danger" id="buyPriceError"></span>
+                                    </div>
+                                </div>
+
+                                <!-- MRP Price -->
+                                <div class="col-xl-4">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="mrp_price">MRP Price <span class="text-danger">*</span></label>
+                                        <input type="number" name="mrp_price" class="form-control" id="mrp_price" placeholder="Enter MRP Price..." value="{{ $data->mrp_price ?? '' }}">
+                                        <span class="text-danger" id="mrpPriceError"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Discount Price -->
+                                <div class="col-xl-4">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="discount_price">Discount Price <span class="text-danger">(%) *</span></label>
+                                        <input type="number" name="discount_price" class="form-control" id="discount_price" placeholder="Enter Discount Price..." value="{{ $data->discount_price ?? '' }}">
+                                        <span class="text-danger" id="discountPriceError"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Sell Price -->
+                                <div class="col-xl-4">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="sell_price">Sell Price <span class="text-danger">*</span></label>
+                                        <input type="number" name="sell_price" class="form-control" id="sell_price" placeholder="Enter Sell Price..." value="{{ $data->sell_price ?? '' }}">
+                                        <span class="text-danger" id="sellPriceError"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Product Category -->
+                                <div class="col-xl-4">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="category_id">Product Category <span class="text-danger">*</span></label>
+                                        <select name="category_id" class="form-control select2" id="category_id">
+                                        </select>
+                                        <span class="text-danger" id="categoryError"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Product Sub Category -->
+                                <div class="col-xl-4">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="subcategory_id">Product Sub Category <span class="text-muted">(optional)</span></label>
+                                        <select name="subcategory_id" class="form-control select2" id="subcategory_id">
+                                        </select>
+                                        <span class="text-danger" id="subCategoryError"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Product Child Category -->
+                                <div class="col-xl-4">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="childcategory_id">Product Child Category <span class="text-muted">(optional)</span></label>
+                                        <select name="childcategory_id" class="form-control select2" id="childcategory_id">
+                                        </select>
+                                        <span class="text-danger" id="childCategoryError"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Product Brand -->
+                                <div class="col-xl-4">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="brand_id">Select Brand<span class="text-muted">(optional)</span></label>
+                                        <select name="brand_id" class="form-control select2" id="brand_id">
+                                        </select>
+                                        <span class="text-danger" id="brandError"></span>
+                                    </div>
+                                </div>
+
+
+                                <!-- Product Model No. -->
+                                <div class="col-xl-4">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="model_no">Model No. <span class="text-muted">(optional)</span></label>
+                                        <input type="text" name="model_no" class="form-control" id="model_no" placeholder="Enter Model No...." value="{{ $data->model_no ?? '' }}">
+                                        <span class="text-danger" id="modelNoError"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Product Keywords -->
+                                <div class="col-xl-4">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="keywords">Keywords <span class="text-muted">(optional use ',')</span></label>
+                                        <input type="text" name="keywords" class="form-control" id="keywords" placeholder="product name, brand name, etc.." value="{{ $data->keywords ?? '' }}">
+                                        <span class="text-danger" id="keywordsError"></span>
+                                    </div>
+                                </div>
+
+                                @php
+                                    $dataColors = json_decode($data->color ?? '[]');
+                                    $dataSizes = json_decode($data->size ?? '[]');
+                                @endphp
+
+                                <!-- Product Sizes -->
+                                <div class="col-xl-4">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="sizes">Select Sizes ( <small>Optional</small> )</label>
+                                        <select class="form-control select2 text-uppercase" name="sizes[]" id="sizes" multiple>
+                                            @foreach ($sizes as $size => $key)
+                                            <option value="{{ $key }}" {{ isset($dataSizes) && in_array($key, $dataSizes) ? 'selected' : '' }}>
+                                                {{ ucfirst($size) }}
+                                            </option>
+                                            @endforeach
+                                        </select>
+                                        <span class="text-danger" id="sizeError"></span>
+                                    </div>
+                                </div>
+
+                                 <!-- Product Colors -->
+                                <div class="col-xl-4">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="colors">Product Colors ( <small>Optional</small> )</label>
+                                        <select class="form-control select2 text-uppercase" name="colors[]" id="colors" multiple>
+                                            @foreach ($colors as $color => $key)
+                                            <option value="{{ $key }}" {{ isset($dataColors) && in_array($key, $dataColors) ? 'selected' : '' }}>
+                                                {{ ucfirst($color) }}
+                                            </option>
+                                        @endforeach
+                                        </select>
+                                        <span class="text-danger" id="colorError"></span>
+                                    </div>
+                                </div>
+
+                                 <!-- Product Condition -->
+                                <div class="col-xl-4">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="condition">Product Condition ( <small>Optional</small> )</label>
+                                        <select class="form-control select2 text-uppercase" name="condition" id="condition">
+                                            <option value="">Select Condition</option>
+                                            @foreach ($conditions as $condition => $key)
+                                            <option value="{{ $key }}" {{ isset($data->condition) && ($data->condition == $key) ? 'selected' : '' }}>
+                                                {{ ucfirst($condition) }}
+                                            </option>
+                                            @endforeach
+                                        </select>
+                                        <span class="text-danger" id="conditionError"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Thumbnail Image -->
+                                <div class="col-xl-4">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="thumbnail">Thumbnail Image <span class="text-danger">*</span> ( <small>420 X 510</small> )</label>
+                                        <input type="file" name="thumbnail" class="form-control" id="thumbnail" onchange="previewThumbnail()">
+                                        <span class="text-danger" id="thumbnailError"></span>
+
+                                        <div id="thumbnailPreview" class="mt-2">
+                                            @if(isset($data->thumbnail))
+                                                <div class="image-preview-container">
+                                                    <img src="{{ asset($data->thumbnail) }}" alt="Thumbnail Preview" style="width: 64px; margin: 10px 16px 0 0;">
+                                                    <i class="fas fa-times cancel-icon" onclick="clearThumbnailPreview({{ $data->id }})"></i>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Featured Images (Multiple) -->
+                                <div class="col-xl-8">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="featured_images">Featured Images <span class="text-muted">(optional, multiple)</span> ( <small>850 X 1036</small> )</label>
+                                        <input type="file" name="featured_images[]" class="form-control" id="featured_images" multiple onchange="previewFeaturedImages()">
+                                        <span class="text-danger" id="featuredImagesError"></span>
+
+                                        <div class="d-flex">
+                                            @if(isset($data->featuredImages))
+                                                <div id="featuredImagesPreviewUpdate" class="mt-2">
+                                                    @foreach($data->featuredImages as $index => $image)
+                                                        <div id="image-previewdd" class="image-preview-{{ $image->id }}">
+                                                            <img src="{{ asset($image->image) }}" alt="Featured Image Preview" style="width: 64px; margin: 10px 16px 0 0;">
+                                                            <i class="fas fa-times cancel-icon" onclick="removeFeaturedImageDb({{ $image->id }}, true)"></i>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            @endif
+
+                                            <div id="featuredImagesPreview" class="mt-2">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Short Description (Optional) -->
+                                <div class="col-xl-12">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="short_description">Short Description <span class="text-muted">(optional around 25 words)</span></label>
+                                        <textarea name="short_description" class="form-control" id="short_description" placeholder="Enter Short Description...">{{ $data->short_description ?? '' }}</textarea>
+                                        <span class="text-danger" id="shortDescriptionError"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Product Description -->
+                                <div class="col-xl-12">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="description">Product Details <span class="text-danger">*</span></label>
+                                        <div class="card">
+                                            <textarea name="description" class="form-control summernote" id="description" placeholder="Enter Description...">{{ $data->description ?? '' }}</textarea>
+
+                                            <x-card-arrow />
+                                        </div>
+                                        <span class="text-danger" id="descriptionError"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Product type -->
+                                <div class="col-xl-4">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="product_type">Product Type ( <small>Optional</small> )</label>
+                                        <select class="form-control select2" name="product_type" id="product_type">
+                                            <option value="">Select type</option>
+                                            @foreach ($product_type as $type => $key)
+                                                <option value="{{$key }}" {{ isset($data->product_type) && ($data->product_type == $key) ? 'selected' : '' }}>{{ ucfirst($type) }}</option>
+                                            @endforeach
+                                        </select>
+                                        <span class="text-danger" id="productTypeError"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Latest Deals ends -->
+                                <div class="col-xl-4 {{ isset($data->deals_time) && ($data->deals_time) ? 'd-block' : 'd-none' }}" id="deals">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="deals_time">Latest Deals Ends<span class="text-danger"></span></label>
+                                        <input type="text" name="deals_time" class="form-control datepicker" id="deals_time" value="{{ isset($data->deals_time) ? dateFormat2($data->deals_time) : '' }}">
+                                        <span class="text-danger" id="dealsTimeError"></span>
+                                    </div>
+                                </div>
+
+
+                                <!-- Stock Quantity -->
+                                <div class="col-xl-4">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="stock">Stock Quantity <span class="text-danger"></span></label>
+                                        <input type="number" name="stock" class="form-control" id="stock" placeholder="Enter Stock Quantity..." value="{{ $data->stock_quantity ?? '' }}">
+                                        <span class="text-danger" id="stockError"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Product Status -->
+                                <div class="col-xl-4">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="unit">Unit ( <small>default PCS</small> )</label>
+                                        <select class="form-control select2" name="unit" id="unit">
+                                            @foreach ($units as $unit => $key)
+                                                <option value="{{$key }}" {{ isset($data->unit) && ($data->unit == $key) ? 'selected' : '' }}>{{ ucfirst($unit) }}</option>
+                                            @endforeach
+                                        </select>
+                                        <span class="text-danger" id="unitError"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Product return -->
+                                <div class="col-xl-6">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="product_return">Return Policy [Default ( <small>Non-returnable</small> )]</label>
+                                        <select class="form-control select2" name="product_return" id="product_return">
+                                            @foreach ($returns as $return)
+                                                <option value="{{ $return }}" {{ isset($data->return) && ($data->return === $return) ? 'selected' : '' }}>{{ ucfirst($return) }}</option>
+                                            @endforeach
+                                        </select>
+                                        <span class="text-danger" id="productReturnError"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Product Warranty -->
+                                <div class="col-xl-6">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="warranty">Warranty [Default ( <small>No Warranty</small> )]</label>
+                                        <select class="form-control select2" name="warranty" id="warranty">
+                                            @foreach ($warranties as $warranty)
+                                                <option value="{{ $warranty }}" {{ isset($data->warranty) && ($data->warranty === $warranty) ? 'selected' : '' }}>{{ ucfirst($warranty) }}</option>
+                                            @endforeach
+                                        </select>
+                                        <span class="text-danger" id="warrantyError"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Delivery Type -->
+                                <div class="col-xl-6">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="delivery_type">Delivery Type </label>
+                                        <select class="form-control select2" name="delivery_type" id="delivery_type">
+
+                                        </select>
+                                        <span class="text-danger" id="deliveryTypeError"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Product Status -->
+                                <div class="col-xl-6">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label" for="status">Status ( <small>default active</small> )</label>
+                                        <select class="form-control select2" name="status" id="status">
+                                            @foreach ($activeStatus as $status => $key)
+                                                <option value="{{$key }}" {{ isset($data->status) && ($data->status == $key) ? 'selected' : '' }}>{{ ucfirst($status) }}</option>
+                                            @endforeach
+                                        </select>
+                                        <span class="text-danger" id="statusError"></span>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-xl-12">
+                                    <div class="text-left">
+                                        @if (Request::is('admin/products/create'))
+                                            <button type="button" onclick="addProduct();" class="btn btn-outline-success mr-2 mb-2"><i class="fa fa-plus me-2"></i>Add Product</button>
+                                        @elseif (Request::is('admin/products/edit*'))
+                                            <button type="button" onclick="updateProduct();" class="btn btn-outline-success mr-2 mb-2"><i class="fa fa-share me-2"></i>Update Product</button>
+                                        @endif
+                                    </div>
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+                    <x-card-arrow />
+                </div>
+                <!-- END Users Form -->
+
+            </div>
+            <!-- END col-12-->
+        </div>
+        <!-- END row -->
+    </div>
+    <!-- END #content -->
+@endsection
+
+@push('js')
+@include('layouts.admin.all_select2')
+<script>
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    $(document).ready(function () {
+        $('.summernote').summernote({minHeight: 200});
+
+        getBrand();
+        getDeliveryType();
+        getCategory();
+
+        // Sub categories selection
+        $('#category_id').on('change', function() {
+            const categoryId = $(this).val();
+
+            if (categoryId) {
+                getSubCategory(categoryId);
+            } else {
+                $('#subcategory_id').empty();
+            }
+        });
+        $('#subcategory_id').on('change', function() {
+            const subcategoryId = $(this).val();
+
+            if (subcategoryId) {
+                getChildCategory(subcategoryId);
+            } else {
+                $('#childcategory_id').empty();
+            }
+        });
+
+        setTimeout(() => {
+            $("#category_id").val('{{ $data->category_id ?? '' }}').trigger('change');
+        }, 500);
+
+        setTimeout(() => {
+            $("#subcategory_id").val('{{ $data->subcategory_id ?? '' }}').trigger('change');
+        }, 1000);
+
+        setTimeout(() => {
+            $("#childcategory_id").val('{{ $data->childcategory_id ?? '' }}').trigger('change');
+        }, 1500);
+
+        setTimeout(() => {
+            $("#brand_id").val('{{ $data->brand_id ?? '' }}').trigger('change');
+        }, 2000);
+
+        setTimeout(() => {
+            $("#delivery_type").val('{{ $data->delivery_type ?? '1' }}').trigger('change');
+        }, 2500);
+
+        // Product price Calculations
+        $('#buy_price, #mrp_price, #discount_price').on('input', function() {
+            calculateSellPrice();
+        });
+
+        // Stock quantity validation
+        $('#stock').on('input', function() {
+            validateStockQuantity();
+        });
+
+        const PRODUCT_TYPE = @json($product_type);
+
+        $('#product_type').on('change', function () {
+            const type_id = $(this).val();
+
+            if (parseInt(type_id) === PRODUCT_TYPE.Latest_deals) {
+                $('#deals').removeClass('d-none');
+            } else {
+                $('#deals').addClass('d-none');
+                $('#deals_time').val('');
+            }
+        });
+
+    });
+
+
+    // Product price Calculations
+    function calculateSellPrice() {
+        const buyPrice = parseFloat($('#buy_price').val()) || 0;
+        const mrpPrice = parseFloat($('#mrp_price').val()) || 0;
+        const discountPercentage = parseFloat($('#discount_price').val()) || 0;
+
+        let discountAmount = (mrpPrice * (discountPercentage / 100));
+
+        let sellPrice = mrpPrice - discountAmount;
+
+        // Ensure sell price isn’t below buy price
+        if (sellPrice < buyPrice) {
+            $('#sellPriceError').text("Sell Price cannot be less then buy Price");
+        }else {
+            $('#sellPriceError').text("");
+        }
+
+        // Update Sell Price field
+        $('#sell_price').val(sellPrice.toFixed(2));
+    }
+
+    // Stock quantity validation
+    function validateStockQuantity() {
+        const stockQuantity = parseInt($('#stock').val()) || 0;
+
+        if (stockQuantity < 0) {
+            $('#stock').val(0); // Reset to 0 if negative
+            $('#stockError').text("Stock quantity cannot be negative.");
+        } else {
+            $('#stockError').text('');
+        }
+    }
+
+    function clearThumbnailPreview(id) {
+        removeImage(id);
+    }
+    function removeFeaturedImageDb(imageId, isExisting = false) {
+
+        let url = "{{ route('admin.products.removeFeaturedImage', ':id') }}";
+        url = url.replace(':id', imageId);
+
+        Swal.fire({
+            title: `Are you sure you want to remove this banner?`,
+            text: "You won't be able to revert this!",
+            showCancelButton: true,
+            confirmButtonColor: 'transparent',
+            cancelButtonColor: 'transparent',
+            confirmButtonText: 'Yes, delete it!',
+            customClass: {
+                popup: 'my-custom-popup',
+                confirmButton: 'my-custom-confirm',
+                cancelButton: 'my-custom-cancel',
+            },
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: url,
+                    type: 'Delete',
+                    dataType: 'JSON',
+                    success: function(data) {
+                        show_success('Image removed successfully.');
+                        if (isExisting) {
+                            const imageContainer = $(`.image-preview-${imageId}`);
+                            if (imageContainer) {
+                                imageContainer.remove();
+                            }
+                        }
+                    },
+                    error: function(error) {
+                        let message = error.responseJSON.message || 'An error occurred';
+                        show_error(message);
+                    }
+                });
+            }
+        });
+
+    }
+
+    // Product Thumbnail
+    function previewThumbnail() {
+        const $thumbnailInput = $('#thumbnail');
+        const $previewContainer = $('#thumbnailPreview');
+        $previewContainer.empty(); // Clear previous content
+
+        if ($thumbnailInput[0].files && $thumbnailInput[0].files[0]) {
+            const file = $thumbnailInput[0].files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const $imageContainer = $('<div>').addClass('image-preview-container');
+
+                const $img = $('<img>')
+                    .attr('src', e.target.result)
+                    .attr('alt', 'Thumbnail Preview')
+                    .css({ width: '64px', margin: '10px 16px 0 0' });
+
+                const $cancelIcon = $('<i>')
+                    .addClass('fas fa-times cancel-icon') // Font Awesome close icon
+                    .on('click', function() {
+                        $thumbnailInput.val(''); // Clear the file input
+                        $previewContainer.empty(); // Clear the preview container
+                    });
+
+                $imageContainer.append($img).append($cancelIcon);
+                $previewContainer.append($imageContainer);
+            };
+
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // Product Featured Images
+    function previewFeaturedImages() {
+        const $featuredInput = $('#featured_images');
+        const $previewContainer = $('#featuredImagesPreview');
+        $previewContainer.empty(); // Clear previous content to avoid duplicates
+
+        $.each($featuredInput[0].files, function(index, file) {
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const $imageContainer = $('<div>')
+                    .addClass('image-preview-container')
+                    .data('index', index); // Save index for removal
+
+                const $img = $('<img>')
+                    .attr('src', e.target.result)
+                    .attr('alt', 'Featured Image Preview')
+                    .css({ width: '64px', margin: '10px 16px 0 0' });
+
+                const $cancelIcon = $('<i>')
+                    .addClass('fas fa-times cancel-icon') // Font Awesome close icon
+                    .on('click', function() {
+                        removeFeaturedImage(index);
+                    });
+
+                $imageContainer.append($img).append($cancelIcon);
+                $previewContainer.append($imageContainer);
+            };
+
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // Remove a featured image
+    function removeFeaturedImage(index) {
+        const $featuredInput = $('#featured_images');
+        const $previewContainer = $('#featuredImagesPreview');
+
+        // Convert FileList to an array to remove the specific file by index
+        const filesArray = Array.from($featuredInput[0].files);
+        filesArray.splice(index, 1);
+
+        // Clear and re-assign the FileList by re-creating a DataTransfer object
+        const dataTransfer = new DataTransfer();
+        filesArray.forEach(file => dataTransfer.items.add(file));
+        $featuredInput[0].files = dataTransfer.files;
+
+        // Refresh the preview
+        previewFeaturedImages();
+    }
+
+
+    function addProduct() {
+
+        let url = "{{ route('admin.products.store') }}";
+
+        let name = $('#name').val();
+        let buy_price = $('#buy_price').val();
+        let mrp_price = $('#mrp_price').val();
+        let discount_price = $('#discount_price').val();
+        let sell_price = $('#sell_price').val();
+        let category_id = $('#category_id').val();
+        let subcategory_id = $('#subcategory_id').val();
+        let childcategory_id = $('#childcategory_id').val();
+        let brand_id = $('#brand_id').val();
+        let model_no = $('#model_no').val();
+        let keywords = $('#keywords').val();
+        let sizes = $('#sizes').val();
+        let colors = $('#colors').val();
+        let condition = $('#condition').val();
+        let thumbnail = $('#thumbnail')[0].files[0];
+        let featured_images = $('#featured_images')[0].files;
+        let short_description = $('#short_description').val();
+        let description = $('#description').summernote('code');
+        let product_type = $('#product_type').val();
+        let deals_time = $('#deals_time').val();
+        let stock = $('#stock').val();
+        let unit = $('#unit').val();
+        let product_return = $('#product_return').val();
+        let warranty = $('#warranty').val();
+        let delivery_type = $('#delivery_type').val();
+        let status = $('#status').val();
+
+        let formData = new FormData();
+        formData.append('name', name);
+        formData.append('buy_price', buy_price);
+        formData.append('mrp_price', mrp_price);
+        formData.append('discount_price', discount_price);
+        formData.append('sell_price', sell_price);
+        formData.append('category_id', category_id);
+        formData.append('subcategory_id', subcategory_id);
+        formData.append('childcategory_id', childcategory_id);
+        formData.append('brand_id', brand_id);
+        formData.append('model_no', model_no);
+        formData.append('keywords', keywords);
+
+        for (let i = 0; i < sizes.length; i++) {
+            formData.append('sizes[]', sizes[i]);
+        }
+
+        for (let i = 0; i < colors.length; i++) {
+            formData.append('colors[]', colors[i]);
+        }
+
+        formData.append('condition', condition);
+        formData.append('thumbnail', thumbnail);
+
+        for (let i = 0; i < featured_images.length; i++) {
+            formData.append('featured_images[]', featured_images[i]);
+        }
+
+        formData.append('short_description', short_description);
+        formData.append('description', description);
+        formData.append('product_type', product_type);
+        formData.append('deals_time', deals_time);
+        formData.append('stock', stock);
+        formData.append('unit', unit);
+        formData.append('product_return', product_return);
+        formData.append('warranty', warranty);
+        formData.append('delivery_type', delivery_type);
+        formData.append('status', status);
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(data) {
+                if(data.success === false) {
+                    show_error('Failed to add product');
+                }else {
+                    show_success('Product Added Successfully');
+                    resetForm();
+                }
+            },
+            error: function(error) {
+                clearErrors();
+                let errors = error.responseJSON.errors;
+
+                if (errors.title) {
+                    $('#nameError').html(errors.title);
+                    $('#name').val('');
+                    $('#name').addClass('is-invalid');
+                }
+                if(errors.buy_price) {
+                    $('#buyPriceError').html(errors.buy_price);
+                    $('#buy_price').val('');
+                    $('#buy_price').addClass('is-invalid');
+                }
+                if(errors.mrp_price) {
+                    $('#mrpPriceError').html(errors.mrp_price);
+                    $('#mrp_price').val('');
+                    $('#mrp_price').addClass('is-invalid');
+                }
+                if(errors.discount_price) {
+                    $('#discountPriceError').html(errors.discount_price);
+                    $('#discount_price').val('');
+                    $('#discount_price').addClass('is-invalid');
+                }
+                if(errors.sell_price) {
+                    $('#sellPriceError').html(errors.sell_price);
+                    $('#sell_price').val('');
+                    $('#sell_price').addClass('is-invalid');
+                }
+                if(errors.category_id) {
+                    $('#categoryError').html(errors.category_id);
+                }
+                if(errors.subcategory_id) {
+                    $('#subCategoryError').html(errors.subcategory_id);
+                }
+                if(errors.childcategory_id) {
+                    $('#childCategoryError').html(errors.childcategory_id);
+                }
+                if(errors.brand_id) {
+                    $('#brandError').html(errors.brand_id);
+                }
+                if(errors.model_no) {
+                    $('#modelNoError').html(errors.model_no);
+                    $('#model_no').val('');
+                    $('#model_no').addClass('is-invalid');
+                }
+                if(errors.keywords) {
+                    $('#keywordsError').html(errors.keywords);
+                    $('#keywords').val('');
+                    $('#keywords').addClass('is-invalid');
+                }
+                if(errors.sizes) {
+                    $('#sizesError').html(errors.sizes);
+                }
+                if(errors.colors) {
+                    $('#colorsError').html(errors.colors);
+                }
+                if(errors.condition) {
+                    $('#conditionError').html(errors.condition);
+                }
+                if(errors.thumbnail) {
+                    $('#thumbnailError').html(errors.thumbnail);
+                    $('#thumbnail').val('');
+                    $('#thumbnail').addClass('is-invalid');
+                }
+                if(errors.featured_images) {
+                    $('#featuredImagesError').html(errors.featured_images);
+                    $('#featured_images').val('');
+                    $('#featured_images').addClass('is-invalid');
+                }
+                if(errors.short_description) {
+                    $('#shortDescriptionError').html(errors.short_description);
+                    $('#short_description').val('');
+                    $('#short_description').addClass('is-invalid');
+                }
+                if(errors.description) {
+                    $('#descriptionError').html(errors.description);
+                    $('#description').summernote('code', '');
+                    $('#description').addClass('is-invalid');
+                }
+                if(errors.product_type) {
+                    $('#productTypeError').html(errors.product_type);
+                }
+                if(errors.deals_time) {
+                    $('#dealsTimeError').html(errors.deals_time);
+                    $('#deals_time').val('');
+                    $('#deals_time').addClass('is-invalid');
+                }
+                if(errors.stock) {
+                    $('#stockError').html(errors.stock);
+                    $('#stock').val('');
+                    $('#stock').addClass('is-invalid');
+                }
+                if(errors.unit) {
+                    $('#unitError').html(errors.unit);
+                }
+                if(errors.product_return) {
+                    $('#productReturnError').html(errors.product_return);
+                }
+                if(errors.warranty) {
+                    $('#warrantyError').html(errors.warranty);
+                }
+                if(errors.delivery_type) {
+                    $('#deliveryTypeError').html(errors.delivery_type);
+                }
+                if(errors.status) {
+                    $('#statusError').html(errors.status);
+                }
+
+            }
+        });
+    }
+    function updateProduct() {
+        let id = $('#update_id').val();
+        let url = "{{ route('admin.products.update', ':id') }}";
+        url = url.replace(':id', id);
+
+        let name = $('#name').val();
+        let buy_price = $('#buy_price').val();
+        let mrp_price = $('#mrp_price').val();
+        let discount_price = $('#discount_price').val();
+        let sell_price = $('#sell_price').val();
+        let category_id = $('#category_id').val();
+        let subcategory_id = $('#subcategory_id').val();
+        let childcategory_id = $('#childcategory_id').val();
+        let brand_id = $('#brand_id').val();
+        let model_no = $('#model_no').val();
+        let keywords = $('#keywords').val();
+        let sizes = $('#sizes').val();
+        let colors = $('#colors').val();
+        let condition = $('#condition').val();
+        let thumbnail = $('#thumbnail')[0].files[0];
+        let featured_images = $('#featured_images')[0].files;
+        let short_description = $('#short_description').val();
+        let description = $('#description').summernote('code');
+        let product_type = $('#product_type').val();
+        let deals_time = $('#deals_time').val();
+        let stock = $('#stock').val();
+        let unit = $('#unit').val();
+        let product_return = $('#product_return').val();
+        let warranty = $('#warranty').val();
+        let delivery_type = $('#delivery_type').val();
+        let status = $('#status').val();
+
+        let formData = new FormData();
+        formData.append('name', name);
+        formData.append('buy_price', buy_price);
+        formData.append('mrp_price', mrp_price);
+        formData.append('discount_price', discount_price);
+        formData.append('sell_price', sell_price);
+        formData.append('category_id', category_id);
+        formData.append('subcategory_id', subcategory_id);
+        formData.append('childcategory_id', childcategory_id);
+        formData.append('brand_id', brand_id);
+        formData.append('model_no', model_no);
+        formData.append('keywords', keywords);
+
+        for (let i = 0; i < sizes.length; i++) {
+            formData.append('sizes[]', sizes[i]);
+        }
+
+        for (let i = 0; i < colors.length; i++) {
+            formData.append('colors[]', colors[i]);
+        }
+
+        formData.append('condition', condition);
+        formData.append('thumbnail', thumbnail);
+
+        for (let i = 0; i < featured_images.length; i++) {
+            formData.append('featured_images[]', featured_images[i]);
+        }
+
+        formData.append('short_description', short_description);
+        formData.append('description', description);
+        formData.append('product_type', product_type);
+        formData.append('deals_time', deals_time);
+        formData.append('stock', stock);
+        formData.append('unit', unit);
+        formData.append('product_return', product_return);
+        formData.append('warranty', warranty);
+        formData.append('delivery_type', delivery_type);
+        formData.append('status', status);
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(data) {
+                if(data.success === false) {
+                    show_error('Failed to Update Product');
+                }else {
+                    show_success('Product Updated Successfully');
+                    resetForm();
+                    setTimeout(function() {
+                        window.location.href = "{{ route('admin.products.index') }}";
+                    }, 2000);
+                }
+            },
+            error: function(error) {
+                clearErrors();
+                let errors = error.responseJSON.errors;
+
+                if (errors.title) {
+                    $('#nameError').html(errors.title);
+                    $('#name').val('');
+                    $('#name').addClass('is-invalid');
+                }
+                if(errors.buy_price) {
+                    $('#buyPriceError').html(errors.buy_price);
+                    $('#buy_price').val('');
+                    $('#buy_price').addClass('is-invalid');
+                }
+                if(errors.mrp_price) {
+                    $('#mrpPriceError').html(errors.mrp_price);
+                    $('#mrp_price').val('');
+                    $('#mrp_price').addClass('is-invalid');
+                }
+                if(errors.discount_price) {
+                    $('#discountPriceError').html(errors.discount_price);
+                    $('#discount_price').val('');
+                    $('#discount_price').addClass('is-invalid');
+                }
+                if(errors.sell_price) {
+                    $('#sellPriceError').html(errors.sell_price);
+                    $('#sell_price').val('');
+                    $('#sell_price').addClass('is-invalid');
+                }
+                if(errors.category_id) {
+                    $('#categoryError').html(errors.category_id);
+                }
+                if(errors.subcategory_id) {
+                    $('#subCategoryError').html(errors.subcategory_id);
+                }
+                if(errors.childcategory_id) {
+                    $('#childCategoryError').html(errors.childcategory_id);
+                }
+                if(errors.brand_id) {
+                    $('#brandError').html(errors.brand_id);
+                }
+                if(errors.model_no) {
+                    $('#modelNoError').html(errors.model_no);
+                    $('#model_no').val('');
+                    $('#model_no').addClass('is-invalid');
+                }
+                if(errors.keywords) {
+                    $('#keywordsError').html(errors.keywords);
+                    $('#keywords').val('');
+                    $('#keywords').addClass('is-invalid');
+                }
+                if(errors.sizes) {
+                    $('#sizesError').html(errors.sizes);
+                }
+                if(errors.colors) {
+                    $('#colorsError').html(errors.colors);
+                }
+                if(errors.condition) {
+                    $('#conditionError').html(errors.condition);
+                }
+                if(errors.thumbnail) {
+                    $('#thumbnailError').html(errors.thumbnail);
+                    $('#thumbnail').val('');
+                    $('#thumbnail').addClass('is-invalid');
+                }
+                if(errors.featured_images) {
+                    $('#featuredImagesError').html(errors.featured_images);
+                    $('#featured_images').val('');
+                    $('#featured_images').addClass('is-invalid');
+                }
+                if(errors.short_description) {
+                    $('#shortDescriptionError').html(errors.short_description);
+                    $('#short_description').val('');
+                    $('#short_description').addClass('is-invalid');
+                }
+                if(errors.description) {
+                    $('#descriptionError').html(errors.description);
+                    $('#description').summernote('code', '');
+                    $('#description').addClass('is-invalid');
+                }
+                if(errors.product_type) {
+                    $('#productTypeError').html(errors.product_type);
+                }
+                if(errors.deals_time) {
+                    $('#dealsTimeError').html(errors.deals_time);
+                    $('#deals_time').val('');
+                    $('#deals_time').addClass('is-invalid');
+                }
+                if(errors.stock) {
+                    $('#stockError').html(errors.stock);
+                    $('#stock').val('');
+                    $('#stock').addClass('is-invalid');
+                }
+                if(errors.unit) {
+                    $('#unitError').html(errors.unit);
+                }
+                if(errors.product_return) {
+                    $('#productReturnError').html(errors.product_return);
+                }
+                if(errors.warranty) {
+                    $('#warrantyError').html(errors.warranty);
+                }
+                if(errors.delivery_type) {
+                    $('#deliveryTypeError').html(errors.delivery_type);
+                }
+                if(errors.status) {
+                    $('#statusError').html(errors.status);
+                }
+
+            }
+        });
+    }
+
+    function removeImage(id) {
+        let url = "{{ route('admin.products.removeImage', ':id') }}";
+        url = url.replace(':id', id);
+
+        Swal.fire({
+            title: `Are you sure you want to remove this banner?`,
+            text: "You won't be able to revert this!",
+            showCancelButton: true,
+            confirmButtonColor: 'transparent',
+            cancelButtonColor: 'transparent',
+            confirmButtonText: 'Yes, delete it!',
+            customClass: {
+                popup: 'my-custom-popup',
+                confirmButton: 'my-custom-confirm',
+                cancelButton: 'my-custom-cancel',
+            },
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: url,
+                    type: 'Delete',
+                    dataType: 'JSON',
+                    success: function(data) {
+                        show_success('Image removed successfully.');
+                        $('#thumbnailPreview').empty();
+                    },
+                    error: function(error) {
+                        let message = error.responseJSON.message || 'An error occurred';
+                        show_error(message);
+                    }
+                });
+            }
+        });
+    }
+
+
+    function clearErrors() {
+        $('#nameError').html('');
+        $('#buyPriceError').html('');
+        $('#mrpPriceError').html('');
+        $('#discountPriceError').html('');
+        $('#sellPriceError').html('');
+        $('#categoryError').html('');
+        $('#subCategoryError').html('');
+        $('#childCategoryError').html('');
+        $('#brandError').html('');
+        $('#modelNoError').html('');
+        $('#keywordsError').html('');
+        $('#sizesError').html('');
+        $('#colorsError').html('');
+        $('#conditionError').html('');
+        $('#thumbnailError').html('');
+        $('#featuredImagesError').html('');
+        $('#shortDescriptionError').html('');
+        $('#descriptionError').html('');
+        $('#productTypeError').html('');
+        $('#dealsTimeError').html('');
+        $('#stockError').html('');
+        $('#unitError').html('');
+        $('#productReturnError').html('');
+        $('#warrantyError').html('');
+        $('#deliveryTypeError').html('');
+        $('#statusError').html('');
+
+        $('#name').removeClass('is-invalid');
+        $('#buyPrice').removeClass('is-invalid');
+        $('#mrpPrice').removeClass('is-invalid');
+        $('#discountPrice').removeClass('is-invalid');
+        $('#sellPrice').removeClass('is-invalid');
+        $('#model_no').removeClass('is-invalid');
+        $('#keywords').removeClass('is-invalid');
+        $('#thumbnail').removeClass('is-invalid');
+        $('#featuredImages').removeClass('is-invalid');
+        $('#shortDescription').removeClass('is-invalid');
+        $('#description').removeClass('is-invalid');
+        $('#deals_time').removeClass('is-invalid');
+        $('#stock').removeClass('is-invalid');
+    }
+
+    function resetForm() {
+        $('#update_id').val('');
+
+        $('#nameError').html('');
+        $('#name').val('');
+        $('#name').removeClass('is-invalid');
+
+        $('#buyPriceError').html('');
+        $('#buy_price').val('');
+        $('#buy_price').removeClass('is-invalid');
+
+        $('#mrpPriceError').html('');
+        $('#mrp_price').val('');
+        $('#mrp_price').removeClass('is-invalid');
+
+        $('#discountPriceError').html('');
+        $('#discount_price').val('');
+        $('#discount_price').removeClass('is-invalid');
+
+        $('#sellPriceError').html('');
+        $('#sell_price').val('');
+        $('#sell_price').removeClass('is-invalid');
+
+        $('#categoryError').html('');
+        $('#category_id').val('').trigger('change');
+        $('#category_id').removeClass('is-invalid');
+
+        $('#subCategoryError').html('');
+        $('#subcategory_id').val('').trigger('change');
+        $('#subcategory_id').removeClass('is-invalid');
+
+        $('#childCategoryError').html('');
+        $('#childcategory_id').val('').trigger('change');
+        $('#childcategory_id').removeClass('is-invalid');
+
+        $('#brandError').html('');
+        $('#brand_id').val('').trigger('change');
+        $('#brand_id').removeClass('is-invalid');
+
+        $('#modelNoError').html('');
+        $('#model_no').val('');
+        $('#model_no').removeClass('is-invalid');
+
+        $('#keywordsError').html('');
+        $('#keywords').val('');
+        $('#keywords').removeClass('is-invalid');
+
+        $('#sizesError').html('');
+        $('#sizes').val('').trigger('change');
+
+        $('#colorsError').html('');
+        $('#colors').val('').trigger('change');
+
+        $('#conditionError').html('');
+        $('#condition').val('').trigger('change');
+
+        $('#thumbnailError').html('');
+        $('#thumbnail').val('');
+        $('#thumbnail').removeClass('is-invalid');
+        $('#thumbnailPreview').empty();
+
+        $('#featuredImagesError').html('');
+        $('#featured_images').val('');
+        $('#featured_images').removeClass('is-invalid');
+        $('#featuredImagesPreview').empty();
+        $('#featuredImagesPreviewUpdate').empty();
+
+
+        $('#shortDescriptionError').html('');
+        $('#short_description').val('');
+        $('#short_description').removeClass('is-invalid');
+
+        $('#descriptionError').html('');
+        $('#description').summernote('code', '');
+        $('#description').removeClass('is-invalid');
+
+
+        $('#productTypeError').html('');
+        $('#product_type').val('').trigger('change');
+        $('#product_type').removeClass('is-invalid');
+
+        $('#dealsTimeError').html('');
+        $('#deals_time').val('');
+        $('#deals_time').removeClass('is-invalid');
+
+        $('#stockError').html('');
+        $('#stock').val('');
+        $('#stock').removeClass('is-invalid');
+
+
+        $('#product_return').val($('#product_return option:first').val()).trigger('change');
+        $('#warranty').val($('#warranty option:first').val()).trigger('change');
+
+        $('#unitError').html('');
+        $('#deliveryTypeError').html('');
+        $('#statusError').html('');
+
+    }
+
+
+
+</script>
+@endpush
