@@ -1,11 +1,11 @@
 <script>
     $(document).ready(function () {
         const $addressElement = $('.delivery-text.address');
-        const apiKey = 'AIzaSyDEEib4rCQgtJDpxRegUP-s2HF3vgusrIQ';
+        const googleMapsApiKey = "{{ env('GOOGLE_MAPS_API_KEY') }}";
         const maxRetries = 3;
 
         const getAddress = (lat, lng, retries = 0) => {
-            const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`;
+            const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${googleMapsApiKey}`;
             $.getJSON(url, (data) => {
                 if (data.results?.length) {
                     const location = data.results[0].formatted_address;
