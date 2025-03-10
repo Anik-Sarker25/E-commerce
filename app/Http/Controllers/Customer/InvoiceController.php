@@ -38,6 +38,28 @@ class InvoiceController extends Controller
         ]);
     }
 
+    public function invoiceView(Request $request) {
+        $id = $request->query('tradeOrderId');
+        $pageTitle        = 'Order Details';
+        $categories       = Category::with('subcategories.products')->get();
+        $paymentMethods   = PaymentMethod::orderBy('id', 'DESC')->get();
+        $brands           = Brand::orderBy('id', 'ASC')->get();
+        $partnerships     = Partnership::orderBy('id', 'ASC')->get();
+        $user             = auth()->user();
+        $invoice          = Invoice::find($id);
+
+        return view('customer.orders.order_view', [
+            'pageTitle'            => $pageTitle,
+            'categories'           => $categories,
+            'paymentMethods'       => $paymentMethods,
+            'brands'               => $brands,
+            'partnerships'         => $partnerships,
+            'user'                 => $user,
+            'invoice'              => $invoice,
+        ]);
+
+    }
+
     public function store(Request $request)
     {
         $request->validate([

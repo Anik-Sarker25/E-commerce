@@ -51,44 +51,20 @@
         border: 0;
         background: transparent !important;;
     }
-    .panel-title.billing {
-        visibility: hidden;
-    }
-    .muted {
-        color: #666;
-        margin: 10px 0 0 0;
-        font-size: 12px;
-    }
-
     .btn {
         background-color: #f36;
         color: #fff !important;
         border-radius: 3px;
     }
-    .profile .buttons {
-        margin-top: 80px;
-    }
-
-    .cancelBtn {
-        background-color: #e50039;
-    }
-
     .btn:hover  {
         background-color: #e50039;
     }
-    .buttons button {
-        margin-right: 5px;
-    }
-    select {
-        text-transform: capitalize !important;
-    }
-
-    .ui-datepicker {
-        font-size: 14px;
-    }
-
-    .edit {
-        display: none;
-    }
+    .bg-secondary {
+            background-color: #6c757d;
+            color: white;
+            padding: 3px 6px;
+            border-radius: 5px;
+            text-transform: capitalize;
+        }
 
 </style>

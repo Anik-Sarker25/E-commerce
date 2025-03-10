@@ -47,6 +47,7 @@ Route::prefix('customer')->as('customer.')->middleware(['auth', 'verified'])->gr
     // Order Routes
     Route::prefix('order')->as('order.')->group(function () {
         Route::get('/', [InvoiceController::class, 'index'])->name('index');
+        Route::get('/view', [InvoiceController::class, 'invoiceView'])->name('invoice.view');
         Route::post('/store', [InvoiceController::class,'store'])->name('store');
     });
 

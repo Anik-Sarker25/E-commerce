@@ -2,6 +2,35 @@
 
 @push('css')
 @include('layouts.customer.sidebar_css')
+
+<style>
+    .panel-title.billing {
+        visibility: hidden;
+    }
+    .muted {
+        color: #666;
+        margin: 10px 0 0 0;
+        font-size: 12px;
+    }
+    .profile .buttons {
+        margin-top: 80px;
+    }
+    .cancelBtn {
+        background-color: #e50039;
+    }
+    .buttons button {
+        margin-right: 5px;
+    }
+    select {
+        text-transform: capitalize !important;
+    }
+    .ui-datepicker {
+        font-size: 14px;
+    }
+    .edit {
+        display: none;
+    }
+</style>
 @endpush
 
 @section('content')

@@ -1,108 +1,24 @@
 @extends('layouts.customer.app')
 @push('css')
+@include('layouts.customer.sidebar_css')
     <style>
-        .site-main {
-            background-color: #f5f5f5;
-        }
-        .col-sidebar .block-sidebar {
-            background-color: #fff;
-            border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .user {
-            padding: 10px 0 0 27px;
-            margin-bottom: 0;
-            text-transform: capitalize;
-        }
-        .custom-menu * {
-            color: #666;
-        }
-        .custom-menu li>ul>li {
-            display: block;
-            text-indent: 15px;
-            font-size: 14px;
-            padding: 3px 0;
-            text-transform: capitalize;
-        }
-        .custom-menu .upper-item {
-            font-size: 16px;
-            font-weight: 400;
-            text-transform: capitalize;
-        }
-        .custom-menu .upper-item.active,
-        .custom-menu .lower-item.active {
-            color: #f36;
-        }
-        .color {
-            color: #f36 !important;
-        }
-        .custom-menu .list-item {
-            padding-bottom: 10px;
-            text-transform: capitalize;
-        }
-        .custom-menu .list-item ul {
-            padding-bottom: 10px;
-        }
-        .col-main .panel {
-            background-color: #fff;
-            border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .address-left {
-            padding-right: 0;
-        }
-        .address-right {
-            padding-left: 0;
-        }
-
-        .panel-heading .address {
-            color: #666;
-            margin: 10px 0 0 0;
-            font-size: 12px;
-            text-transform: uppercase;
-        }
-        .panel-title.billing {
-            visibility: hidden;
-        }
-        .profile {
-            display: flex;
-            flex-wrap: wrap; /* Ensures flexibility across columns */
-        }
-
-        .profile > .col-md-4 {
-            display: flex;
-            flex-direction: column; /* Ensures the child panels inside each column stretch vertically */
-        }
-
-        .panel {
-            flex: 1; /* Ensures the panels inside each column stretch to the same height */
-        }
-
         .itemTable tbody td {
             border-top: none !important;
         }
         .border_bottom {
             border-bottom: 1px solid #ddd !important;
         }
-        .bg-secondary {
-            background-color: #6c757d; /* Greyish color like Bootstrap 4/5 */
-            color: white;
-            padding: 3px 6px;
-            border-radius: 5px;
-            text-transform: capitalize;
-        }
         .product-image {
             border-radius: 5px;
             margin-right: 10px;
         }
-
-
-
     </style>
-
 @endpush
 
 @section('content')
+@php
+    use App\Helpers\Constant;
+@endphp
 
     <!-- MAIN -->
     <main class="site-main">
@@ -125,7 +41,24 @@
                                 <div class="panel panel-default">
                                     <div class="panel-heading border_bottom d-flex align-items-center justify-content-between">
                                         <h5 class="panel-title"><i class="fas fa-barcode"></i> {{ customerFormatedInvoiceId($invoice->id) }}</h5>
-                                        <span class="bg-secondary">completed</span>
+                                        @php
+                                            $statusLabel = array_search($invoice->status, Constant::ORDER_STATUS);
+                                        @endphp
+                                        <span class="label
+                                            @switch($statusLabel)
+                                                @case('pending') label-warning @break
+                                                @case('confirmed') label-info @break
+                                                @case('processing') label-primary @break
+                                                @case('shipped') label-default @break
+                                                @case('delivered') label-success @break
+                                                @case('canceled') label-danger @break
+                                                @case('refunded') label-default @break
+                                                @case('returned') label-default @break
+                                                @default label-default
+                                            @endswitch
+                                        ">
+                                            {{ ucfirst($statusLabel) }}
+                                        </span>
                                     </div>
                                     <div class="panel-body">
                                         <div class="table-responsive mt-0">
@@ -136,7 +69,19 @@
                                                             <td class="text-left" style="width: 40%;">
                                                                 <div class="d-flex">
                                                                     <img src="{{ asset($item->products->thumbnail) }}" alt="image" class="product-image" width="64px">
-                                                                    <p>{{ $item->products->name }}</p>
+                                                                    @php
+                                                                        $orderGroupKey = "ORDERSL_" . $invoice->id . "_" . rand(1000, 9999) . "_DT" . time();
+                                                                        $tradeOrderId = $invoice->id;
+
+                                                                    @endphp
+                                                                    <p>
+                                                                        <a href="{{ route('customer.order.invoice.view', [
+                                                                            'orderGroupKey' => $orderGroupKey,
+                                                                            'tradeOrderId' => $tradeOrderId
+                                                                        ]) }}">
+                                                                            {{ $item->products->name }}
+                                                                        </a>
+                                                                    </p>
                                                                 </div>
                                                             </td>
                                                             <td class="text-center" style="width: 30%;">
