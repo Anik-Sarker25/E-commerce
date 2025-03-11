@@ -7,6 +7,7 @@
 	<script src="{{ asset('backend/assets/plugins/jvectormap-next/jquery-jvectormap.min.js') }}"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 	<script src="{{ asset('backend/assets/plugins/summernote/dist/summernote-lite.min.js') }}"></script>
+	<script src="{{ asset('backend/assets/plugins/spectrum-colorpicker2/dist/spectrum.min.js') }}"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/@flasher/flasher@1.2.4/dist/flasher.min.js"></script>
 	<script src="{{ asset('backend/assets/plugins/jvectormap-content/world-mill.js') }}"></script>
 	<script src="{{ asset('backend/assets/plugins/apexcharts/dist/apexcharts.min.js') }}"></script>
@@ -58,7 +59,33 @@
                 allowClear: true
             });
 
+            $('.color-picker').each(function() {
+                if (!$(this).hasClass('spectrum-applied')) {
+                    $(this).spectrum({
+                        type: "component",
+                        showPalette: true,
+                        showInput: true,
+                        allowEmpty: true
+                    });
+                    $(this).addClass('spectrum-applied');
+                }
+            });
+
+            // Apply Spectrum for newly added elements dynamically
+            $(document).on('focus', '.color-picker', function() {
+                if (!$(this).hasClass('spectrum-applied')) {
+                    $(this).spectrum({
+                        type: "component",
+                        showPalette: true,
+                        showInput: true,
+                        allowEmpty: true
+                    });
+                    $(this).addClass('spectrum-applied');
+                }
+            });
+
         });
+
         function show_error(msg) {
             flasher.error(msg);
         }

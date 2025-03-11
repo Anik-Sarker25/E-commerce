@@ -138,73 +138,12 @@
                                     </div>
                                 </div>
 
-
-                                <!-- Product Model No. -->
-                                <div class="col-xl-4">
-                                    <div class="form-group mb-3">
-                                        <label class="form-label" for="model_no">Model No. <span class="text-muted">(optional)</span></label>
-                                        <input type="text" name="model_no" class="form-control" id="model_no" placeholder="Enter Model No...." value="{{ $data->model_no ?? '' }}">
-                                        <span class="text-danger" id="modelNoError"></span>
-                                    </div>
-                                </div>
-
                                 <!-- Product Keywords -->
                                 <div class="col-xl-4">
                                     <div class="form-group mb-3">
                                         <label class="form-label" for="keywords">Keywords <span class="text-muted">(optional use ',')</span></label>
                                         <input type="text" name="keywords" class="form-control" id="keywords" placeholder="product name, brand name, etc.." value="{{ $data->keywords ?? '' }}">
                                         <span class="text-danger" id="keywordsError"></span>
-                                    </div>
-                                </div>
-
-                                @php
-                                    $dataColors = json_decode($data->color ?? '[]');
-                                    $dataSizes = json_decode($data->size ?? '[]');
-                                @endphp
-
-                                <!-- Product Sizes -->
-                                <div class="col-xl-4">
-                                    <div class="form-group mb-3">
-                                        <label class="form-label" for="sizes">Select Sizes ( <small>Optional</small> )</label>
-                                        <select class="form-control select2 text-uppercase" name="sizes[]" id="sizes" multiple>
-                                            @foreach ($sizes as $size => $key)
-                                            <option value="{{ $key }}" {{ isset($dataSizes) && in_array($key, $dataSizes) ? 'selected' : '' }}>
-                                                {{ ucfirst($size) }}
-                                            </option>
-                                            @endforeach
-                                        </select>
-                                        <span class="text-danger" id="sizeError"></span>
-                                    </div>
-                                </div>
-
-                                 <!-- Product Colors -->
-                                <div class="col-xl-4">
-                                    <div class="form-group mb-3">
-                                        <label class="form-label" for="colors">Product Colors ( <small>Optional</small> )</label>
-                                        <select class="form-control select2 text-uppercase" name="colors[]" id="colors" multiple>
-                                            @foreach ($colors as $color => $key)
-                                            <option value="{{ $key }}" {{ isset($dataColors) && in_array($key, $dataColors) ? 'selected' : '' }}>
-                                                {{ ucfirst($color) }}
-                                            </option>
-                                        @endforeach
-                                        </select>
-                                        <span class="text-danger" id="colorError"></span>
-                                    </div>
-                                </div>
-
-                                 <!-- Product Condition -->
-                                <div class="col-xl-4">
-                                    <div class="form-group mb-3">
-                                        <label class="form-label" for="condition">Product Condition ( <small>Optional</small> )</label>
-                                        <select class="form-control select2 text-uppercase" name="condition" id="condition">
-                                            <option value="">Select Condition</option>
-                                            @foreach ($conditions as $condition => $key)
-                                            <option value="{{ $key }}" {{ isset($data->condition) && ($data->condition == $key) ? 'selected' : '' }}>
-                                                {{ ucfirst($condition) }}
-                                            </option>
-                                            @endforeach
-                                        </select>
-                                        <span class="text-danger" id="conditionError"></span>
                                     </div>
                                 </div>
 
@@ -251,14 +190,73 @@
                                     </div>
                                 </div>
 
-                                <!-- Short Description (Optional) -->
+                                <!-- Product Variants -->
                                 <div class="col-xl-12">
-                                    <div class="form-group mb-3">
-                                        <label class="form-label" for="short_description">Short Description <span class="text-muted">(optional around 25 words)</span></label>
-                                        <textarea name="short_description" class="form-control" id="short_description" placeholder="Enter Short Description...">{{ $data->short_description ?? '' }}</textarea>
-                                        <span class="text-danger" id="shortDescriptionError"></span>
+                                    <div id="variant-container">
+                                        <div class="d-flex">
+                                            <h5 class="me-4">Product Variants Options</h5>
+                                            <div class="form-check form-switch">
+                                                <input type="checkbox" class="form-check-input" id="customSwitch1">
+                                            </div>
+                                        </div>
+                                        <div class="variant" id="variant-0">
+                                            <div class="row">
+                                                <div class="col-xl-2">
+                                                    <label class="form-label">Color Name:</label>
+                                                    <input type="text" class="form-control form-control-sm" name="variants[0][color_name]">
+                                                </div>
+                                                <div class="col-xl-2">
+                                                    <label class="form-label">Color:</label>
+                                                    <input type="text" id="color-picker-0" class="form-control form-control-sm color-picker" name="variants[0][color]">
+                                                </div>
+                                                <div class="col-xl-2">
+                                                    <label class="form-label">Size:</label>
+                                                    <input type="text" class="form-control form-control-sm" name="variants[0][size]">
+                                                </div>
+                                                <div class="col-xl-2">
+                                                    <label class="form-label">Image:</label>
+                                                    <input type="file" id="color_image-0" class="form-control form-control-sm variant-image" name="variants[0][image]" onchange="previewImage(event, 0)">
+                                                </div>
+                                                <div class="col-xl-2">
+                                                    <div class="vimage-preview" style="position: relative">
+                                                        <img id="preview-0" src="" alt="image-preview" style="width: 50px; height: 50px; margin-top: 8px; display: none;">
+                                                        <button type="button" id="remove-btn-0" class="btn btn-danger btn-sm" onclick="removeVImage(0)" style="display: none; position: absolute; top: 0; right: 0;">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-2">
+                                                    <label class="form-label">Buy Price:</label>
+                                                    <input type="number" class="form-control form-control-sm" name="variants[0][buy_price]">
+                                                </div>
+                                                <div class="col-xl-2">
+                                                    <label class="form-label">MRP Price:</label>
+                                                    <input type="number" class="form-control form-control-sm" name="variants[0][mrp_price]">
+                                                </div>
+                                                <div class="col-xl-2">
+                                                    <label class="form-label">Discount Price:</label>
+                                                    <input type="number" class="form-control form-control-sm" name="variants[0][discount_price]">
+                                                </div>
+                                                <div class="col-xl-2">
+                                                    <label class="form-label">Sell Price:</label>
+                                                    <input type="number" class="form-control form-control-sm" name="variants[0][sell_price]">
+                                                </div>
+                                                <div class="col-xl-2">
+                                                    <label class="form-label">Stock Quantity:</label>
+                                                    <input type="number" class="form-control form-control-sm" name="variants[0][stock_quantity]">
+                                                </div>
+                                                <div class="col-xl-2">
+                                                    <div class="d-flex flex-column justify-content-end" style="height: 100%;">
+                                                        <div class="btn-group">
+                                                            <button type="button" class="btn btn-success btn-sm" onclick="addVariant()">+</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
+
 
                                 <!-- Product Description -->
                                 <div class="col-xl-12">
@@ -306,7 +304,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Product Status -->
+                                <!-- Product Unit -->
                                 <div class="col-xl-4">
                                     <div class="form-group mb-3">
                                         <label class="form-label" for="unit">Unit ( <small>default PCS</small> )</label>
@@ -639,6 +637,110 @@
         previewFeaturedImages();
     }
 
+
+    let variantIndex = 1;
+
+    function addVariant() {
+        let container = document.getElementById('variant-container');
+
+        let newVariant = document.createElement('div');
+        newVariant.classList.add('variant');
+        newVariant.setAttribute('id', `variant-${variantIndex}`);
+
+        newVariant.innerHTML = `
+            <div class="row">
+                <div class="col-xl-2">
+                    <label class="form-label">Color Name:</label>
+                    <input type="text" class="form-control form-control-sm" name="variants[${variantIndex}][color_name]">
+                </div>
+                <div class="col-xl-2">
+                    <label class="form-label">Color:</label>
+                    <input type="text" id="color-picker-${variantIndex}" class="form-control form-control-sm color-picker" name="variants[${variantIndex}][color]">
+                </div>
+                <div class="col-xl-2">
+                    <label class="form-label">Size:</label>
+                    <input type="text" class="form-control form-control-sm" name="variants[${variantIndex}][size]">
+                </div>
+                <div class="col-xl-2">
+                    <label class="form-label">Image:</label>
+                    <input type="file" id="color_image-${variantIndex}" class="form-control form-control-sm variant-image" name="variants[${variantIndex}][image]" onchange="previewImage(event, ${variantIndex})">
+                </div>
+                <div class="col-xl-2">
+                    <div class="vimage-preview" style="position: relative;">
+                        <img id="preview-${variantIndex}" src="" alt="image-preview" style="width: 50px; height: 50px; margin-top: 8px; display: none;">
+                        <button type="button" id="remove-btn-${variantIndex}" class="btn btn-danger btn-sm" onclick="removeVImage(${variantIndex})" style="display: none; position: absolute; top: 0; right: 0;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-xl-2">
+                    <label class="form-label">Buy Price:</label>
+                    <input type="number" class="form-control form-control-sm" name="variants[${variantIndex}][buy_price]">
+                </div>
+                <div class="col-xl-2">
+                    <label class="form-label">MRP Price:</label>
+                    <input type="number" class="form-control form-control-sm" name="variants[${variantIndex}][mrp_price]">
+                </div>
+                <div class="col-xl-2">
+                    <label class="form-label">Discount Price:</label>
+                    <input type="number" class="form-control form-control-sm" name="variants[${variantIndex}][discount_price]">
+                </div>
+                <div class="col-xl-2">
+                    <label class="form-label">Sell Price:</label>
+                    <input type="number" class="form-control form-control-sm" name="variants[${variantIndex}][sell_price]">
+                </div>
+                <div class="col-xl-2">
+                    <label class="form-label">Stock Quantity:</label>
+                    <input type="number" class="form-control form-control-sm" name="variants[${variantIndex}][stock_quantity]">
+                </div>
+                <div class="col-xl-2">
+                    <div class="d-flex flex-column justify-content-end" style="height: 100%;">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-light btn-sm" onclick="removeVariant(${variantIndex})">-</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        container.appendChild(newVariant);
+        variantIndex++;
+    }
+
+    function removeVariant(index) {
+        let variantToRemove = document.getElementById(`variant-${index}`);
+        if (variantToRemove) {
+            variantToRemove.remove();
+        }
+    }
+
+    function previewImage(event, index) {
+        let input = event.target;
+        let file = input.files[0];
+        let preview = document.getElementById(`preview-${index}`);
+        let removeBtn = document.getElementById(`remove-btn-${index}`);
+
+        if (file) {
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = "block";
+                removeBtn.style.display = "block";
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function removeVImage(index) {
+        let preview = document.getElementById(`preview-${index}`);
+        let removeBtn = document.getElementById(`remove-btn-${index}`);
+        let fileInput = document.getElementById(`color_image-${index}`);
+
+        preview.src = "";
+        preview.style.display = "none";
+        removeBtn.style.display = "none";
+        fileInput.value = ""; // Reset file input
+    }
 
     function addProduct() {
 

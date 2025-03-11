@@ -20,6 +20,7 @@
 
 	<!-- ================== Summernote css ================== -->
 	<link href="{{ asset('backend/assets/plugins/summernote/dist/summernote-lite.css') }}" rel="stylesheet">
+	<link href="{{ asset('backend/assets/plugins/spectrum-colorpicker2/dist/spectrum.min.css') }}" rel="stylesheet">
 
 	<!-- ================== BEGIN DataTables-css ================== -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">

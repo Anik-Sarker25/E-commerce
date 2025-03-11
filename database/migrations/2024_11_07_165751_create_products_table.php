@@ -21,19 +21,13 @@ return new class extends Migration
             $table->unsignedBigInteger('delivery_type')->nullable();
             $table->string('name');
             $table->string('slug')->nullable();
-            $table->string('model_no')->nullable();
             $table->string('keywords')->nullable();
             $table->string('item_code')->nullable();
             $table->decimal('buy_price', 10, 0)->nullable()->default(0);
             $table->decimal('mrp_price', 10, 0)->nullable()->default(0);
             $table->decimal('discount_price', 10, 0)->nullable()->default(0);
             $table->decimal('sell_price', 10, 0)->nullable()->default(0);
-            $table->string('model')->nullable();
-            $table->string('size')->nullable();
-            $table->string('color')->nullable();
-            $table->string('condition')->nullable();
             $table->string('thumbnail')->nullable();
-            $table->text('short_description')->nullable();
             $table->longText('description');
             $table->string('return')->nullable();
             $table->string('warranty')->nullable();
@@ -42,6 +36,7 @@ return new class extends Migration
             $table->string('deals_time')->nullable();
             $table->tinyInteger('product_type')->nullable();
             $table->tinyInteger('status')->default(Constant::STATUS['active']);
+            $table->boolean('has_variants')->default(false);
             $table->timestamps();
             $table->SoftDeletes();
         });

@@ -15,6 +15,7 @@ class Product extends Model
         'subcategory_id',
         'childcategory_id',
         'brand_id',
+        'delivery_type',
         'name',
         'slug',
         'buy_price',
@@ -22,7 +23,6 @@ class Product extends Model
         'discount_price',
         'sell_price',
         'thumbnail',
-        'short_description',
         'description',
         'stock_quantity',
         'return',
@@ -30,13 +30,10 @@ class Product extends Model
         'deals_time',
         'product_type',
         'unit',
-        'model_no',
         'keywords',
-        'color',
-        'size',
-        'condition',
         'item_code',
         'status',
+        'has_variants',
     ];
 
     public function featuredImages(){
