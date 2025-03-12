@@ -53,7 +53,7 @@
                         <form id="userForm">
                             <div class="row">
                                 <!-- Product Title -->
-                                <div class="col-xl-6">
+                                <div class="col-xl-4">
                                     <div class="form-group mb-3">
                                         <label class="form-label" for="name">Product Name <span class="text-danger">*</span></label>
                                         <input type="hidden" id="update_id" value="{{ $data->id ?? '' }}">
@@ -63,7 +63,7 @@
                                 </div>
 
                                 <!-- Buy Price -->
-                                <div class="col-xl-6">
+                                <div class="col-xl-4">
                                     <div class="form-group mb-3">
                                         <label class="form-label" for="buy_price">Buy Price <span class="text-danger">*</span></label>
                                         <input type="number" name="buy_price" class="form-control" id="buy_price" placeholder="Enter Buy Price..." value="{{ $data->buy_price ?? '' }}">
@@ -139,7 +139,7 @@
                                 </div>
 
                                 <!-- Product Keywords -->
-                                <div class="col-xl-4">
+                                <div class="col-xl-3">
                                     <div class="form-group mb-3">
                                         <label class="form-label" for="keywords">Keywords <span class="text-muted">(optional use ',')</span></label>
                                         <input type="text" name="keywords" class="form-control" id="keywords" placeholder="product name, brand name, etc.." value="{{ $data->keywords ?? '' }}">
@@ -148,7 +148,7 @@
                                 </div>
 
                                 <!-- Thumbnail Image -->
-                                <div class="col-xl-4">
+                                <div class="col-xl-3">
                                     <div class="form-group mb-3">
                                         <label class="form-label" for="thumbnail">Thumbnail Image <span class="text-danger">*</span> ( <small>420 X 510</small> )</label>
                                         <input type="file" name="thumbnail" class="form-control" id="thumbnail" onchange="previewThumbnail()">
@@ -166,7 +166,7 @@
                                 </div>
 
                                 <!-- Featured Images (Multiple) -->
-                                <div class="col-xl-8">
+                                <div class="col-xl-6">
                                     <div class="form-group mb-3">
                                         <label class="form-label" for="featured_images">Featured Images <span class="text-muted">(optional, multiple)</span> ( <small>850 X 1036</small> )</label>
                                         <input type="file" name="featured_images[]" class="form-control" id="featured_images" multiple onchange="previewFeaturedImages()">
@@ -196,26 +196,26 @@
                                         <div class="d-flex">
                                             <h5 class="me-4">Product Variants Options</h5>
                                             <div class="form-check form-switch">
-                                                <input type="checkbox" class="form-check-input" id="customSwitch1">
+                                                <input type="checkbox" onchange="toggleVariants();" class="form-check-input" id="customSwitch1">
                                             </div>
                                         </div>
-                                        <div class="variant" id="variant-0">
+                                        <div class="variant d-none" id="variant-0">
                                             <div class="row">
                                                 <div class="col-xl-2">
-                                                    <label class="form-label">Color Name:</label>
-                                                    <input type="text" class="form-control form-control-sm" name="variants[0][color_name]">
+                                                    <label class="form-label">Color Name</label>
+                                                    <input type="text" class="form-control form-control-sm cname-0" name="variants[0][color_name]">
                                                 </div>
                                                 <div class="col-xl-2">
-                                                    <label class="form-label">Color:</label>
-                                                    <input type="text" id="color-picker-0" class="form-control form-control-sm color-picker" name="variants[0][color]">
+                                                    <label class="form-label">Color</label>
+                                                    <input type="text" id="color-picker-0" class="form-control form-control-sm color-picker color-0" name="variants[0][color]">
                                                 </div>
                                                 <div class="col-xl-2">
-                                                    <label class="form-label">Size:</label>
-                                                    <input type="text" class="form-control form-control-sm" name="variants[0][size]">
+                                                    <label class="form-label">Size</label>
+                                                    <input type="text" class="form-control form-control-sm size-0" name="variants[0][size]">
                                                 </div>
                                                 <div class="col-xl-2">
-                                                    <label class="form-label">Image:</label>
-                                                    <input type="file" id="color_image-0" class="form-control form-control-sm variant-image" name="variants[0][image]" onchange="previewImage(event, 0)">
+                                                    <label class="form-label">Image</label>
+                                                    <input type="file" id="color_image-0" class="form-control form-control-sm variant-image" name="variants[0][image]" onchange="previewVImage(event, 0)">
                                                 </div>
                                                 <div class="col-xl-2">
                                                     <div class="vimage-preview" style="position: relative">
@@ -226,24 +226,25 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-xl-2">
-                                                    <label class="form-label">Buy Price:</label>
-                                                    <input type="number" class="form-control form-control-sm" name="variants[0][buy_price]">
+                                                    <label class="form-label">Buy Price</label>
+                                                    <input type="number" class="form-control form-control-sm vbp-0" name="variants[0][buy_price]" oninput="updateVSellPrice(0)">
                                                 </div>
                                                 <div class="col-xl-2">
-                                                    <label class="form-label">MRP Price:</label>
-                                                    <input type="number" class="form-control form-control-sm" name="variants[0][mrp_price]">
+                                                    <label class="form-label">MRP Price</label>
+                                                    <input type="number" class="form-control form-control-sm vmrp-0" name="variants[0][mrp_price]" oninput="updateVSellPrice(0)">
                                                 </div>
                                                 <div class="col-xl-2">
-                                                    <label class="form-label">Discount Price:</label>
-                                                    <input type="number" class="form-control form-control-sm" name="variants[0][discount_price]">
+                                                    <label class="form-label">Discount Price <span class="text-danger">(%) *</span></label>
+                                                    <input type="number" class="form-control form-control-sm vdp-0" name="variants[0][discount_price]" oninput="updateVSellPrice(0)">
                                                 </div>
                                                 <div class="col-xl-2">
-                                                    <label class="form-label">Sell Price:</label>
-                                                    <input type="number" class="form-control form-control-sm" name="variants[0][sell_price]">
+                                                    <label class="form-label">Sell Price</label>
+                                                    <input type="number" class="form-control form-control-sm vsp-0" name="variants[0][sell_price]">
+                                                    <span class="text-danger" id="sellPriceError-0"></span>
                                                 </div>
                                                 <div class="col-xl-2">
-                                                    <label class="form-label">Stock Quantity:</label>
-                                                    <input type="number" class="form-control form-control-sm" name="variants[0][stock_quantity]">
+                                                    <label class="form-label">Stock Quantity</label>
+                                                    <input type="number" class="form-control form-control-sm quantity-0" name="variants[0][stock_quantity]" oninput="updateTotalQuantity();">
                                                 </div>
                                                 <div class="col-xl-2">
                                                     <div class="d-flex flex-column justify-content-end" style="height: 100%;">
@@ -472,6 +473,7 @@
             }
         });
 
+
     });
 
 
@@ -488,12 +490,29 @@
         // Ensure sell price isn’t below buy price
         if (sellPrice < buyPrice) {
             $('#sellPriceError').text("Sell Price cannot be less then buy Price");
+            $('#sell_price').val(buyPrice.toFixed(2));
+
         }else {
             $('#sellPriceError').text("");
+            $('#sell_price').val(sellPrice.toFixed(2));
         }
 
         // Update Sell Price field
-        $('#sell_price').val(sellPrice.toFixed(2));
+
+        // update all the variants price fields
+        const switchInput = $("#customSwitch1");
+
+        if (switchInput.is(":checked")) {
+            $('.vbp-0').val(buyPrice);
+            $('.vmrp-0').val(mrpPrice);
+            $('.vdp-0').val(discountPercentage);
+            $('.vsp-0').val(sellPrice.toFixed(2));
+        } else {
+            $('.vbp-0').val('');
+            $('.vmrp-0').val('');
+            $('.vdp-0').val('');
+            $('.vsp-0').val('');
+        }
     }
 
     // Stock quantity validation
@@ -637,11 +656,33 @@
         previewFeaturedImages();
     }
 
+    // variants dynamic content for multiple variants
+    function toggleVariants() {
+        let variantContainers = $(".variant");
+        let switchInput = $("#customSwitch1");
+
+        if (switchInput.is(":checked")) {
+            variantContainers.removeClass('d-none');
+            variantContainers.addClass('d-block');
+        } else {
+            variantContainers.removeClass('d-block');
+            variantContainers.addClass('d-none');
+        }
+    }
 
     let variantIndex = 1;
 
     function addVariant() {
         let container = document.getElementById('variant-container');
+
+        let vcname = $('.cname-0').val();
+        let vcolor = $('.color-0').val();
+        let vsize = $('.size-0').val();
+        let vbp_price = parseFloat($('.vbp-0').val()) || 0;
+        let vmrp_price = parseFloat($('.vmrp-0').val()) || 0;
+        let vdp_price = parseFloat($('.vdp-0').val()) || 0;
+        let vsp_price = calculateVSellPrice(vmrp_price, vdp_price, vbp_price); // Calculate initial sell price
+        let vquantity = parseFloat($('.quantity-0').val()) || 0;
 
         let newVariant = document.createElement('div');
         newVariant.classList.add('variant');
@@ -650,20 +691,20 @@
         newVariant.innerHTML = `
             <div class="row">
                 <div class="col-xl-2">
-                    <label class="form-label">Color Name:</label>
-                    <input type="text" class="form-control form-control-sm" name="variants[${variantIndex}][color_name]">
+                    <label class="form-label">Color Name</label>
+                    <input type="text" class="form-control form-control-sm" name="variants[${variantIndex}][color_name]" value="${vcname}">
                 </div>
                 <div class="col-xl-2">
-                    <label class="form-label">Color:</label>
-                    <input type="text" id="color-picker-${variantIndex}" class="form-control form-control-sm color-picker" name="variants[${variantIndex}][color]">
+                    <label class="form-label">Color</label>
+                    <input type="text" id="color-picker-${variantIndex}" class="form-control form-control-sm color-picker" name="variants[${variantIndex}][color]" value="${vcolor}">
                 </div>
                 <div class="col-xl-2">
-                    <label class="form-label">Size:</label>
-                    <input type="text" class="form-control form-control-sm" name="variants[${variantIndex}][size]">
+                    <label class="form-label">Size</label>
+                    <input type="text" class="form-control form-control-sm" name="variants[${variantIndex}][size]" value="${vsize}">
                 </div>
                 <div class="col-xl-2">
-                    <label class="form-label">Image:</label>
-                    <input type="file" id="color_image-${variantIndex}" class="form-control form-control-sm variant-image" name="variants[${variantIndex}][image]" onchange="previewImage(event, ${variantIndex})">
+                    <label class="form-label">Image</label>
+                    <input type="file" id="color_image-${variantIndex}" class="form-control form-control-sm variant-image" name="variants[${variantIndex}][image]" onchange="previewVImage(event, ${variantIndex})">
                 </div>
                 <div class="col-xl-2">
                     <div class="vimage-preview" style="position: relative;">
@@ -674,24 +715,25 @@
                     </div>
                 </div>
                 <div class="col-xl-2">
-                    <label class="form-label">Buy Price:</label>
-                    <input type="number" class="form-control form-control-sm" name="variants[${variantIndex}][buy_price]">
+                    <label class="form-label">Buy Price</label>
+                    <input type="number" class="form-control form-control-sm vbp-${variantIndex}" name="variants[${variantIndex}][buy_price]" value="${vbp_price}" oninput="updateVSellPrice(${variantIndex})">
                 </div>
                 <div class="col-xl-2">
-                    <label class="form-label">MRP Price:</label>
-                    <input type="number" class="form-control form-control-sm" name="variants[${variantIndex}][mrp_price]">
+                    <label class="form-label">MRP Price</label>
+                    <input type="number" class="form-control form-control-sm vmrp-${variantIndex}" name="variants[${variantIndex}][mrp_price]" value="${vmrp_price}" oninput="updateVSellPrice(${variantIndex})">
                 </div>
                 <div class="col-xl-2">
-                    <label class="form-label">Discount Price:</label>
-                    <input type="number" class="form-control form-control-sm" name="variants[${variantIndex}][discount_price]">
+                    <label class="form-label">Discount Price <span class="text-danger">(%) *</span></label>
+                    <input type="number" class="form-control form-control-sm vdp-${variantIndex}" name="variants[${variantIndex}][discount_price]" value="${vdp_price}" oninput="updateVSellPrice(${variantIndex})">
                 </div>
                 <div class="col-xl-2">
-                    <label class="form-label">Sell Price:</label>
-                    <input type="number" class="form-control form-control-sm" name="variants[${variantIndex}][sell_price]">
+                    <label class="form-label">Sell Price</label>
+                    <input type="number" class="form-control form-control-sm vsp-${variantIndex}" name="variants[${variantIndex}][sell_price]" value="${vsp_price}">
+                    <span id="sellPriceError-${variantIndex}" class="text-danger"></span>
                 </div>
                 <div class="col-xl-2">
-                    <label class="form-label">Stock Quantity:</label>
-                    <input type="number" class="form-control form-control-sm" name="variants[${variantIndex}][stock_quantity]">
+                    <label class="form-label">Stock Quantity</label>
+                    <input type="number" class="form-control form-control-sm" name="variants[${variantIndex}][stock_quantity]" value="${vquantity}" oninput="updateTotalQuantity()">
                 </div>
                 <div class="col-xl-2">
                     <div class="d-flex flex-column justify-content-end" style="height: 100%;">
@@ -704,17 +746,69 @@
         `;
 
         container.appendChild(newVariant);
+        updateTotalQuantity();
         variantIndex++;
     }
+
+    function updateTotalQuantity() {
+        let totalQty = 0;
+
+        // Loop through all quantity input fields and sum their values
+        $('input[name^="variants"][name$="[stock_quantity]"]').each(function() {
+            totalQty += parseFloat($(this).val()) || 0;
+        });
+
+        // Set the total quantity in the element with class "qty"
+        $('#stock').val(totalQty);
+    }
+
+    /**
+     * Function to calculate variant sell price based on MRP and discount
+     */
+    function calculateVSellPrice(mrp, discount, buyPrice) {
+        let discountAmount = (mrp * (discount / 100));
+        let sellPrice = mrp - discountAmount;
+
+        // Ensure sell price isn’t below buy price
+        if (sellPrice < buyPrice) {
+            return buyPrice; // Set sell price to buy price to prevent loss
+        }
+        return sellPrice;
+    }
+
+    /**
+     * Function to update the variant sell price when any of the related fields change
+     */
+     function updateVSellPrice(index) {
+        let buyPrice = parseFloat($(`.vbp-${index}`).val()) || 0;
+        let mrpPrice = parseFloat($(`.vmrp-${index}`).val()) || 0;
+        let discountPrice = parseFloat($(`.vdp-${index}`).val()) || 0;
+
+        let discountAmount = (mrpPrice * (discountPrice / 100));
+        let sellPrice = mrpPrice - discountAmount;
+
+        // Ensure sell price isn’t below buy price
+        let errorElement = $(`#sellPriceError-${index}`);
+
+        if (sellPrice < buyPrice) {
+            errorElement.text("Sell Price cannot be less than Buy Price");
+            $(`.vsp-${index}`).val(buyPrice.toFixed(2)); // Prevent loss by setting sell price to buy price
+        } else {
+            errorElement.text("");
+            $(`.vsp-${index}`).val(sellPrice.toFixed(2));
+        }
+    }
+
 
     function removeVariant(index) {
         let variantToRemove = document.getElementById(`variant-${index}`);
         if (variantToRemove) {
             variantToRemove.remove();
+            updateTotalQuantity();
         }
     }
 
-    function previewImage(event, index) {
+    function previewVImage(event, index) {
         let input = event.target;
         let file = input.files[0];
         let preview = document.getElementById(`preview-${index}`);
@@ -741,6 +835,7 @@
         removeBtn.style.display = "none";
         fileInput.value = ""; // Reset file input
     }
+    // variants ends here
 
     function addProduct() {
 
