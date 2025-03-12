@@ -104,7 +104,7 @@
                                         <label class="form-label" for="category_id">Product Category <span class="text-danger">*</span></label>
                                         <select name="category_id" class="form-control select2" id="category_id">
                                         </select>
-                                        <span class="text-danger" id="categoryError"></span>
+                                        <span class="text-danger" id="category_idError"></span>
                                     </div>
                                 </div>
 
@@ -114,7 +114,7 @@
                                         <label class="form-label" for="subcategory_id">Product Sub Category <span class="text-muted">(optional)</span></label>
                                         <select name="subcategory_id" class="form-control select2" id="subcategory_id">
                                         </select>
-                                        <span class="text-danger" id="subCategoryError"></span>
+                                        <span class="text-danger" id="subcategory_idError"></span>
                                     </div>
                                 </div>
 
@@ -124,7 +124,7 @@
                                         <label class="form-label" for="childcategory_id">Product Child Category <span class="text-muted">(optional)</span></label>
                                         <select name="childcategory_id" class="form-control select2" id="childcategory_id">
                                         </select>
-                                        <span class="text-danger" id="childCategoryError"></span>
+                                        <span class="text-danger" id="childcategory_idError"></span>
                                     </div>
                                 </div>
 
@@ -199,8 +199,9 @@
                                                 <input type="checkbox" onchange="toggleVariants();" class="form-check-input" id="customSwitch1">
                                             </div>
                                         </div>
-                                        <div class="variant d-none" id="variant-0">
-                                            <div class="row">
+                                        <div class="variant d-none d-flex" id="variant-0">
+                                            <strong class="me-3">1</strong>
+                                            <div class="row mb-2">
                                                 <div class="col-xl-2">
                                                     <label class="form-label">Color Name</label>
                                                     <input type="text" class="form-control form-control-sm cname-0" name="variants[0][color_name]">
@@ -212,6 +213,10 @@
                                                 <div class="col-xl-2">
                                                     <label class="form-label">Size</label>
                                                     <input type="text" class="form-control form-control-sm size-0" name="variants[0][size]">
+                                                </div>
+                                                <div class="col-xl-2">
+                                                    <label class="form-label">Storage Capacity</label>
+                                                    <input type="text" class="form-control form-control-sm storage_capacity-0" name="variants[0][storage_capacity]">
                                                 </div>
                                                 <div class="col-xl-2">
                                                     <label class="form-label">Image</label>
@@ -477,7 +482,7 @@
     });
 
 
-    // Product price Calculations
+    // function to calculate product prices
     function calculateSellPrice() {
         const buyPrice = parseFloat($('#buy_price').val()) || 0;
         const mrpPrice = parseFloat($('#mrp_price').val()) || 0;
@@ -497,8 +502,6 @@
             $('#sell_price').val(sellPrice.toFixed(2));
         }
 
-        // Update Sell Price field
-
         // update all the variants price fields
         const switchInput = $("#customSwitch1");
 
@@ -515,7 +518,7 @@
         }
     }
 
-    // Stock quantity validation
+    // function to validate nagetive quantity
     function validateStockQuantity() {
         const stockQuantity = parseInt($('#stock').val()) || 0;
 
@@ -527,9 +530,11 @@
         }
     }
 
+    // function to remove thumbnail images
     function clearThumbnailPreview(id) {
         removeImage(id);
     }
+    // function to remove the product freatured image
     function removeFeaturedImageDb(imageId, isExisting = false) {
 
         let url = "{{ route('admin.products.removeFeaturedImage', ':id') }}";
@@ -572,7 +577,7 @@
 
     }
 
-    // Product Thumbnail
+    // function to preview product thumbnail
     function previewThumbnail() {
         const $thumbnailInput = $('#thumbnail');
         const $previewContainer = $('#thumbnailPreview');
@@ -605,7 +610,7 @@
         }
     }
 
-    // Product Featured Images
+    // function to preview featured images
     function previewFeaturedImages() {
         const $featuredInput = $('#featured_images');
         const $previewContainer = $('#featuredImagesPreview');
@@ -638,7 +643,7 @@
         });
     }
 
-    // Remove a featured image
+    // function to remove featured images
     function removeFeaturedImage(index) {
         const $featuredInput = $('#featured_images');
         const $previewContainer = $('#featuredImagesPreview');
@@ -656,7 +661,8 @@
         previewFeaturedImages();
     }
 
-    // variants dynamic content for multiple variants
+    // variants dynamic content start from here
+    // function for toggle variants content
     function toggleVariants() {
         let variantContainers = $(".variant");
         let switchInput = $("#customSwitch1");
@@ -664,13 +670,17 @@
         if (switchInput.is(":checked")) {
             variantContainers.removeClass('d-none');
             variantContainers.addClass('d-block');
+            updateTotalQuantity();
         } else {
             variantContainers.removeClass('d-block');
             variantContainers.addClass('d-none');
+            updateTotalQuantity();
         }
     }
 
+    // function to add variants
     let variantIndex = 1;
+    let columnindex = 1;
 
     function addVariant() {
         let container = document.getElementById('variant-container');
@@ -678,6 +688,7 @@
         let vcname = $('.cname-0').val();
         let vcolor = $('.color-0').val();
         let vsize = $('.size-0').val();
+        let storage_capacity = $('.storage_capacity-0').val();
         let vbp_price = parseFloat($('.vbp-0').val()) || 0;
         let vmrp_price = parseFloat($('.vmrp-0').val()) || 0;
         let vdp_price = parseFloat($('.vdp-0').val()) || 0;
@@ -685,22 +696,29 @@
         let vquantity = parseFloat($('.quantity-0').val()) || 0;
 
         let newVariant = document.createElement('div');
-        newVariant.classList.add('variant');
+        newVariant.classList.add('variant', 'd-flex');
         newVariant.setAttribute('id', `variant-${variantIndex}`);
 
+        columnindex++;
         newVariant.innerHTML = `
-            <div class="row">
+
+            <strong class="me-3 variant-number">${columnindex}</strong>
+            <div class="row mb-2">
                 <div class="col-xl-2">
                     <label class="form-label">Color Name</label>
-                    <input type="text" class="form-control form-control-sm" name="variants[${variantIndex}][color_name]" value="${vcname}">
+                    <input type="text" class="form-control form-control-sm cname-${variantIndex}" name="variants[${variantIndex}][color_name]" value="${vcname}">
                 </div>
                 <div class="col-xl-2">
                     <label class="form-label">Color</label>
-                    <input type="text" id="color-picker-${variantIndex}" class="form-control form-control-sm color-picker" name="variants[${variantIndex}][color]" value="${vcolor}">
+                    <input type="text" id="color-picker-${variantIndex}" class="form-control form-control-sm color-${variantIndex} color-picker" name="variants[${variantIndex}][color]" value="${vcolor}">
                 </div>
                 <div class="col-xl-2">
                     <label class="form-label">Size</label>
-                    <input type="text" class="form-control form-control-sm" name="variants[${variantIndex}][size]" value="${vsize}">
+                    <input type="text" class="form-control form-control-sm size-${variantIndex}" name="variants[${variantIndex}][size]" value="${vsize}">
+                </div>
+                <div class="col-xl-2">
+                    <label class="form-label">Storage Capacity</label>
+                    <input type="text" class="form-control form-control-sm storage_capacity-${variantIndex}" name="variants[${variantIndex}][storage_capacity]" value="${storage_capacity}">
                 </div>
                 <div class="col-xl-2">
                     <label class="form-label">Image</label>
@@ -733,7 +751,7 @@
                 </div>
                 <div class="col-xl-2">
                     <label class="form-label">Stock Quantity</label>
-                    <input type="number" class="form-control form-control-sm" name="variants[${variantIndex}][stock_quantity]" value="${vquantity}" oninput="updateTotalQuantity()">
+                    <input type="number" class="form-control form-control-sm quantity-${variantIndex}" name="variants[${variantIndex}][stock_quantity]" value="${vquantity}" oninput="updateTotalQuantity()">
                 </div>
                 <div class="col-xl-2">
                     <div class="d-flex flex-column justify-content-end" style="height: 100%;">
@@ -750,21 +768,24 @@
         variantIndex++;
     }
 
+    //function to calculate variants total quantity
     function updateTotalQuantity() {
         let totalQty = 0;
+        let switchInput = $("#customSwitch1");
 
-        // Loop through all quantity input fields and sum their values
-        $('input[name^="variants"][name$="[stock_quantity]"]').each(function() {
-            totalQty += parseFloat($(this).val()) || 0;
-        });
+        if (switchInput.is(":checked")) {
+            // Loop through all stock quantity inputs and sum their values
+            $('input[name^="variants"][name$="[stock_quantity]"]').each(function() {
+                totalQty += parseFloat($(this).val()) || 0;
+            });
 
-        // Set the total quantity in the element with class "qty"
-        $('#stock').val(totalQty);
+            $('#stock').val(totalQty);
+        } else {
+            $('#stock').val('');
+        }
     }
 
-    /**
-     * Function to calculate variant sell price based on MRP and discount
-     */
+    // Function to calculate variant sell price based on MRP and discount
     function calculateVSellPrice(mrp, discount, buyPrice) {
         let discountAmount = (mrp * (discount / 100));
         let sellPrice = mrp - discountAmount;
@@ -776,10 +797,8 @@
         return sellPrice;
     }
 
-    /**
-     * Function to update the variant sell price when any of the related fields change
-     */
-     function updateVSellPrice(index) {
+    // Function to update the variant sell price when any of the related fields change
+    function updateVSellPrice(index) {
         let buyPrice = parseFloat($(`.vbp-${index}`).val()) || 0;
         let mrpPrice = parseFloat($(`.vmrp-${index}`).val()) || 0;
         let discountPrice = parseFloat($(`.vdp-${index}`).val()) || 0;
@@ -792,14 +811,14 @@
 
         if (sellPrice < buyPrice) {
             errorElement.text("Sell Price cannot be less than Buy Price");
-            $(`.vsp-${index}`).val(buyPrice.toFixed(2)); // Prevent loss by setting sell price to buy price
+            $(`.vsp-${index}`).val(buyPrice.toFixed(2));
         } else {
             errorElement.text("");
             $(`.vsp-${index}`).val(sellPrice.toFixed(2));
         }
     }
 
-
+    // function to remove variants items
     function removeVariant(index) {
         let variantToRemove = document.getElementById(`variant-${index}`);
         if (variantToRemove) {
@@ -808,6 +827,8 @@
         }
     }
 
+
+    // function to preview variants images
     function previewVImage(event, index) {
         let input = event.target;
         let file = input.files[0];
@@ -825,6 +846,7 @@
         }
     }
 
+    // function to remove variants images
     function removeVImage(index) {
         let preview = document.getElementById(`preview-${index}`);
         let removeBtn = document.getElementById(`remove-btn-${index}`);
@@ -835,8 +857,36 @@
         removeBtn.style.display = "none";
         fileInput.value = ""; // Reset file input
     }
+
+    // function to reset variants
+    function resetVariants() {
+        $('.variant').each(function () {
+            let variantId = $(this).attr('id').split('-')[1]; // Extract Variant Index
+            // Clear input fields
+            $(`.cname-${variantId}`).val('');
+            $(`.color-${variantId}`).val('');
+            $(`.size-${variantId}`).val('');
+            $(`.storage_capacity-${variantId}`).val('');
+            $(`.vbp-${variantId}`).val('');
+            $(`.vmrp-${variantId}`).val('');
+            $(`.vdp-${variantId}`).val('');
+            $(`.vsp-${variantId}`).val('');
+            $(`.quantity-${variantId}`).val('');
+            $(`#color_image-${variantId}`).val('');
+            $(`#preview-${variantId}`).attr('src', '');
+            $(`#preview-${variantId}`).addClass('d-none');
+            $(`#remove-btn-${variantId}`).hide();
+
+            if (variantId !== "0") {
+                $(this).remove();
+            }
+            updateTotalQuantity();
+        });
+    }
+
     // variants ends here
 
+    // function to add new products information
     function addProduct() {
 
         let url = "{{ route('admin.products.store') }}";
@@ -847,17 +897,12 @@
         let discount_price = $('#discount_price').val();
         let sell_price = $('#sell_price').val();
         let category_id = $('#category_id').val();
-        let subcategory_id = $('#subcategory_id').val();
-        let childcategory_id = $('#childcategory_id').val();
+        let subcategory_id = $('#subcategory_id').val() || null;
+        let childcategory_id = $('#childcategory_id').val() || null;
         let brand_id = $('#brand_id').val();
-        let model_no = $('#model_no').val();
         let keywords = $('#keywords').val();
-        let sizes = $('#sizes').val();
-        let colors = $('#colors').val();
-        let condition = $('#condition').val();
         let thumbnail = $('#thumbnail')[0].files[0];
         let featured_images = $('#featured_images')[0].files;
-        let short_description = $('#short_description').val();
         let description = $('#description').summernote('code');
         let product_type = $('#product_type').val();
         let deals_time = $('#deals_time').val();
@@ -869,6 +914,7 @@
         let status = $('#status').val();
 
         let formData = new FormData();
+        // Append Product Data
         formData.append('name', name);
         formData.append('buy_price', buy_price);
         formData.append('mrp_price', mrp_price);
@@ -878,25 +924,7 @@
         formData.append('subcategory_id', subcategory_id);
         formData.append('childcategory_id', childcategory_id);
         formData.append('brand_id', brand_id);
-        formData.append('model_no', model_no);
         formData.append('keywords', keywords);
-
-        for (let i = 0; i < sizes.length; i++) {
-            formData.append('sizes[]', sizes[i]);
-        }
-
-        for (let i = 0; i < colors.length; i++) {
-            formData.append('colors[]', colors[i]);
-        }
-
-        formData.append('condition', condition);
-        formData.append('thumbnail', thumbnail);
-
-        for (let i = 0; i < featured_images.length; i++) {
-            formData.append('featured_images[]', featured_images[i]);
-        }
-
-        formData.append('short_description', short_description);
         formData.append('description', description);
         formData.append('product_type', product_type);
         formData.append('deals_time', deals_time);
@@ -906,6 +934,45 @@
         formData.append('warranty', warranty);
         formData.append('delivery_type', delivery_type);
         formData.append('status', status);
+
+        // Append Images
+        if (thumbnail) {
+            formData.append('thumbnail', thumbnail);
+        }
+
+        for (let i = 0; i < featured_images.length; i++) {
+            formData.append('featured_images[]', featured_images[i]);
+        }
+
+        // Collect and Append Variants
+        $('.variant').each(function (index) {
+            let variantId = $(this).attr('id').split('-')[1]; // Extract Variant Index
+
+            let color_name = $(`.cname-${variantId}`).val();
+            let color = $(`.color-${variantId}`).val();
+            let size = $(`.size-${variantId}`).val();
+            let storage_capacity = $(`.storage_capacity-${variantId}`).val();
+            let buy_price = $(`.vbp-${variantId}`).val();
+            let mrp_price = $(`.vmrp-${variantId}`).val();
+            let discount_price = $(`.vdp-${variantId}`).val();
+            let sell_price = $(`.vsp-${variantId}`).val();
+            let stock_quantity = $(`.quantity-${variantId}`).val();
+            let image = $(`#color_image-${variantId}`)[0].files[0];
+
+            formData.append(`variants[${index}][color_name]`, color_name);
+            formData.append(`variants[${index}][color]`, color);
+            formData.append(`variants[${index}][size]`, size);
+            formData.append(`variants[${index}][storage_capacity]`, storage_capacity);
+            formData.append(`variants[${index}][buy_price]`, buy_price);
+            formData.append(`variants[${index}][mrp_price]`, mrp_price);
+            formData.append(`variants[${index}][discount_price]`, discount_price);
+            formData.append(`variants[${index}][sell_price]`, sell_price);
+            formData.append(`variants[${index}][stock_quantity]`, stock_quantity);
+
+            if (image) {
+                formData.append(`variants[${index}][image]`, image);
+            }
+        });
 
         $.ajax({
             url: url,
@@ -919,120 +986,30 @@
                 }else {
                     show_success('Product Added Successfully');
                     resetForm();
+                    resetVariants();
+
                 }
             },
             error: function(error) {
-                clearErrors();
+                // clearErrors();
                 let errors = error.responseJSON.errors;
 
-                if (errors.title) {
-                    $('#nameError').html(errors.title);
-                    $('#name').val('');
-                    $('#name').addClass('is-invalid');
-                }
-                if(errors.buy_price) {
-                    $('#buyPriceError').html(errors.buy_price);
-                    $('#buy_price').val('');
-                    $('#buy_price').addClass('is-invalid');
-                }
-                if(errors.mrp_price) {
-                    $('#mrpPriceError').html(errors.mrp_price);
-                    $('#mrp_price').val('');
-                    $('#mrp_price').addClass('is-invalid');
-                }
-                if(errors.discount_price) {
-                    $('#discountPriceError').html(errors.discount_price);
-                    $('#discount_price').val('');
-                    $('#discount_price').addClass('is-invalid');
-                }
-                if(errors.sell_price) {
-                    $('#sellPriceError').html(errors.sell_price);
-                    $('#sell_price').val('');
-                    $('#sell_price').addClass('is-invalid');
-                }
-                if(errors.category_id) {
-                    $('#categoryError').html(errors.category_id);
-                }
-                if(errors.subcategory_id) {
-                    $('#subCategoryError').html(errors.subcategory_id);
-                }
-                if(errors.childcategory_id) {
-                    $('#childCategoryError').html(errors.childcategory_id);
-                }
-                if(errors.brand_id) {
-                    $('#brandError').html(errors.brand_id);
-                }
-                if(errors.model_no) {
-                    $('#modelNoError').html(errors.model_no);
-                    $('#model_no').val('');
-                    $('#model_no').addClass('is-invalid');
-                }
-                if(errors.keywords) {
-                    $('#keywordsError').html(errors.keywords);
-                    $('#keywords').val('');
-                    $('#keywords').addClass('is-invalid');
-                }
-                if(errors.sizes) {
-                    $('#sizesError').html(errors.sizes);
-                }
-                if(errors.colors) {
-                    $('#colorsError').html(errors.colors);
-                }
-                if(errors.condition) {
-                    $('#conditionError').html(errors.condition);
-                }
-                if(errors.thumbnail) {
-                    $('#thumbnailError').html(errors.thumbnail);
-                    $('#thumbnail').val('');
-                    $('#thumbnail').addClass('is-invalid');
-                }
-                if(errors.featured_images) {
-                    $('#featuredImagesError').html(errors.featured_images);
-                    $('#featured_images').val('');
-                    $('#featured_images').addClass('is-invalid');
-                }
-                if(errors.short_description) {
-                    $('#shortDescriptionError').html(errors.short_description);
-                    $('#short_description').val('');
-                    $('#short_description').addClass('is-invalid');
-                }
-                if(errors.description) {
-                    $('#descriptionError').html(errors.description);
-                    $('#description').summernote('code', '');
-                    $('#description').addClass('is-invalid');
-                }
-                if(errors.product_type) {
-                    $('#productTypeError').html(errors.product_type);
-                }
-                if(errors.deals_time) {
-                    $('#dealsTimeError').html(errors.deals_time);
-                    $('#deals_time').val('');
-                    $('#deals_time').addClass('is-invalid');
-                }
-                if(errors.stock) {
-                    $('#stockError').html(errors.stock);
-                    $('#stock').val('');
-                    $('#stock').addClass('is-invalid');
-                }
-                if(errors.unit) {
-                    $('#unitError').html(errors.unit);
-                }
-                if(errors.product_return) {
-                    $('#productReturnError').html(errors.product_return);
-                }
-                if(errors.warranty) {
-                    $('#warrantyError').html(errors.warranty);
-                }
-                if(errors.delivery_type) {
-                    $('#deliveryTypeError').html(errors.delivery_type);
-                }
-                if(errors.status) {
-                    $('#statusError').html(errors.status);
+                for (let key in errors) {
+                    // Check if the field is a select element
+                    if ($(`#${key}`).is('select')) {
+                        $(`#${key}Error`).html(errors[key]);
+                    } else {
+                        $(`#${key}Error`).html(errors[key]);
+                        $(`#${key}`).val('');
+                        $(`#${key}`).addClass('is-invalid');
+                    }
                 }
 
             }
         });
     }
+
+    // function to update product information
     function updateProduct() {
         let id = $('#update_id').val();
         let url = "{{ route('admin.products.update', ':id') }}";
@@ -1047,14 +1024,9 @@
         let subcategory_id = $('#subcategory_id').val();
         let childcategory_id = $('#childcategory_id').val();
         let brand_id = $('#brand_id').val();
-        let model_no = $('#model_no').val();
         let keywords = $('#keywords').val();
-        let sizes = $('#sizes').val();
-        let colors = $('#colors').val();
-        let condition = $('#condition').val();
         let thumbnail = $('#thumbnail')[0].files[0];
         let featured_images = $('#featured_images')[0].files;
-        let short_description = $('#short_description').val();
         let description = $('#description').summernote('code');
         let product_type = $('#product_type').val();
         let deals_time = $('#deals_time').val();
@@ -1075,25 +1047,13 @@
         formData.append('subcategory_id', subcategory_id);
         formData.append('childcategory_id', childcategory_id);
         formData.append('brand_id', brand_id);
-        formData.append('model_no', model_no);
         formData.append('keywords', keywords);
-
-        for (let i = 0; i < sizes.length; i++) {
-            formData.append('sizes[]', sizes[i]);
-        }
-
-        for (let i = 0; i < colors.length; i++) {
-            formData.append('colors[]', colors[i]);
-        }
-
-        formData.append('condition', condition);
         formData.append('thumbnail', thumbnail);
 
         for (let i = 0; i < featured_images.length; i++) {
             formData.append('featured_images[]', featured_images[i]);
         }
 
-        formData.append('short_description', short_description);
         formData.append('description', description);
         formData.append('product_type', product_type);
         formData.append('deals_time', deals_time);
@@ -1162,24 +1122,10 @@
                 if(errors.brand_id) {
                     $('#brandError').html(errors.brand_id);
                 }
-                if(errors.model_no) {
-                    $('#modelNoError').html(errors.model_no);
-                    $('#model_no').val('');
-                    $('#model_no').addClass('is-invalid');
-                }
                 if(errors.keywords) {
                     $('#keywordsError').html(errors.keywords);
                     $('#keywords').val('');
                     $('#keywords').addClass('is-invalid');
-                }
-                if(errors.sizes) {
-                    $('#sizesError').html(errors.sizes);
-                }
-                if(errors.colors) {
-                    $('#colorsError').html(errors.colors);
-                }
-                if(errors.condition) {
-                    $('#conditionError').html(errors.condition);
                 }
                 if(errors.thumbnail) {
                     $('#thumbnailError').html(errors.thumbnail);
@@ -1190,11 +1136,6 @@
                     $('#featuredImagesError').html(errors.featured_images);
                     $('#featured_images').val('');
                     $('#featured_images').addClass('is-invalid');
-                }
-                if(errors.short_description) {
-                    $('#shortDescriptionError').html(errors.short_description);
-                    $('#short_description').val('');
-                    $('#short_description').addClass('is-invalid');
                 }
                 if(errors.description) {
                     $('#descriptionError').html(errors.description);
@@ -1234,6 +1175,7 @@
         });
     }
 
+    // function to remove images
     function removeImage(id) {
         let url = "{{ route('admin.products.removeImage', ':id') }}";
         url = url.replace(':id', id);
@@ -1269,7 +1211,7 @@
         });
     }
 
-
+    // function to clear previous error messages to show the new ones
     function clearErrors() {
         $('#nameError').html('');
         $('#buyPriceError').html('');
@@ -1280,14 +1222,9 @@
         $('#subCategoryError').html('');
         $('#childCategoryError').html('');
         $('#brandError').html('');
-        $('#modelNoError').html('');
         $('#keywordsError').html('');
-        $('#sizesError').html('');
-        $('#colorsError').html('');
-        $('#conditionError').html('');
         $('#thumbnailError').html('');
         $('#featuredImagesError').html('');
-        $('#shortDescriptionError').html('');
         $('#descriptionError').html('');
         $('#productTypeError').html('');
         $('#dealsTimeError').html('');
@@ -1303,16 +1240,15 @@
         $('#mrpPrice').removeClass('is-invalid');
         $('#discountPrice').removeClass('is-invalid');
         $('#sellPrice').removeClass('is-invalid');
-        $('#model_no').removeClass('is-invalid');
         $('#keywords').removeClass('is-invalid');
         $('#thumbnail').removeClass('is-invalid');
         $('#featuredImages').removeClass('is-invalid');
-        $('#shortDescription').removeClass('is-invalid');
         $('#description').removeClass('is-invalid');
         $('#deals_time').removeClass('is-invalid');
         $('#stock').removeClass('is-invalid');
     }
 
+    // function to reset error messages
     function resetForm() {
         $('#update_id').val('');
 
@@ -1352,22 +1288,9 @@
         $('#brand_id').val('').trigger('change');
         $('#brand_id').removeClass('is-invalid');
 
-        $('#modelNoError').html('');
-        $('#model_no').val('');
-        $('#model_no').removeClass('is-invalid');
-
         $('#keywordsError').html('');
         $('#keywords').val('');
         $('#keywords').removeClass('is-invalid');
-
-        $('#sizesError').html('');
-        $('#sizes').val('').trigger('change');
-
-        $('#colorsError').html('');
-        $('#colors').val('').trigger('change');
-
-        $('#conditionError').html('');
-        $('#condition').val('').trigger('change');
 
         $('#thumbnailError').html('');
         $('#thumbnail').val('');
@@ -1380,15 +1303,9 @@
         $('#featuredImagesPreview').empty();
         $('#featuredImagesPreviewUpdate').empty();
 
-
-        $('#shortDescriptionError').html('');
-        $('#short_description').val('');
-        $('#short_description').removeClass('is-invalid');
-
         $('#descriptionError').html('');
         $('#description').summernote('code', '');
         $('#description').removeClass('is-invalid');
-
 
         $('#productTypeError').html('');
         $('#product_type').val('').trigger('change');
@@ -1401,7 +1318,6 @@
         $('#stockError').html('');
         $('#stock').val('');
         $('#stock').removeClass('is-invalid');
-
 
         $('#product_return').val($('#product_return option:first').val()).trigger('change');
         $('#warranty').val($('#warranty option:first').val()).trigger('change');

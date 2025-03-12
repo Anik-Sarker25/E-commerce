@@ -9,6 +9,7 @@ use App\Http\Requests\ProductStoreRequest;
 use App\Http\Requests\ProductUpdateRequest;
 use App\Models\Product;
 use App\Models\ProductFeaturedImage;
+use App\Models\ProductVariants;
 use Illuminate\Http\Request;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
@@ -99,6 +100,9 @@ class ProductController extends Controller
 
             }
 
+            $subcategory = ($request->has('subcategory_id') && $request->subcategory_id !== "null") ? $request->subcategory_id : null;
+            $childcategory = ($request->has('childcategory_id') && $request->childcategory_id !== "null") ? $request->childcategory_id : null;
+
             $data = Product::create([
                 'name' => $request->name,
                 'slug' => Str::slug($request->name),
@@ -107,16 +111,11 @@ class ProductController extends Controller
                 'discount_price' => $request->discount_price,
                 'sell_price' => $request->sell_price,
                 'category_id' => $request->category_id,
-                'subcategory_id' => $request->subcategory_id,
-                'childcategory_id' => $request->childcategory_id,
+                'subcategory_id' => $subcategory,
+                'childcategory_id' => $childcategory,
                 'brand_id' => $request->brand_id,
-                'model_no' => $request->model_no,
                 'keywords' => $request->keywords,
-                'color' => json_encode($request->colors),  // Store colors as a JSON array
-                'size' => json_encode($request->sizes),
-                'condition' => $request->condition,
                 'thumbnail' => $imagePath,
-                'short_description' => $request->short_description,
                 'description' => $request->description,
                 'product_type' => $request->product_type,
                 'deals_time' => strtotime($request->deals_time),
@@ -149,6 +148,42 @@ class ProductController extends Controller
                     $featuredImage->save();
                 }
 
+            }
+
+            // Handle Variants Upload
+            if ($request->has('variants')) {
+                $data->update(['has_variants' => true]);
+                foreach ($request->variants as $variant) {
+                    $variantData = [
+                        'product_id' => $data->id,
+                        'color_name' => $variant['color_name'],
+                        'color_code' => $variant['color'],
+                        'size' => $variant['size'],
+                        'storage' => $variant['storage_capacity'],
+                        'buy_price' => $variant['buy_price'],
+                        'mrp_price' => $variant['mrp_price'],
+                        'discount_price' => $variant['discount_price'],
+                        'sell_price' => $variant['sell_price'],
+                        'stock_quantity' => $variant['stock_quantity'],
+                    ];
+
+                    // Handle image for variant
+                    if (isset($variant['image'])) {
+                        $image = $variant['image'];
+
+                        $manager = new ImageManager(new Driver());
+                        $imageObj = $manager->read($image);
+                        $assign_name = "variant-" . uniqid() . '.' . $image->getClientOriginalExtension();
+
+                        // Save the image (you can resize it if needed)
+                        $imageObj->save(public_path('uploads/products/variants') . '/' . $assign_name, 80, 'png');
+
+                        // Store the image path in the variant data array
+                        $variantData['color_image'] = '/uploads/products/variants/' . $assign_name;
+                    }
+                    // Create a new ProductVariant instance
+                    ProductVariants::create($variantData);
+                }
             }
 
             return response()->json();

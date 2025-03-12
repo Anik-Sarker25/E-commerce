@@ -10,7 +10,8 @@ class ProductVariants extends Model
     use HasFactory;
     protected $fillable = [
         'product_id',
-        'color',
+        'color_name',
+        'color_code',
         'size',
         'storage_capacity',
         'buy_price',

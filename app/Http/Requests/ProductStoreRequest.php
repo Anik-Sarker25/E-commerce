@@ -27,18 +27,13 @@ class ProductStoreRequest extends FormRequest
             'mrp_price' => ['required', 'numeric'],
             'discount_price' => ['required', 'numeric', 'lt:buy_price'], // Discount must be less than buy price
             'sell_price' => ['required', 'numeric', 'gte:buy_price'], // Sell price must be greater than or equal to buy price
-            'category_id' => ['required', 'integer'],
-            'subcategory_id' => ['nullable', 'integer'],
-            'childcategory_id' => ['nullable', 'integer'],
+            'category_id' => ['required'],
+            'subcategory_id' => ['nullable'],
+            'childcategory_id' => ['nullable'],
             'brand_id' => ['nullable', 'integer'],
-            'model_no' => ['nullable', 'string', 'max:255'],
             'keywords' => ['nullable', 'string', 'max:255'],
-            'sizes.*' => ['nullable', 'string', 'max:255'],
-            'colors.*' => ['nullable', 'string', 'max:255'],
-            'condition' => ['nullable', 'string', 'max:255'],
             'thumbnail' => ['required', 'image', 'mimes:jpeg,png,jpg'],
             'featured_images.*' => $this->hasFile('featured_images') ? ['image', 'mimes:jpeg,png,jpg'] : ['nullable'],
-            'short_description' => ['nullable', 'string', 'max:500'],
             'description' => [
                 'required',
                 'string',
