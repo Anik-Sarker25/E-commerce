@@ -159,7 +159,7 @@ class ProductController extends Controller
                         'color_name' => $variant['color_name'],
                         'color_code' => $variant['color'],
                         'size' => $variant['size'],
-                        'storage' => $variant['storage_capacity'],
+                        'storage_capacity' => $variant['storage_capacity'],
                         'buy_price' => $variant['buy_price'],
                         'mrp_price' => $variant['mrp_price'],
                         'discount_price' => $variant['discount_price'],
@@ -184,6 +184,8 @@ class ProductController extends Controller
                     // Create a new ProductVariant instance
                     ProductVariants::create($variantData);
                 }
+            } else {
+                $data->update(['has_variants' => false]);
             }
 
             return response()->json();
@@ -193,7 +195,7 @@ class ProductController extends Controller
     }
 
     public function edit($id)  {
-        $data = Product::with(['featuredImages', 'category', 'subcategory'])->find($id);
+        $data = Product::with(['featuredImages', 'category', 'subcategory', 'variants'])->find($id);
         $pageTitle = "Edit product";
         $breadcrumbs = [
             ['url' => route('admin.products.index'), 'title' => 'products'],
@@ -230,6 +232,10 @@ class ProductController extends Controller
             } else {
                 $imagePath = $data->thumbnail;
             }
+
+            $subcategory = ($request->has('subcategory_id') && $request->subcategory_id !== "null") ? $request->subcategory_id : null;
+            $childcategory = ($request->has('childcategory_id') && $request->childcategory_id !== "null") ? $request->childcategory_id : null;
+
             $data->name = $request->name;
             $data->slug = Str::slug($request->name);
             $data->buy_price = $request->buy_price;
@@ -237,16 +243,11 @@ class ProductController extends Controller
             $data->discount_price = $request->discount_price;
             $data->sell_price = $request->sell_price;
             $data->category_id = $request->category_id;
-            $data->subcategory_id = $request->subcategory_id;
-            $data->childcategory_id = $request->childcategory_id;
+            $data->subcategory_id = $subcategory;
+            $data->childcategory_id = $childcategory;
             $data->brand_id = $request->brand_id;
-            $data->model_no = $request->model_no;
             $data->keywords = $request->keywords;
-            $data->color = json_encode($request->colors);  // Store colors as a JSON array
-            $data->size = json_encode($request->sizes);
-            $data->condition = $request->condition;
             $data->thumbnail = $imagePath;
-            $data->short_description = $request->short_description;
             $data->description = $request->description;
             $data->product_type = $request->product_type;
             $data->deals_time = strtotime($request->deals_time);
@@ -276,6 +277,98 @@ class ProductController extends Controller
                 }
 
             }
+
+            // Handle Variants Update
+            if ($request->has('variants_delete')) {
+                // If no variants were sent in the request, remove all existing ones
+                $removeVariants = ProductVariants::where('product_id', $data->id)->get();
+
+                foreach ($removeVariants as $variant) {
+                    if (!empty($variant->color_image)) {
+                        $imagePath = public_path($variant->color_image);
+
+                        if (file_exists($imagePath)) {
+                            unlink($imagePath);
+                        }
+                    }
+                }
+
+                ProductVariants::where('product_id', $data->id)->delete();
+                $data->has_variants = false;
+                $data->save();
+            }else if ($request->has('variants') && !empty($request->variants)) {
+                $data->has_variants = true;
+                $data->save();
+
+                $existingVariantIds = ProductVariants::where('product_id', $data->id)->pluck('id')->toArray(); // for removing old variants
+                $updatedVariantIds = [];
+
+                foreach ($request->variants as $variant) {
+                    // Find existing variant
+                    $productVariant = ProductVariants::where('product_id', $data->id)
+                        ->where('id', $variant['variant_id'])
+                        ->first();
+
+                    $variantData = [
+                        'product_id' => $data->id,
+                        'color_name' => $variant['color_name'],
+                        'color_code' => $variant['color'],
+                        'size' => $variant['size'],
+                        'storage_capacity' => $variant['storage_capacity'],
+                        'buy_price' => $variant['buy_price'],
+                        'mrp_price' => $variant['mrp_price'],
+                        'discount_price' => $variant['discount_price'],
+                        'sell_price' => $variant['sell_price'],
+                        'stock_quantity' => $variant['stock_quantity'],
+                    ];
+
+                    // Handle image for variant
+                    if (isset($variant['image'])) {
+                        if ($productVariant && $productVariant->color_image) {
+                            $oldImagePath = public_path($productVariant->color_image);
+                            if (file_exists($oldImagePath)) {
+                                unlink($oldImagePath); // Delete old image
+                            }
+                        }
+
+                        $image = $variant['image'];
+                        $manager = new ImageManager(new Driver());
+                        $imageObj = $manager->read($image);
+                        $assign_name = "variant-" . uniqid() . '.' . $image->getClientOriginalExtension();
+                        $imageObj->save(public_path('uploads/products/variants/' . $assign_name), 80, 'png');
+                        $variantData['color_image'] = '/uploads/products/variants/' . $assign_name;
+                    }
+
+                    if ($productVariant) {
+                        $productVariant->update($variantData);
+                        $updatedVariantIds[] = $productVariant->id;
+                    } else {
+                        $newVariant = ProductVariants::create($variantData);
+                        $updatedVariantIds[] = $newVariant->id;
+                    }
+                }
+                // Get all variants that will be deleted
+                $variantsToDelete = ProductVariants::where('product_id', $data->id)
+                    ->whereNotIn('id', $updatedVariantIds)
+                    ->get();
+
+                foreach ($variantsToDelete as $variant) {
+                    if (!empty($variant->color_image)) {
+                        $imagePath = public_path($variant->color_image);
+
+                        if (file_exists($imagePath)) {
+                            unlink($imagePath);
+                        }
+                    }
+                }
+
+                // Now delete variants that are not in the updated list
+                ProductVariants::where('product_id', $data->id)
+                    ->whereNotIn('id', $updatedVariantIds)
+                    ->delete();
+
+            }
+
 
             return response()->json();
 

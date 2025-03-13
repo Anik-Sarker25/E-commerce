@@ -14,6 +14,9 @@
         cursor: pointer;
         font-size: 16px;
     }
+    .addVrBtn .btn {
+        padding: 0 5px;
+    }
 </style>
 
 @endpush
@@ -93,7 +96,7 @@
                                 <div class="col-xl-4">
                                     <div class="form-group mb-3">
                                         <label class="form-label" for="sell_price">Sell Price <span class="text-danger">*</span></label>
-                                        <input type="number" name="sell_price" class="form-control" id="sell_price" placeholder="Enter Sell Price..." value="{{ $data->sell_price ?? '' }}">
+                                        <input type="number" name="sell_price" class="form-control" id="sell_price" placeholder="Enter Sell Price..." value="{{ $data->sell_price ?? '' }}" readonly>
                                         <span class="text-danger" id="sellPriceError"></span>
                                     </div>
                                 </div>
@@ -134,7 +137,7 @@
                                         <label class="form-label" for="brand_id">Select Brand<span class="text-muted">(optional)</span></label>
                                         <select name="brand_id" class="form-control select2" id="brand_id">
                                         </select>
-                                        <span class="text-danger" id="brandError"></span>
+                                        <span class="text-danger" id="brand_idError"></span>
                                     </div>
                                 </div>
 
@@ -196,70 +199,150 @@
                                         <div class="d-flex">
                                             <h5 class="me-4">Product Variants Options</h5>
                                             <div class="form-check form-switch">
-                                                <input type="checkbox" onchange="toggleVariants();" class="form-check-input" id="customSwitch1">
+                                                <input type="checkbox" onchange="toggleVariants();" class="form-check-input" id="customSwitch1"
+                                                @if (isset($data->variants) && count($data->variants) > 0)
+                                                    checked
+                                                @endif
+                                                >
                                             </div>
+                                            <div class="addVrBtn"></div>
                                         </div>
-                                        <div class="variant d-none d-flex" id="variant-0">
-                                            <strong class="me-3">1</strong>
-                                            <div class="row mb-2">
-                                                <div class="col-xl-2">
-                                                    <label class="form-label">Color Name</label>
-                                                    <input type="text" class="form-control form-control-sm cname-0" name="variants[0][color_name]">
-                                                </div>
-                                                <div class="col-xl-2">
-                                                    <label class="form-label">Color</label>
-                                                    <input type="text" id="color-picker-0" class="form-control form-control-sm color-picker color-0" name="variants[0][color]">
-                                                </div>
-                                                <div class="col-xl-2">
-                                                    <label class="form-label">Size</label>
-                                                    <input type="text" class="form-control form-control-sm size-0" name="variants[0][size]">
-                                                </div>
-                                                <div class="col-xl-2">
-                                                    <label class="form-label">Storage Capacity</label>
-                                                    <input type="text" class="form-control form-control-sm storage_capacity-0" name="variants[0][storage_capacity]">
-                                                </div>
-                                                <div class="col-xl-2">
-                                                    <label class="form-label">Image</label>
-                                                    <input type="file" id="color_image-0" class="form-control form-control-sm variant-image" name="variants[0][image]" onchange="previewVImage(event, 0)">
-                                                </div>
-                                                <div class="col-xl-2">
-                                                    <div class="vimage-preview" style="position: relative">
-                                                        <img id="preview-0" src="" alt="image-preview" style="width: 50px; height: 50px; margin-top: 8px; display: none;">
-                                                        <button type="button" id="remove-btn-0" class="btn btn-danger btn-sm" onclick="removeVImage(0)" style="display: none; position: absolute; top: 0; right: 0;">
-                                                            <i class="fas fa-trash"></i>
-                                                        </button>
+
+                                        @php
+                                            $variantIndex = 0;
+                                        @endphp
+
+                                        @forelse ($data->variants ?? [] as $key => $variant)
+                                            <div class="variant d-flex" id="variant-{{ $variantIndex }}">
+                                                <strong class="me-3">{{ $variantIndex + 1 }}</strong>
+                                                <input type="hidden" class="up_variant-{{ $variantIndex }}" value="{{ $variant->id }}">
+                                                <div class="row mb-2">
+                                                    <div class="col-xl-2">
+                                                        <label class="form-label">Color Name</label>
+                                                        <input type="text" class="form-control form-control-sm cname-{{ $variantIndex }}" name="variants[{{ $variantIndex }}][color_name]" value="{{ $variant->color_name }}">
                                                     </div>
+                                                    <div class="col-xl-2">
+                                                        <label class="form-label">Color</label>
+                                                        <input type="text" id="color-picker-{{ $variantIndex }}" class="form-control form-control-sm color-picker color-{{ $variantIndex }}" name="variants[{{ $variantIndex }}][color]" value="{{ $variant->color_code }}">
+                                                    </div>
+                                                    <div class="col-xl-2">
+                                                        <label class="form-label">Size</label>
+                                                        <input type="text" class="form-control form-control-sm size-{{ $variantIndex }}" name="variants[{{ $variantIndex }}][size]" value="{{ $variant->size }}">
+                                                    </div>
+                                                    <div class="col-xl-2">
+                                                        <label class="form-label">Storage Capacity</label>
+                                                        <input type="text" class="form-control form-control-sm storage_capacity-{{ $variantIndex }}" name="variants[{{ $variantIndex }}][storage_capacity]" value="{{ $variant->storage_capacity }}">
+                                                    </div>
+                                                    <div class="col-xl-2">
+                                                        <label class="form-label">Image</label>
+                                                        <input type="file" id="color_image-{{ $variantIndex }}" class="form-control form-control-sm variant-image" name="variants[{{ $variantIndex }}][image]" onchange="previewVImage(event, {{ $variantIndex }})">
+                                                    </div>
+                                                    <div class="col-xl-2">
+                                                        <div class="vimage-preview" style="position: relative;">
+                                                            <img id="preview-{{ $variantIndex }}" src="{{ asset($variant->color_image) }}" alt="image-preview" style="width: 50px; height: 50px; margin-top: 8px; display: block;">
+                                                            <button type="button" id="remove-btn-{{ $variantIndex }}" class="btn btn-danger btn-sm" onclick="removeVImage({{ $variantIndex }})" style="position: absolute; top: 0; right: 0;">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-2">
+                                                        <label class="form-label">Buy Price</label>
+                                                        <input type="number" class="form-control form-control-sm vbp-{{ $variantIndex }}" name="variants[{{ $variantIndex }}][buy_price]" value="{{ $variant->buy_price }}" oninput="updateVSellPrice({{ $variantIndex }})">
+                                                    </div>
+                                                    <div class="col-xl-2">
+                                                        <label class="form-label">MRP Price</label>
+                                                        <input type="number" class="form-control form-control-sm vmrp-{{ $variantIndex }}" name="variants[{{ $variantIndex }}][mrp_price]" value="{{ $variant->mrp_price }}" oninput="updateVSellPrice({{ $variantIndex }})">
+                                                    </div>
+                                                    <div class="col-xl-2">
+                                                        <label class="form-label">Discount Price <span class="text-danger">(%) *</span></label>
+                                                        <input type="number" class="form-control form-control-sm vdp-{{ $variantIndex }}" name="variants[{{ $variantIndex }}][discount_price]" value="{{ $variant->discount_price }}" oninput="updateVSellPrice({{ $variantIndex }})">
+                                                    </div>
+                                                    <div class="col-xl-2">
+                                                        <label class="form-label">Sell Price</label>
+                                                        <input type="number" class="form-control form-control-sm vsp-{{ $variantIndex }}" name="variants[{{ $variantIndex }}][sell_price]" value="{{ $variant->sell_price }}" readonly>
+                                                    </div>
+                                                    <div class="col-xl-2">
+                                                        <label class="form-label">Stock Quantity</label>
+                                                        <input type="number" class="form-control form-control-sm quantity-{{ $variantIndex }}" name="variants[{{ $variantIndex }}][stock_quantity]" value="{{ $variant->stock_quantity }}" oninput="updateTotalQuantity();">
+                                                    </div>
+                                                    <div class="col-xl-2">
+                                                        <div class="d-flex flex-column justify-content-end" style="height: 100%;">
+                                                            <div class="btn-group">
+                                                                <button type="button" class="btn btn-success btn-sm" onclick="addVariant({{ $variantIndex }})">+</button>
+
+                                                                <button type="button" class="btn btn-light btn-sm" onclick="removeVariant({{ $variantIndex }})">-</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
                                                 </div>
-                                                <div class="col-xl-2">
-                                                    <label class="form-label">Buy Price</label>
-                                                    <input type="number" class="form-control form-control-sm vbp-0" name="variants[0][buy_price]" oninput="updateVSellPrice(0)">
-                                                </div>
-                                                <div class="col-xl-2">
-                                                    <label class="form-label">MRP Price</label>
-                                                    <input type="number" class="form-control form-control-sm vmrp-0" name="variants[0][mrp_price]" oninput="updateVSellPrice(0)">
-                                                </div>
-                                                <div class="col-xl-2">
-                                                    <label class="form-label">Discount Price <span class="text-danger">(%) *</span></label>
-                                                    <input type="number" class="form-control form-control-sm vdp-0" name="variants[0][discount_price]" oninput="updateVSellPrice(0)">
-                                                </div>
-                                                <div class="col-xl-2">
-                                                    <label class="form-label">Sell Price</label>
-                                                    <input type="number" class="form-control form-control-sm vsp-0" name="variants[0][sell_price]">
-                                                    <span class="text-danger" id="sellPriceError-0"></span>
-                                                </div>
-                                                <div class="col-xl-2">
-                                                    <label class="form-label">Stock Quantity</label>
-                                                    <input type="number" class="form-control form-control-sm quantity-0" name="variants[0][stock_quantity]" oninput="updateTotalQuantity();">
-                                                </div>
-                                                <div class="col-xl-2">
-                                                    <div class="d-flex flex-column justify-content-end" style="height: 100%;">
-                                                        <div class="btn-group">
-                                                            <button type="button" class="btn btn-success btn-sm" onclick="addVariant()">+</button>
+                                            </div>
+                                            @php $variantIndex++; @endphp
+                                        @empty
+                                            <!-- Default empty variant form -->
+                                            <div class="variant d-none d-flex" id="variant-0">
+                                                <strong class="me-3">1</strong>
+                                                <div class="row mb-2">
+                                                    <div class="col-xl-2">
+                                                        <label class="form-label">Color Name</label>
+                                                        <input type="text" class="form-control form-control-sm cname-0" name="variants[0][color_name]">
+                                                    </div>
+                                                    <div class="col-xl-2">
+                                                        <label class="form-label">Color</label>
+                                                        <input type="text" id="color-picker-0" class="form-control form-control-sm color-picker color-0" name="variants[0][color]">
+                                                    </div>
+                                                    <div class="col-xl-2">
+                                                        <label class="form-label">Size</label>
+                                                        <input type="text" class="form-control form-control-sm size-0" name="variants[0][size]">
+                                                    </div>
+                                                    <div class="col-xl-2">
+                                                        <label class="form-label">Storage Capacity</label>
+                                                        <input type="text" class="form-control form-control-sm storage_capacity-0" name="variants[0][storage_capacity]">
+                                                    </div>
+                                                    <div class="col-xl-2">
+                                                        <label class="form-label">Image</label>
+                                                        <input type="file" id="color_image-0" class="form-control form-control-sm variant-image" name="variants[0][image]" onchange="previewVImage(event, 0)">
+                                                    </div>
+                                                    <div class="col-xl-2">
+                                                        <div class="vimage-preview" style="position: relative;">
+                                                            <img id="preview-0" src="" alt="image-preview" style="width: 50px; height: 50px; margin-top: 8px; display: none;">
+                                                            <button type="button" id="remove-btn-0" class="btn btn-danger btn-sm" onclick="removeVImage(0)" style="display: none; position: absolute; top: 0; right: 0;">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-2">
+                                                        <label class="form-label">Buy Price</label>
+                                                        <input type="number" class="form-control form-control-sm vbp-0" name="variants[0][buy_price]" oninput="updateVSellPrice(0)">
+                                                    </div>
+                                                    <div class="col-xl-2">
+                                                        <label class="form-label">MRP Price</label>
+                                                        <input type="number" class="form-control form-control-sm vmrp-0" name="variants[0][mrp_price]" oninput="updateVSellPrice(0)">
+                                                    </div>
+                                                    <div class="col-xl-2">
+                                                        <label class="form-label">Discount Price <span class="text-danger">(%) *</span></label>
+                                                        <input type="number" class="form-control form-control-sm vdp-0" name="variants[0][discount_price]" oninput="updateVSellPrice(0)">
+                                                    </div>
+                                                    <div class="col-xl-2">
+                                                        <label class="form-label">Sell Price</label>
+                                                        <input type="number" class="form-control form-control-sm vsp-0" name="variants[0][sell_price]" readonly>
+                                                    </div>
+                                                    <div class="col-xl-2">
+                                                        <label class="form-label">Stock Quantity</label>
+                                                        <input type="number" class="form-control form-control-sm quantity-0" name="variants[0][stock_quantity]" oninput="updateTotalQuantity();">
+                                                    </div>
+                                                    <!-- Only show the button inside the first (empty) variant -->
+                                                    <div class="col-xl-2">
+                                                        <div class="d-flex flex-column justify-content-end" style="height: 100%;">
+                                                            <div class="btn-group">
+                                                                <button type="button" class="btn btn-success btn-sm" onclick="addVariant(0)">+</button>
+                                                                <button type="button" class="btn btn-light btn-sm" onclick="removeVariant(0)">-</button>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        @endforelse
                                     </div>
                                 </div>
 
@@ -662,6 +745,16 @@
     }
 
     // variants dynamic content start from here
+    function setPriceValue() {
+        let buyPrice = parseFloat($('#buy_price').val()) ||'';
+        let mrpPrice = parseFloat($('#mrp_price').val()) || '';
+        let disPrice = parseFloat($('#discount_price').val()) || '';
+        let sellPrice = parseFloat($('#sell_price').val()) || '';
+        $('.vbp-0').val(buyPrice);
+        $('.vmrp-0').val(mrpPrice);
+        $('.vdp-0').val(disPrice);
+        $('.vsp-0').val(sellPrice.toFixed(2));
+    }
     // function for toggle variants content
     function toggleVariants() {
         let variantContainers = $(".variant");
@@ -670,10 +763,13 @@
         if (switchInput.is(":checked")) {
             variantContainers.removeClass('d-none');
             variantContainers.addClass('d-block');
+            setAddVariantBtn();
+            setPriceValue();
             updateTotalQuantity();
         } else {
             variantContainers.removeClass('d-block');
             variantContainers.addClass('d-none');
+            $('.addVrBtn').html('');
             updateTotalQuantity();
         }
     }
@@ -682,18 +778,18 @@
     let variantIndex = 1;
     let columnindex = 1;
 
-    function addVariant() {
+    function addVariant(clickedIndex) {
         let container = document.getElementById('variant-container');
 
-        let vcname = $('.cname-0').val();
-        let vcolor = $('.color-0').val();
-        let vsize = $('.size-0').val();
-        let storage_capacity = $('.storage_capacity-0').val();
-        let vbp_price = parseFloat($('.vbp-0').val()) || 0;
-        let vmrp_price = parseFloat($('.vmrp-0').val()) || 0;
-        let vdp_price = parseFloat($('.vdp-0').val()) || 0;
+        let vcname = $(`.cname-${clickedIndex}`).val();
+        let vcolor = $(`.color-${clickedIndex}`).val();
+        let vsize = $(`.size-${clickedIndex}`).val();
+        let storage_capacity = $(`.storage_capacity-${clickedIndex}`).val();
+        let vbp_price = parseFloat($(`.vbp-${clickedIndex}`).val()) || 0;
+        let vmrp_price = parseFloat($(`.vmrp-${clickedIndex}`).val()) || 0;
+        let vdp_price = parseFloat($(`.vdp-${clickedIndex}`).val()) || 0;
         let vsp_price = calculateVSellPrice(vmrp_price, vdp_price, vbp_price); // Calculate initial sell price
-        let vquantity = parseFloat($('.quantity-0').val()) || 0;
+        let vquantity = parseFloat($(`.quantity-${clickedIndex}`).val()) || 0;
 
         let newVariant = document.createElement('div');
         newVariant.classList.add('variant', 'd-flex');
@@ -746,7 +842,7 @@
                 </div>
                 <div class="col-xl-2">
                     <label class="form-label">Sell Price</label>
-                    <input type="number" class="form-control form-control-sm vsp-${variantIndex}" name="variants[${variantIndex}][sell_price]" value="${vsp_price}">
+                    <input type="number" class="form-control form-control-sm vsp-${variantIndex}" name="variants[${variantIndex}][sell_price]" value="${vsp_price.toFixed(2)}" readonly>
                     <span id="sellPriceError-${variantIndex}" class="text-danger"></span>
                 </div>
                 <div class="col-xl-2">
@@ -756,12 +852,15 @@
                 <div class="col-xl-2">
                     <div class="d-flex flex-column justify-content-end" style="height: 100%;">
                         <div class="btn-group">
+                            <button type="button" class="btn btn-theme btn-sm" onclick="addVariant(${variantIndex})">+</button>
                             <button type="button" class="btn btn-light btn-sm" onclick="removeVariant(${variantIndex})">-</button>
                         </div>
                     </div>
                 </div>
             </div>
         `;
+
+        $('.addVrBtn').html('');
 
         container.appendChild(newVariant);
         updateTotalQuantity();
@@ -824,9 +923,23 @@
         if (variantToRemove) {
             variantToRemove.remove();
             updateTotalQuantity();
+
+            setAddVariantBtn();
+
         }
     }
+    // function to set add variants btn
+    function setAddVariantBtn() {
+        let remainingVariants = $('.variant').length;
 
+        let buttonContainer = $('.addVrBtn');
+        if (remainingVariants === 0) {
+            let btnHtml = `<button type="button" class="btn btn-theme btn-sm" onclick="addVariant(variantIndex)">+ add variant</button>`;
+            buttonContainer.html(btnHtml);
+        }else {
+            buttonContainer.html('');
+        }
+    }
 
     // function to preview variants images
     function previewVImage(event, index) {
@@ -1008,8 +1121,7 @@
             }
         });
     }
-
-    // function to update product information
+    // function to add new products information
     function updateProduct() {
         let id = $('#update_id').val();
         let url = "{{ route('admin.products.update', ':id') }}";
@@ -1021,8 +1133,8 @@
         let discount_price = $('#discount_price').val();
         let sell_price = $('#sell_price').val();
         let category_id = $('#category_id').val();
-        let subcategory_id = $('#subcategory_id').val();
-        let childcategory_id = $('#childcategory_id').val();
+        let subcategory_id = $('#subcategory_id').val() || null;
+        let childcategory_id = $('#childcategory_id').val() || null;
         let brand_id = $('#brand_id').val();
         let keywords = $('#keywords').val();
         let thumbnail = $('#thumbnail')[0].files[0];
@@ -1038,6 +1150,7 @@
         let status = $('#status').val();
 
         let formData = new FormData();
+        // Append Product Data
         formData.append('name', name);
         formData.append('buy_price', buy_price);
         formData.append('mrp_price', mrp_price);
@@ -1048,12 +1161,6 @@
         formData.append('childcategory_id', childcategory_id);
         formData.append('brand_id', brand_id);
         formData.append('keywords', keywords);
-        formData.append('thumbnail', thumbnail);
-
-        for (let i = 0; i < featured_images.length; i++) {
-            formData.append('featured_images[]', featured_images[i]);
-        }
-
         formData.append('description', description);
         formData.append('product_type', product_type);
         formData.append('deals_time', deals_time);
@@ -1063,6 +1170,55 @@
         formData.append('warranty', warranty);
         formData.append('delivery_type', delivery_type);
         formData.append('status', status);
+
+        // Append Images
+        if (thumbnail) {
+            formData.append('thumbnail', thumbnail);
+        }
+
+        for (let i = 0; i < featured_images.length; i++) {
+            formData.append('featured_images[]', featured_images[i]);
+        }
+
+        let variantSwitch = $("#customSwitch1");
+        let remainingVariants = $('.variant').length;
+
+        if (!variantSwitch.is(":checked") || remainingVariants < 1) {
+            formData.append("variants_delete", "1");
+        }
+
+        // Collect and Append Variants
+        $('.variant').each(function (index) {
+            let variantId = $(this).attr('id').split('-')[1]; // Extract Variant Index
+
+            let variant_updateId = $(`.up_variant-${variantId}`).val();
+            let color_name = $(`.cname-${variantId}`).val();
+            let color = $(`.color-${variantId}`).val();
+            let size = $(`.size-${variantId}`).val();
+            let storage_capacity = $(`.storage_capacity-${variantId}`).val();
+            let buy_price = $(`.vbp-${variantId}`).val();
+            let mrp_price = $(`.vmrp-${variantId}`).val();
+            let discount_price = $(`.vdp-${variantId}`).val();
+            let sell_price = $(`.vsp-${variantId}`).val();
+            let stock_quantity = $(`.quantity-${variantId}`).val();
+            let image = $(`#color_image-${variantId}`)[0].files[0];
+
+            formData.append(`variants[${index}][variant_id]`, variant_updateId);
+
+            formData.append(`variants[${index}][color_name]`, color_name);
+            formData.append(`variants[${index}][color]`, color);
+            formData.append(`variants[${index}][size]`, size);
+            formData.append(`variants[${index}][storage_capacity]`, storage_capacity);
+            formData.append(`variants[${index}][buy_price]`, buy_price);
+            formData.append(`variants[${index}][mrp_price]`, mrp_price);
+            formData.append(`variants[${index}][discount_price]`, discount_price);
+            formData.append(`variants[${index}][sell_price]`, sell_price);
+            formData.append(`variants[${index}][stock_quantity]`, stock_quantity);
+
+            if (image) {
+                formData.append(`variants[${index}][image]`, image);
+            }
+        });
 
         $.ajax({
             url: url,
@@ -1076,104 +1232,112 @@
                 }else {
                     show_success('Product Updated Successfully');
                     resetForm();
+                    resetVariants();
                     setTimeout(function() {
                         window.location.href = "{{ route('admin.products.index') }}";
                     }, 2000);
                 }
             },
             error: function(error) {
-                clearErrors();
+                // clearErrors();
                 let errors = error.responseJSON.errors;
 
-                if (errors.title) {
-                    $('#nameError').html(errors.title);
-                    $('#name').val('');
-                    $('#name').addClass('is-invalid');
-                }
-                if(errors.buy_price) {
-                    $('#buyPriceError').html(errors.buy_price);
-                    $('#buy_price').val('');
-                    $('#buy_price').addClass('is-invalid');
-                }
-                if(errors.mrp_price) {
-                    $('#mrpPriceError').html(errors.mrp_price);
-                    $('#mrp_price').val('');
-                    $('#mrp_price').addClass('is-invalid');
-                }
-                if(errors.discount_price) {
-                    $('#discountPriceError').html(errors.discount_price);
-                    $('#discount_price').val('');
-                    $('#discount_price').addClass('is-invalid');
-                }
-                if(errors.sell_price) {
-                    $('#sellPriceError').html(errors.sell_price);
-                    $('#sell_price').val('');
-                    $('#sell_price').addClass('is-invalid');
-                }
-                if(errors.category_id) {
-                    $('#categoryError').html(errors.category_id);
-                }
-                if(errors.subcategory_id) {
-                    $('#subCategoryError').html(errors.subcategory_id);
-                }
-                if(errors.childcategory_id) {
-                    $('#childCategoryError').html(errors.childcategory_id);
-                }
-                if(errors.brand_id) {
-                    $('#brandError').html(errors.brand_id);
-                }
-                if(errors.keywords) {
-                    $('#keywordsError').html(errors.keywords);
-                    $('#keywords').val('');
-                    $('#keywords').addClass('is-invalid');
-                }
-                if(errors.thumbnail) {
-                    $('#thumbnailError').html(errors.thumbnail);
-                    $('#thumbnail').val('');
-                    $('#thumbnail').addClass('is-invalid');
-                }
-                if(errors.featured_images) {
-                    $('#featuredImagesError').html(errors.featured_images);
-                    $('#featured_images').val('');
-                    $('#featured_images').addClass('is-invalid');
-                }
-                if(errors.description) {
-                    $('#descriptionError').html(errors.description);
-                    $('#description').summernote('code', '');
-                    $('#description').addClass('is-invalid');
-                }
-                if(errors.product_type) {
-                    $('#productTypeError').html(errors.product_type);
-                }
-                if(errors.deals_time) {
-                    $('#dealsTimeError').html(errors.deals_time);
-                    $('#deals_time').val('');
-                    $('#deals_time').addClass('is-invalid');
-                }
-                if(errors.stock) {
-                    $('#stockError').html(errors.stock);
-                    $('#stock').val('');
-                    $('#stock').addClass('is-invalid');
-                }
-                if(errors.unit) {
-                    $('#unitError').html(errors.unit);
-                }
-                if(errors.product_return) {
-                    $('#productReturnError').html(errors.product_return);
-                }
-                if(errors.warranty) {
-                    $('#warrantyError').html(errors.warranty);
-                }
-                if(errors.delivery_type) {
-                    $('#deliveryTypeError').html(errors.delivery_type);
-                }
-                if(errors.status) {
-                    $('#statusError').html(errors.status);
+                for (let key in errors) {
+                    // Check if the field is a select element
+                    if ($(`#${key}`).is('select')) {
+                        $(`#${key}Error`).html(errors[key]);
+                    } else {
+                        $(`#${key}Error`).html(errors[key]);
+                        $(`#${key}`).val('');
+                        $(`#${key}`).addClass('is-invalid');
+                    }
                 }
 
             }
         });
     }
+
+    // function to update product information
+    // function updateProduct() {
+    //     let id = $('#update_id').val();
+    //     let url = "{{ route('admin.products.update', ':id') }}";
+    //     url = url.replace(':id', id);
+
+    //     let name = $('#name').val();
+    //     let buy_price = $('#buy_price').val();
+    //     let mrp_price = $('#mrp_price').val();
+    //     let discount_price = $('#discount_price').val();
+    //     let sell_price = $('#sell_price').val();
+    //     let category_id = $('#category_id').val();
+    //     let subcategory_id = $('#subcategory_id').val();
+    //     let childcategory_id = $('#childcategory_id').val();
+    //     let brand_id = $('#brand_id').val();
+    //     let keywords = $('#keywords').val();
+    //     let thumbnail = $('#thumbnail')[0].files[0];
+    //     let featured_images = $('#featured_images')[0].files;
+    //     let description = $('#description').summernote('code');
+    //     let product_type = $('#product_type').val();
+    //     let deals_time = $('#deals_time').val();
+    //     let stock = $('#stock').val();
+    //     let unit = $('#unit').val();
+    //     let product_return = $('#product_return').val();
+    //     let warranty = $('#warranty').val();
+    //     let delivery_type = $('#delivery_type').val();
+    //     let status = $('#status').val();
+
+    //     let formData = new FormData();
+    //     formData.append('name', name);
+    //     formData.append('buy_price', buy_price);
+    //     formData.append('mrp_price', mrp_price);
+    //     formData.append('discount_price', discount_price);
+    //     formData.append('sell_price', sell_price);
+    //     formData.append('category_id', category_id);
+    //     formData.append('subcategory_id', subcategory_id);
+    //     formData.append('childcategory_id', childcategory_id);
+    //     formData.append('brand_id', brand_id);
+    //     formData.append('keywords', keywords);
+    //     formData.append('thumbnail', thumbnail);
+
+    //     for (let i = 0; i < featured_images.length; i++) {
+    //         formData.append('featured_images[]', featured_images[i]);
+    //     }
+
+    //     formData.append('description', description);
+    //     formData.append('product_type', product_type);
+    //     formData.append('deals_time', deals_time);
+    //     formData.append('stock', stock);
+    //     formData.append('unit', unit);
+    //     formData.append('product_return', product_return);
+    //     formData.append('warranty', warranty);
+    //     formData.append('delivery_type', delivery_type);
+    //     formData.append('status', status);
+
+    //     $.ajax({
+    //         url: url,
+    //         type: 'POST',
+    //         data: formData,
+    //         contentType: false,
+    //         processData: false,
+    //         success: function(data) {
+    //             if(data.success === false) {
+    //                 show_error('Failed to Update Product');
+    //             }else {
+    //                 show_success('Product Updated Successfully');
+    //                 resetForm();
+    //                 setTimeout(function() {
+    //                     window.location.href = "{{ route('admin.products.index') }}";
+    //                 }, 2000);
+    //             }
+    //         },
+    //         error: function(error) {
+    //             clearErrors();
+    //             let errors = error.responseJSON.errors;
+
+
+
+    //         }
+    //     });
+    // }
 
     // function to remove images
     function removeImage(id) {
@@ -1211,43 +1375,6 @@
         });
     }
 
-    // function to clear previous error messages to show the new ones
-    function clearErrors() {
-        $('#nameError').html('');
-        $('#buyPriceError').html('');
-        $('#mrpPriceError').html('');
-        $('#discountPriceError').html('');
-        $('#sellPriceError').html('');
-        $('#categoryError').html('');
-        $('#subCategoryError').html('');
-        $('#childCategoryError').html('');
-        $('#brandError').html('');
-        $('#keywordsError').html('');
-        $('#thumbnailError').html('');
-        $('#featuredImagesError').html('');
-        $('#descriptionError').html('');
-        $('#productTypeError').html('');
-        $('#dealsTimeError').html('');
-        $('#stockError').html('');
-        $('#unitError').html('');
-        $('#productReturnError').html('');
-        $('#warrantyError').html('');
-        $('#deliveryTypeError').html('');
-        $('#statusError').html('');
-
-        $('#name').removeClass('is-invalid');
-        $('#buyPrice').removeClass('is-invalid');
-        $('#mrpPrice').removeClass('is-invalid');
-        $('#discountPrice').removeClass('is-invalid');
-        $('#sellPrice').removeClass('is-invalid');
-        $('#keywords').removeClass('is-invalid');
-        $('#thumbnail').removeClass('is-invalid');
-        $('#featuredImages').removeClass('is-invalid');
-        $('#description').removeClass('is-invalid');
-        $('#deals_time').removeClass('is-invalid');
-        $('#stock').removeClass('is-invalid');
-    }
-
     // function to reset error messages
     function resetForm() {
         $('#update_id').val('');
@@ -1272,19 +1399,19 @@
         $('#sell_price').val('');
         $('#sell_price').removeClass('is-invalid');
 
-        $('#categoryError').html('');
+        $('#category_idError').html('');
         $('#category_id').val('').trigger('change');
         $('#category_id').removeClass('is-invalid');
 
-        $('#subCategoryError').html('');
+        $('#subcategory_idError').html('');
         $('#subcategory_id').val('').trigger('change');
         $('#subcategory_id').removeClass('is-invalid');
 
-        $('#childCategoryError').html('');
+        $('#childcategory_idError').html('');
         $('#childcategory_id').val('').trigger('change');
         $('#childcategory_id').removeClass('is-invalid');
 
-        $('#brandError').html('');
+        $('#brand_idError').html('');
         $('#brand_id').val('').trigger('change');
         $('#brand_id').removeClass('is-invalid');
 

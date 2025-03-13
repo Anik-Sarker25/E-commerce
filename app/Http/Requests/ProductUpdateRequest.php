@@ -32,16 +32,11 @@ class ProductUpdateRequest extends FormRequest
             'sell_price' => ['required', 'numeric', 'gte:buy_price'], // Sell price must be greater than or equal to buy price
             'category_id' => ['required', 'integer'],
             'subcategory_id' => ['nullable'],
-            'childcategory_id' => ['nullable', 'integer'],
+            'childcategory_id' => ['nullable'],
             'brand_id' => ['nullable', 'integer'],
-            'model_no' => ['nullable', 'string', 'max:255'],
             'keywords' => ['nullable', 'string', 'max:255'],
-            'sizes.*' => ['nullable', 'string', 'max:255'],
-            'colors.*' => ['nullable', 'string', 'max:255'],
-            'condition' => ['nullable', 'string', 'max:255'],
             'thumbnail' => $this->hasFile('thumbnail') ? ['image', 'mimes:jpeg,png,jpg'] : ['nullable', new ThumbnailCheckRule($id)],
             'featured_images.*' => $this->hasFile('featured_images') ? ['image', 'mimes:jpeg,png,jpg'] : ['nullable'],
-            'short_description' => ['nullable', 'string', 'max:500'],
             'description' => [
                 'required',
                 'string',

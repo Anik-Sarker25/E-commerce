@@ -42,7 +42,7 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Thumbnail</th>
-                                        <th>Product Name</th>
+                                        <th style="width: 300px;">Product Name</th>
                                         <th>Item Code</th>
                                         <th>Stock</th>
                                         <th>Status</th>

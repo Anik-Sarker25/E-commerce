@@ -21,4 +21,9 @@ class ProductVariants extends Model
         'stock_quantity',
         'color_image',
     ];
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
 }
