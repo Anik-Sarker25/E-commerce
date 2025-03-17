@@ -217,21 +217,13 @@
                                                 <strong class="me-3">{{ $variantIndex + 1 }}</strong>
                                                 <input type="hidden" class="up_variant-{{ $variantIndex }}" value="{{ $variant->id }}">
                                                 <div class="row mb-2">
-                                                    <div class="col-xl-2">
+                                                    <div class="col-xl-3">
                                                         <label class="form-label">Color Name</label>
                                                         <input type="text" class="form-control form-control-sm cname-{{ $variantIndex }}" name="variants[{{ $variantIndex }}][color_name]" value="{{ $variant->color_name }}">
                                                     </div>
-                                                    <div class="col-xl-2">
+                                                    <div class="col-xl-3">
                                                         <label class="form-label">Color</label>
                                                         <input type="text" id="color-picker-{{ $variantIndex }}" class="form-control form-control-sm color-picker color-{{ $variantIndex }}" name="variants[{{ $variantIndex }}][color]" value="{{ $variant->color_code }}">
-                                                    </div>
-                                                    <div class="col-xl-2">
-                                                        <label class="form-label">Size</label>
-                                                        <input type="text" class="form-control form-control-sm size-{{ $variantIndex }}" name="variants[{{ $variantIndex }}][size]" value="{{ $variant->size }}">
-                                                    </div>
-                                                    <div class="col-xl-2">
-                                                        <label class="form-label">Storage Capacity</label>
-                                                        <input type="text" class="form-control form-control-sm storage_capacity-{{ $variantIndex }}" name="variants[{{ $variantIndex }}][storage_capacity]" value="{{ $variant->storage_capacity }}">
                                                     </div>
                                                     <div class="col-xl-2">
                                                         <label class="form-label">Image</label>
@@ -250,22 +242,6 @@
                                                         <input type="number" class="form-control form-control-sm vbp-{{ $variantIndex }}" name="variants[{{ $variantIndex }}][buy_price]" value="{{ $variant->buy_price }}" oninput="updateVSellPrice({{ $variantIndex }})">
                                                     </div>
                                                     <div class="col-xl-2">
-                                                        <label class="form-label">MRP Price</label>
-                                                        <input type="number" class="form-control form-control-sm vmrp-{{ $variantIndex }}" name="variants[{{ $variantIndex }}][mrp_price]" value="{{ $variant->mrp_price }}" oninput="updateVSellPrice({{ $variantIndex }})">
-                                                    </div>
-                                                    <div class="col-xl-2">
-                                                        <label class="form-label">Discount Price <span class="text-danger">(%) *</span></label>
-                                                        <input type="number" class="form-control form-control-sm vdp-{{ $variantIndex }}" name="variants[{{ $variantIndex }}][discount_price]" value="{{ $variant->discount_price }}" oninput="updateVSellPrice({{ $variantIndex }})">
-                                                    </div>
-                                                    <div class="col-xl-2">
-                                                        <label class="form-label">Sell Price</label>
-                                                        <input type="number" class="form-control form-control-sm vsp-{{ $variantIndex }}" name="variants[{{ $variantIndex }}][sell_price]" value="{{ $variant->sell_price }}" readonly>
-                                                    </div>
-                                                    <div class="col-xl-2">
-                                                        <label class="form-label">Stock Quantity</label>
-                                                        <input type="number" class="form-control form-control-sm quantity-{{ $variantIndex }}" name="variants[{{ $variantIndex }}][stock_quantity]" value="{{ $variant->stock_quantity }}" oninput="updateTotalQuantity();">
-                                                    </div>
-                                                    <div class="col-xl-2">
                                                         <div class="d-flex flex-column justify-content-end" style="height: 100%;">
                                                             <div class="btn-group">
                                                                 <button type="button" class="btn btn-success btn-sm" onclick="addVariant({{ $variantIndex }})">+</button>
@@ -282,22 +258,14 @@
                                             <!-- Default empty variant form -->
                                             <div class="variant d-none d-flex" id="variant-0">
                                                 <strong class="me-3">1</strong>
-                                                <div class="row mb-2">
-                                                    <div class="col-xl-2">
+                                                <div class="row w-100 mb-2">
+                                                    <div class="col-xl-3">
                                                         <label class="form-label">Color Name</label>
                                                         <input type="text" class="form-control form-control-sm cname-0" name="variants[0][color_name]">
                                                     </div>
-                                                    <div class="col-xl-2">
+                                                    <div class="col-xl-3">
                                                         <label class="form-label">Color</label>
                                                         <input type="text" id="color-picker-0" class="form-control form-control-sm color-picker color-0" name="variants[0][color]">
-                                                    </div>
-                                                    <div class="col-xl-2">
-                                                        <label class="form-label">Size</label>
-                                                        <input type="text" class="form-control form-control-sm size-0" name="variants[0][size]">
-                                                    </div>
-                                                    <div class="col-xl-2">
-                                                        <label class="form-label">Storage Capacity</label>
-                                                        <input type="text" class="form-control form-control-sm storage_capacity-0" name="variants[0][storage_capacity]">
                                                     </div>
                                                     <div class="col-xl-2">
                                                         <label class="form-label">Image</label>
@@ -310,26 +278,6 @@
                                                                 <i class="fas fa-trash"></i>
                                                             </button>
                                                         </div>
-                                                    </div>
-                                                    <div class="col-xl-2">
-                                                        <label class="form-label">Buy Price</label>
-                                                        <input type="number" class="form-control form-control-sm vbp-0" name="variants[0][buy_price]" oninput="updateVSellPrice(0)">
-                                                    </div>
-                                                    <div class="col-xl-2">
-                                                        <label class="form-label">MRP Price</label>
-                                                        <input type="number" class="form-control form-control-sm vmrp-0" name="variants[0][mrp_price]" oninput="updateVSellPrice(0)">
-                                                    </div>
-                                                    <div class="col-xl-2">
-                                                        <label class="form-label">Discount Price <span class="text-danger">(%) *</span></label>
-                                                        <input type="number" class="form-control form-control-sm vdp-0" name="variants[0][discount_price]" oninput="updateVSellPrice(0)">
-                                                    </div>
-                                                    <div class="col-xl-2">
-                                                        <label class="form-label">Sell Price</label>
-                                                        <input type="number" class="form-control form-control-sm vsp-0" name="variants[0][sell_price]" readonly>
-                                                    </div>
-                                                    <div class="col-xl-2">
-                                                        <label class="form-label">Stock Quantity</label>
-                                                        <input type="number" class="form-control form-control-sm quantity-0" name="variants[0][stock_quantity]" oninput="updateTotalQuantity();">
                                                     </div>
                                                     <!-- Only show the button inside the first (empty) variant -->
                                                     <div class="col-xl-2">
@@ -380,16 +328,6 @@
                                         <label class="form-label" for="deals_time">Latest Deals Ends<span class="text-danger"></span></label>
                                         <input type="text" name="deals_time" class="form-control datepicker" id="deals_time" value="{{ isset($data->deals_time) ? dateFormat2($data->deals_time) : '' }}">
                                         <span class="text-danger" id="dealsTimeError"></span>
-                                    </div>
-                                </div>
-
-
-                                <!-- Stock Quantity -->
-                                <div class="col-xl-4">
-                                    <div class="form-group mb-3">
-                                        <label class="form-label" for="stock">Stock Quantity <span class="text-danger"></span></label>
-                                        <input type="number" name="stock" class="form-control" id="stock" placeholder="Enter Stock Quantity..." value="{{ $data->stock_quantity ?? '' }}">
-                                        <span class="text-danger" id="stockError"></span>
                                     </div>
                                 </div>
 
@@ -543,11 +481,6 @@
             calculateSellPrice();
         });
 
-        // Stock quantity validation
-        $('#stock').on('input', function() {
-            validateStockQuantity();
-        });
-
         const PRODUCT_TYPE = @json($product_type);
 
         $('#product_type').on('change', function () {
@@ -585,33 +518,19 @@
             $('#sell_price').val(sellPrice.toFixed(2));
         }
 
-        // update all the variants price fields
-        const switchInput = $("#customSwitch1");
-
-        if (switchInput.is(":checked")) {
-            $('.vbp-0').val(buyPrice);
-            $('.vmrp-0').val(mrpPrice);
-            $('.vdp-0').val(discountPercentage);
-            $('.vsp-0').val(sellPrice.toFixed(2));
-        } else {
-            $('.vbp-0').val('');
-            $('.vmrp-0').val('');
-            $('.vdp-0').val('');
-            $('.vsp-0').val('');
-        }
     }
 
     // function to validate nagetive quantity
-    function validateStockQuantity() {
-        const stockQuantity = parseInt($('#stock').val()) || 0;
+    // function validateStockQuantity() {
+    //     const stockQuantity = parseInt($('#stock').val()) || 0;
 
-        if (stockQuantity < 0) {
-            $('#stock').val(0); // Reset to 0 if negative
-            $('#stockError').text("Stock quantity cannot be negative.");
-        } else {
-            $('#stockError').text('');
-        }
-    }
+    //     if (stockQuantity < 0) {
+    //         $('#stock').val(0); // Reset to 0 if negative
+    //         $('#stockError').text("Stock quantity cannot be negative.");
+    //     } else {
+    //         $('#stockError').text('');
+    //     }
+    // }
 
     // function to remove thumbnail images
     function clearThumbnailPreview(id) {
@@ -744,17 +663,6 @@
         previewFeaturedImages();
     }
 
-    // variants dynamic content start from here
-    function setPriceValue() {
-        let buyPrice = parseFloat($('#buy_price').val()) ||'';
-        let mrpPrice = parseFloat($('#mrp_price').val()) || '';
-        let disPrice = parseFloat($('#discount_price').val()) || '';
-        let sellPrice = parseFloat($('#sell_price').val()) || '';
-        $('.vbp-0').val(buyPrice);
-        $('.vmrp-0').val(mrpPrice);
-        $('.vdp-0').val(disPrice);
-        $('.vsp-0').val(sellPrice.toFixed(2));
-    }
     // function for toggle variants content
     function toggleVariants() {
         let variantContainers = $(".variant");
@@ -764,13 +672,10 @@
             variantContainers.removeClass('d-none');
             variantContainers.addClass('d-block');
             setAddVariantBtn();
-            setPriceValue();
-            updateTotalQuantity();
         } else {
             variantContainers.removeClass('d-block');
             variantContainers.addClass('d-none');
             $('.addVrBtn').html('');
-            updateTotalQuantity();
         }
     }
 
@@ -783,13 +688,6 @@
 
         let vcname = $(`.cname-${clickedIndex}`).val();
         let vcolor = $(`.color-${clickedIndex}`).val();
-        let vsize = $(`.size-${clickedIndex}`).val();
-        let storage_capacity = $(`.storage_capacity-${clickedIndex}`).val();
-        let vbp_price = parseFloat($(`.vbp-${clickedIndex}`).val()) || 0;
-        let vmrp_price = parseFloat($(`.vmrp-${clickedIndex}`).val()) || 0;
-        let vdp_price = parseFloat($(`.vdp-${clickedIndex}`).val()) || 0;
-        let vsp_price = calculateVSellPrice(vmrp_price, vdp_price, vbp_price); // Calculate initial sell price
-        let vquantity = parseFloat($(`.quantity-${clickedIndex}`).val()) || 0;
 
         let newVariant = document.createElement('div');
         newVariant.classList.add('variant', 'd-flex');
@@ -799,22 +697,14 @@
         newVariant.innerHTML = `
 
             <strong class="me-3 variant-number">${columnindex}</strong>
-            <div class="row mb-2">
-                <div class="col-xl-2">
+            <div class="row w-100 mb-2">
+                <div class="col-xl-3">
                     <label class="form-label">Color Name</label>
                     <input type="text" class="form-control form-control-sm cname-${variantIndex}" name="variants[${variantIndex}][color_name]" value="${vcname}">
                 </div>
-                <div class="col-xl-2">
+                <div class="col-xl-3">
                     <label class="form-label">Color</label>
                     <input type="text" id="color-picker-${variantIndex}" class="form-control form-control-sm color-${variantIndex} color-picker" name="variants[${variantIndex}][color]" value="${vcolor}">
-                </div>
-                <div class="col-xl-2">
-                    <label class="form-label">Size</label>
-                    <input type="text" class="form-control form-control-sm size-${variantIndex}" name="variants[${variantIndex}][size]" value="${vsize}">
-                </div>
-                <div class="col-xl-2">
-                    <label class="form-label">Storage Capacity</label>
-                    <input type="text" class="form-control form-control-sm storage_capacity-${variantIndex}" name="variants[${variantIndex}][storage_capacity]" value="${storage_capacity}">
                 </div>
                 <div class="col-xl-2">
                     <label class="form-label">Image</label>
@@ -827,27 +717,6 @@
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
-                </div>
-                <div class="col-xl-2">
-                    <label class="form-label">Buy Price</label>
-                    <input type="number" class="form-control form-control-sm vbp-${variantIndex}" name="variants[${variantIndex}][buy_price]" value="${vbp_price}" oninput="updateVSellPrice(${variantIndex})">
-                </div>
-                <div class="col-xl-2">
-                    <label class="form-label">MRP Price</label>
-                    <input type="number" class="form-control form-control-sm vmrp-${variantIndex}" name="variants[${variantIndex}][mrp_price]" value="${vmrp_price}" oninput="updateVSellPrice(${variantIndex})">
-                </div>
-                <div class="col-xl-2">
-                    <label class="form-label">Discount Price <span class="text-danger">(%) *</span></label>
-                    <input type="number" class="form-control form-control-sm vdp-${variantIndex}" name="variants[${variantIndex}][discount_price]" value="${vdp_price}" oninput="updateVSellPrice(${variantIndex})">
-                </div>
-                <div class="col-xl-2">
-                    <label class="form-label">Sell Price</label>
-                    <input type="number" class="form-control form-control-sm vsp-${variantIndex}" name="variants[${variantIndex}][sell_price]" value="${vsp_price.toFixed(2)}" readonly>
-                    <span id="sellPriceError-${variantIndex}" class="text-danger"></span>
-                </div>
-                <div class="col-xl-2">
-                    <label class="form-label">Stock Quantity</label>
-                    <input type="number" class="form-control form-control-sm quantity-${variantIndex}" name="variants[${variantIndex}][stock_quantity]" value="${vquantity}" oninput="updateTotalQuantity()">
                 </div>
                 <div class="col-xl-2">
                     <div class="d-flex flex-column justify-content-end" style="height: 100%;">
@@ -863,69 +732,15 @@
         $('.addVrBtn').html('');
 
         container.appendChild(newVariant);
-        updateTotalQuantity();
         variantIndex++;
     }
-
-    //function to calculate variants total quantity
-    function updateTotalQuantity() {
-        let totalQty = 0;
-        let switchInput = $("#customSwitch1");
-
-        if (switchInput.is(":checked")) {
-            // Loop through all stock quantity inputs and sum their values
-            $('input[name^="variants"][name$="[stock_quantity]"]').each(function() {
-                totalQty += parseFloat($(this).val()) || 0;
-            });
-
-            $('#stock').val(totalQty);
-        } else {
-            $('#stock').val('');
-        }
-    }
-
-    // Function to calculate variant sell price based on MRP and discount
-    function calculateVSellPrice(mrp, discount, buyPrice) {
-        let discountAmount = (mrp * (discount / 100));
-        let sellPrice = mrp - discountAmount;
-
-        // Ensure sell price isn’t below buy price
-        if (sellPrice < buyPrice) {
-            return buyPrice; // Set sell price to buy price to prevent loss
-        }
-        return sellPrice;
-    }
-
-    // Function to update the variant sell price when any of the related fields change
-    function updateVSellPrice(index) {
-        let buyPrice = parseFloat($(`.vbp-${index}`).val()) || 0;
-        let mrpPrice = parseFloat($(`.vmrp-${index}`).val()) || 0;
-        let discountPrice = parseFloat($(`.vdp-${index}`).val()) || 0;
-
-        let discountAmount = (mrpPrice * (discountPrice / 100));
-        let sellPrice = mrpPrice - discountAmount;
-
-        // Ensure sell price isn’t below buy price
-        let errorElement = $(`#sellPriceError-${index}`);
-
-        if (sellPrice < buyPrice) {
-            errorElement.text("Sell Price cannot be less than Buy Price");
-            $(`.vsp-${index}`).val(buyPrice.toFixed(2));
-        } else {
-            errorElement.text("");
-            $(`.vsp-${index}`).val(sellPrice.toFixed(2));
-        }
-    }
-
     // function to remove variants items
     function removeVariant(index) {
         let variantToRemove = document.getElementById(`variant-${index}`);
         if (variantToRemove) {
             variantToRemove.remove();
-            updateTotalQuantity();
 
             setAddVariantBtn();
-
         }
     }
     // function to set add variants btn
@@ -978,13 +793,6 @@
             // Clear input fields
             $(`.cname-${variantId}`).val('');
             $(`.color-${variantId}`).val('');
-            $(`.size-${variantId}`).val('');
-            $(`.storage_capacity-${variantId}`).val('');
-            $(`.vbp-${variantId}`).val('');
-            $(`.vmrp-${variantId}`).val('');
-            $(`.vdp-${variantId}`).val('');
-            $(`.vsp-${variantId}`).val('');
-            $(`.quantity-${variantId}`).val('');
             $(`#color_image-${variantId}`).val('');
             $(`#preview-${variantId}`).attr('src', '');
             $(`#preview-${variantId}`).addClass('d-none');
@@ -993,7 +801,6 @@
             if (variantId !== "0") {
                 $(this).remove();
             }
-            updateTotalQuantity();
         });
     }
 
@@ -1019,7 +826,6 @@
         let description = $('#description').summernote('code');
         let product_type = $('#product_type').val();
         let deals_time = $('#deals_time').val();
-        let stock = $('#stock').val();
         let unit = $('#unit').val();
         let product_return = $('#product_return').val();
         let warranty = $('#warranty').val();
@@ -1041,7 +847,6 @@
         formData.append('description', description);
         formData.append('product_type', product_type);
         formData.append('deals_time', deals_time);
-        formData.append('stock', stock);
         formData.append('unit', unit);
         formData.append('product_return', product_return);
         formData.append('warranty', warranty);
@@ -1063,24 +868,10 @@
 
             let color_name = $(`.cname-${variantId}`).val();
             let color = $(`.color-${variantId}`).val();
-            let size = $(`.size-${variantId}`).val();
-            let storage_capacity = $(`.storage_capacity-${variantId}`).val();
-            let buy_price = $(`.vbp-${variantId}`).val();
-            let mrp_price = $(`.vmrp-${variantId}`).val();
-            let discount_price = $(`.vdp-${variantId}`).val();
-            let sell_price = $(`.vsp-${variantId}`).val();
-            let stock_quantity = $(`.quantity-${variantId}`).val();
             let image = $(`#color_image-${variantId}`)[0].files[0];
 
             formData.append(`variants[${index}][color_name]`, color_name);
             formData.append(`variants[${index}][color]`, color);
-            formData.append(`variants[${index}][size]`, size);
-            formData.append(`variants[${index}][storage_capacity]`, storage_capacity);
-            formData.append(`variants[${index}][buy_price]`, buy_price);
-            formData.append(`variants[${index}][mrp_price]`, mrp_price);
-            formData.append(`variants[${index}][discount_price]`, discount_price);
-            formData.append(`variants[${index}][sell_price]`, sell_price);
-            formData.append(`variants[${index}][stock_quantity]`, stock_quantity);
 
             if (image) {
                 formData.append(`variants[${index}][image]`, image);
@@ -1142,7 +933,6 @@
         let description = $('#description').summernote('code');
         let product_type = $('#product_type').val();
         let deals_time = $('#deals_time').val();
-        let stock = $('#stock').val();
         let unit = $('#unit').val();
         let product_return = $('#product_return').val();
         let warranty = $('#warranty').val();
@@ -1164,7 +954,6 @@
         formData.append('description', description);
         formData.append('product_type', product_type);
         formData.append('deals_time', deals_time);
-        formData.append('stock', stock);
         formData.append('unit', unit);
         formData.append('product_return', product_return);
         formData.append('warranty', warranty);
@@ -1194,26 +983,12 @@
             let variant_updateId = $(`.up_variant-${variantId}`).val();
             let color_name = $(`.cname-${variantId}`).val();
             let color = $(`.color-${variantId}`).val();
-            let size = $(`.size-${variantId}`).val();
-            let storage_capacity = $(`.storage_capacity-${variantId}`).val();
-            let buy_price = $(`.vbp-${variantId}`).val();
-            let mrp_price = $(`.vmrp-${variantId}`).val();
-            let discount_price = $(`.vdp-${variantId}`).val();
-            let sell_price = $(`.vsp-${variantId}`).val();
-            let stock_quantity = $(`.quantity-${variantId}`).val();
             let image = $(`#color_image-${variantId}`)[0].files[0];
 
             formData.append(`variants[${index}][variant_id]`, variant_updateId);
 
             formData.append(`variants[${index}][color_name]`, color_name);
             formData.append(`variants[${index}][color]`, color);
-            formData.append(`variants[${index}][size]`, size);
-            formData.append(`variants[${index}][storage_capacity]`, storage_capacity);
-            formData.append(`variants[${index}][buy_price]`, buy_price);
-            formData.append(`variants[${index}][mrp_price]`, mrp_price);
-            formData.append(`variants[${index}][discount_price]`, discount_price);
-            formData.append(`variants[${index}][sell_price]`, sell_price);
-            formData.append(`variants[${index}][stock_quantity]`, stock_quantity);
 
             if (image) {
                 formData.append(`variants[${index}][image]`, image);
@@ -1256,88 +1031,6 @@
             }
         });
     }
-
-    // function to update product information
-    // function updateProduct() {
-    //     let id = $('#update_id').val();
-    //     let url = "{{ route('admin.products.update', ':id') }}";
-    //     url = url.replace(':id', id);
-
-    //     let name = $('#name').val();
-    //     let buy_price = $('#buy_price').val();
-    //     let mrp_price = $('#mrp_price').val();
-    //     let discount_price = $('#discount_price').val();
-    //     let sell_price = $('#sell_price').val();
-    //     let category_id = $('#category_id').val();
-    //     let subcategory_id = $('#subcategory_id').val();
-    //     let childcategory_id = $('#childcategory_id').val();
-    //     let brand_id = $('#brand_id').val();
-    //     let keywords = $('#keywords').val();
-    //     let thumbnail = $('#thumbnail')[0].files[0];
-    //     let featured_images = $('#featured_images')[0].files;
-    //     let description = $('#description').summernote('code');
-    //     let product_type = $('#product_type').val();
-    //     let deals_time = $('#deals_time').val();
-    //     let stock = $('#stock').val();
-    //     let unit = $('#unit').val();
-    //     let product_return = $('#product_return').val();
-    //     let warranty = $('#warranty').val();
-    //     let delivery_type = $('#delivery_type').val();
-    //     let status = $('#status').val();
-
-    //     let formData = new FormData();
-    //     formData.append('name', name);
-    //     formData.append('buy_price', buy_price);
-    //     formData.append('mrp_price', mrp_price);
-    //     formData.append('discount_price', discount_price);
-    //     formData.append('sell_price', sell_price);
-    //     formData.append('category_id', category_id);
-    //     formData.append('subcategory_id', subcategory_id);
-    //     formData.append('childcategory_id', childcategory_id);
-    //     formData.append('brand_id', brand_id);
-    //     formData.append('keywords', keywords);
-    //     formData.append('thumbnail', thumbnail);
-
-    //     for (let i = 0; i < featured_images.length; i++) {
-    //         formData.append('featured_images[]', featured_images[i]);
-    //     }
-
-    //     formData.append('description', description);
-    //     formData.append('product_type', product_type);
-    //     formData.append('deals_time', deals_time);
-    //     formData.append('stock', stock);
-    //     formData.append('unit', unit);
-    //     formData.append('product_return', product_return);
-    //     formData.append('warranty', warranty);
-    //     formData.append('delivery_type', delivery_type);
-    //     formData.append('status', status);
-
-    //     $.ajax({
-    //         url: url,
-    //         type: 'POST',
-    //         data: formData,
-    //         contentType: false,
-    //         processData: false,
-    //         success: function(data) {
-    //             if(data.success === false) {
-    //                 show_error('Failed to Update Product');
-    //             }else {
-    //                 show_success('Product Updated Successfully');
-    //                 resetForm();
-    //                 setTimeout(function() {
-    //                     window.location.href = "{{ route('admin.products.index') }}";
-    //                 }, 2000);
-    //             }
-    //         },
-    //         error: function(error) {
-    //             clearErrors();
-    //             let errors = error.responseJSON.errors;
-
-
-
-    //         }
-    //     });
-    // }
 
     // function to remove images
     function removeImage(id) {
@@ -1441,10 +1134,6 @@
         $('#dealsTimeError').html('');
         $('#deals_time').val('');
         $('#deals_time').removeClass('is-invalid');
-
-        $('#stockError').html('');
-        $('#stock').val('');
-        $('#stock').removeClass('is-invalid');
 
         $('#product_return').val($('#product_return option:first').val()).trigger('change');
         $('#warranty').val($('#warranty option:first').val()).trigger('change');

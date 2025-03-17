@@ -44,7 +44,6 @@ class ProductUpdateRequest extends FormRequest
             ],
             'product_type' => ['nullable', 'string'],
             'deals_time' => ['nullable', 'date'],
-            'stock' => ['nullable', 'numeric'],
             'product_return' => ['required'],
             'warranty' => ['required'],
             'unit' => ['required'],

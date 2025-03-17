@@ -24,7 +24,6 @@ class Product extends Model
         'sell_price',
         'thumbnail',
         'description',
-        'stock_quantity',
         'return',
         'warranty',
         'deals_time',

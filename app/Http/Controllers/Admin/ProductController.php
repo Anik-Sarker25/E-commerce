@@ -119,7 +119,6 @@ class ProductController extends Controller
                 'description' => $request->description,
                 'product_type' => $request->product_type,
                 'deals_time' => strtotime($request->deals_time),
-                'stock_quantity' => $request->stock ?? 0,
                 'unit' => $request->unit,
                 'return' => $request->product_return,
                 'warranty' => $request->warranty,
@@ -158,13 +157,6 @@ class ProductController extends Controller
                         'product_id' => $data->id,
                         'color_name' => $variant['color_name'],
                         'color_code' => $variant['color'],
-                        'size' => $variant['size'],
-                        'storage_capacity' => $variant['storage_capacity'],
-                        'buy_price' => $variant['buy_price'],
-                        'mrp_price' => $variant['mrp_price'],
-                        'discount_price' => $variant['discount_price'],
-                        'sell_price' => $variant['sell_price'],
-                        'stock_quantity' => $variant['stock_quantity'],
                     ];
 
                     // Handle image for variant
@@ -251,7 +243,6 @@ class ProductController extends Controller
             $data->description = $request->description;
             $data->product_type = $request->product_type;
             $data->deals_time = strtotime($request->deals_time);
-            $data->stock_quantity = $request->stock ?? 0;
             $data->unit = $request->unit;
             $data->return = $request->product_return;
             $data->warranty = $request->warranty;
@@ -313,13 +304,6 @@ class ProductController extends Controller
                         'product_id' => $data->id,
                         'color_name' => $variant['color_name'],
                         'color_code' => $variant['color'],
-                        'size' => $variant['size'],
-                        'storage_capacity' => $variant['storage_capacity'],
-                        'buy_price' => $variant['buy_price'],
-                        'mrp_price' => $variant['mrp_price'],
-                        'discount_price' => $variant['discount_price'],
-                        'sell_price' => $variant['sell_price'],
-                        'stock_quantity' => $variant['stock_quantity'],
                     ];
 
                     // Handle image for variant

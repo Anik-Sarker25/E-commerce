@@ -31,7 +31,6 @@ return new class extends Migration
             $table->longText('description');
             $table->string('return')->nullable();
             $table->string('warranty')->nullable();
-            $table->integer('stock_quantity')->nullable()->default(0);
             $table->string('unit')->default(Constant::UNIT['pcs']);
             $table->string('deals_time')->nullable();
             $table->tinyInteger('product_type')->nullable();
