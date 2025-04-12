@@ -173,6 +173,11 @@
 									<span class="menu-text">Products</span>
 								</a>
 							</div>
+							<div class="menu-item {{ Request::is('admin/products/variants') ? 'active' : '' }}">
+								<a href="{{ route('admin.products.variants.index') }}" class="menu-link">
+									<span class="menu-text">Variants & Stocks</span>
+								</a>
+							</div>
 							<div class="menu-item {{ Request::is('admin/products/stock') ? 'active' : '' }}">
 								<a href="{{ route('admin.products.stock') }}" class="menu-link">
 									<span class="menu-text">Stocks</span>

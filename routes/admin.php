@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\StockController;
 use App\Http\Controllers\Admin\SubcategoryController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\VariantOptionsController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->as('admin.')->middleware('auth:admin')->group(function () {
@@ -86,6 +87,14 @@ Route::prefix('admin')->as('admin.')->middleware('auth:admin')->group(function (
 
         Route::get('/stock', [StockController::class, 'index'])->name('stock');
 
+        // Brands routes
+        Route::prefix('variants')->as('variants.')->group(function () {
+            Route::get('/', [VariantOptionsController::class, 'index'])->name('index');
+            // Route::post('/store', [VariantOptionsController::class,'store'])->name('store');
+            // Route::get('/edit/{id}', [VariantOptionsController::class, 'edit'])->name('edit');
+            // Route::post('/update/{id}', [VariantOptionsController::class, 'Update'])->name('update');
+            // Route::delete('/destroy/{id}', [VariantOptionsController::class, 'destroy'])->name('destroy');
+        });
         // Brands routes
         Route::prefix('brands')->as('brands.')->group(function () {
             Route::get('/', [BrandController::class, 'index'])->name('index');

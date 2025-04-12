@@ -520,18 +520,6 @@
 
     }
 
-    // function to validate nagetive quantity
-    // function validateStockQuantity() {
-    //     const stockQuantity = parseInt($('#stock').val()) || 0;
-
-    //     if (stockQuantity < 0) {
-    //         $('#stock').val(0); // Reset to 0 if negative
-    //         $('#stockError').text("Stock quantity cannot be negative.");
-    //     } else {
-    //         $('#stockError').text('');
-    //     }
-    // }
-
     // function to remove thumbnail images
     function clearThumbnailPreview(id) {
         removeImage(id);

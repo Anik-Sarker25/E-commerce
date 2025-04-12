@@ -8,6 +8,8 @@ use App\Models\Category;
 use App\Models\ChildCategory;
 use App\Models\Country;
 use App\Models\DeliveryOption;
+use App\Models\Product;
+use App\Models\ProductVariants;
 use App\Models\SubCategory;
 use Devfaysal\BangladeshGeocode\Models\District;
 use Devfaysal\BangladeshGeocode\Models\Division;
@@ -46,6 +48,18 @@ class AjaxController extends Controller
 
     public function getCategory() {
         $data = Category::all();
+        return response()->json($data);
+    }
+    public function getProducts() {
+        $data = Product::all();
+        return response()->json($data);
+    }
+    public function getColorFamily($id) {
+        $data = ProductVariants::where('product_id', $id)->get();
+        return response()->json($data);
+    }
+    public function getProductsPrice($id) {
+        $data = Product::where('id', $id)->first();
         return response()->json($data);
     }
 

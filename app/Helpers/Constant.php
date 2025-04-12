@@ -119,6 +119,12 @@ class Constant {
         'pink' => 'pink',
         'brown' => 'brown',
     ];
+    const VARIANT_TYPES = [
+        'size' => '1',
+        'storage_capacity' => '2',
+        'instalment' => '3',
+        'case_size' => '4',
+    ];
     const CONDITIONS = [
         'new' => 1,
         'used' => 2,

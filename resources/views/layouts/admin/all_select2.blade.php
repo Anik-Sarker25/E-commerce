@@ -226,5 +226,58 @@
         });
     }
 
+    function getProducts() {
+        url = "{{ route('ajax.get.products') }}";
+        $.ajax({
+            type: "GET",
+            url: url,
+            success: function(data) {
+                var html = '';
+                html += '<option value="">Select Product</option>';
+                $.each(data, function(index, value) {
+                    html += '<option value="' + value.id + '">' + value.name + '</option>';
+                });
+
+                $('#product_id').html(html);
+            }
+        });
+        $("#product_id").select2({
+            placeholder: "Select Product",
+            width: '100%',
+            allowClear: true,
+        });
+    }
+    function getProductColor(productId) {
+        let url = "{{ route('ajax.get.colorFamily', ':id') }}";
+        url = url.replace(':id', productId);
+        $.ajax({
+            type: "GET",
+            url: url,
+            success: function(data) {
+                var html = '';
+                html += '<option value="">Choose Color Family</option>';
+                $.each(data, function(index, value) {
+                    html += '<option value="' + value.id + '">' + value.color_name + '</option>';
+                });
+
+                $('#color_family').html(html);
+            }
+        });
+    }
+    function getProductPrice(productId) {
+        let url = "{{ route('ajax.get.product.price', ':id') }}";
+        url = url.replace(':id', productId);
+        $.ajax({
+            type: "GET",
+            url: url,
+            success: function(data) {
+                $('#buy_price').val(data.buy_price);
+                $('#mrp_price').val(data.mrp_price);
+                $('#discount_price').val(data.discount_price);
+                $('#sell_price').val(data.sell_price);
+            }
+        });
+    }
+
 
 </script>
