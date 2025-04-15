@@ -37,6 +37,7 @@
                                     <div class="col-xl-4">
                                         <div class="form-group mb-3">
                                             <label class="form-label" for="product_id">Select Product</label>
+                                            <input type="hidden" id="update_id" value="">
                                             <select name="product_id"  class="form-control select2" id="product_id">
                                             </select>
                                             <span class="text-danger" id="product_idError"></span>
@@ -46,7 +47,6 @@
                                     <div class="col-xl-4">
                                         <div class="form-group mb-3">
                                             <label class="form-label" for="color_family">Color Family</label>
-                                            <input type="hidden" id="update_id" value="">
                                             <select name="color_family"  class="form-control select2" id="color_family">
                                             </select>
                                             <span class="text-danger" id="color_familyError"></span>
@@ -78,7 +78,7 @@
                                         <div class="form-group mb-3">
                                             <label class="form-label" for="buy_price">Buy Price <span class="text-danger">*</span></label>
                                             <input type="number" name="buy_price" class="form-control" id="buy_price" placeholder="Enter Buy Price...">
-                                            <span class="text-danger" id="buyPriceError"></span>
+                                            <span class="text-danger" id="buy_priceError"></span>
                                         </div>
                                     </div>
 
@@ -86,7 +86,7 @@
                                         <div class="form-group mb-3">
                                             <label class="form-label" for="mrp_price">MRP Price <span class="text-danger">*</span></label>
                                             <input type="number" name="mrp_price" class="form-control" id="mrp_price" placeholder="Enter MRP Price...">
-                                            <span class="text-danger" id="mrpPriceError"></span>
+                                            <span class="text-danger" id="mrp_priceError"></span>
                                         </div>
                                     </div>
 
@@ -94,7 +94,7 @@
                                         <div class="form-group mb-3">
                                             <label class="form-label" for="discount_price">Discount Price <span class="text-danger">(%) *</span></label>
                                             <input type="number" name="discount_price" class="form-control" id="discount_price" placeholder="Enter Discount Price...">
-                                            <span class="text-danger" id="discountPriceError"></span>
+                                            <span class="text-danger" id="discount_priceError"></span>
                                         </div>
                                     </div>
 
@@ -102,7 +102,7 @@
                                         <div class="form-group mb-3">
                                             <label class="form-label" for="sell_price">Sell Price <span class="text-danger">*</span></label>
                                             <input type="number" name="sell_price" class="form-control" id="sell_price" placeholder="Enter Sell Price..." readonly>
-                                            <span class="text-danger" id="sellPriceError"></span>
+                                            <span class="text-danger" id="sell_priceError"></span>
                                         </div>
                                     </div>
 
@@ -117,9 +117,9 @@
 
 
                                 <div class="mb-3">
-                                    <button type="button" onclick="addVariant();" class="btn btn-outline-success"id="addVariantBtn()"><i class="fa fa-plus me-2"></i>Add Variant</button>
-                                    <button type="button" onclick="updateVariant();" class="btn btn-outline-success d-none me-2" id="updateVariantBtn()"><i class="fa fa-share me-2"></i>Update Variant</button>
-                                    <button type="button" onclick="resetVariant()();" class="btn btn-outline-danger" id="cancelVariantBtn()"><i class="fa fa-times me-2"></i>Cencel</button>
+                                    <button type="button" onclick="addVariant();" class="btn btn-outline-success" id="addVariantBtn"><i class="fa fa-plus me-2"></i>Add Variant</button>
+                                    <button type="button" onclick="updateVariant();" class="btn btn-outline-success d-none me-2" id="updateVariantBtn"><i class="fa fa-share me-2"></i>Update Variant</button>
+                                    <button type="button" onclick="resetVariant();" class="btn btn-outline-danger" id="cancelVariantBtn"><i class="fa fa-times me-2"></i>Cencel</button>
                                 </div>
 
 
@@ -246,11 +246,11 @@
 
         // Ensure sell price isn’t below buy price
         if (sellPrice < buyPrice) {
-            $('#sellPriceError').text("Sell Price cannot be less then buy Price");
+            $('#sell_priceError').text("Sell Price cannot be less then buy Price");
             $('#sell_price').val(buyPrice.toFixed(2));
 
         }else {
-            $('#sellPriceError').text("");
+            $('#sell_priceError').text("");
             $('#sell_price').val(sellPrice.toFixed(2));
         }
 
@@ -386,17 +386,7 @@
     function showVariantsForm() {
         $('#variantsFormBox').collapse('toggle');
 
-        $('#update_id').val('');
-        $('#nameError').text('');
-        $('#name').val('');
-        $('#name').removeClass('is-invalid');
-
-        $('#categoryError').text('');
-        $('#product_id').val('').trigger('change');
-
-        $('#imageError').text('');
-        $('#image').val('');
-        $('#image').removeClass('is-invalid');
+        resetVariant();
 
         $('#addVariantsTitle').removeClass('d-none');
         $('#updateVariantsTitle').addClass('d-none');
@@ -406,17 +396,29 @@
     }
 
     function addVariant() {
-        let url = "{{ route('admin.subcategories.store') }}";
+        let url = "{{ route('admin.products.variants.store') }}";
 
         let product_id = $('#product_id').val();
-        let name = $('#name').val();
-        let image = $('#image')[0].files[0];
+        let color_family = $('#color_family').val();
+        let variant_type = $('#variant_type').val();
+        let variant_value = $('#variant_value').val();
+        let buy_price = $('#buy_price').val();
+        let mrp_price = $('#mrp_price').val();
+        let discount_price = $('#discount_price').val();
+        let sell_price = $('#sell_price').val();
+        let stock = $('#stock').val();
 
         // Prepare form data
         let formData = new FormData();
         formData.append('product_id', product_id);
-        formData.append('name', name);
-        formData.append('image', image);
+        formData.append('color_family', color_family);
+        formData.append('variant_type', variant_type);
+        formData.append('variant_value', variant_value);
+        formData.append('buy_price', buy_price);
+        formData.append('mrp_price', mrp_price);
+        formData.append('discount_price', discount_price);
+        formData.append('sell_price', sell_price);
+        formData.append('stock', stock);
 
         $.ajax({
             url: url,
@@ -426,32 +428,32 @@
             contentType: false,
             success: function(response) {
                 resetVariant();
-                show_success('Sub Category Added Successfully!');
+                show_success('Variants Added Successfully!');
 
                 $('.DataTable').DataTable().ajax.reload();
             },
             error: function(error) {
+
+                $('[id$="Error"]').html(''); // Clear all error message containers
+                $('.is-invalid').removeClass('is-invalid');
+
                 let errors = error.responseJSON.errors;
-                if(errors.product_id) {
-                    $('#categoryError').text(errors.product_id);
-                    $('#product_id').val('').trigger('change');
-                }
-                if(errors.name) {
-                    $('#nameError').text(errors.name);
-                    $('#name').val('');
-                    $('#name').addClass('is-invalid');
-                }
-                if(errors.image) {
-                    $('#imageError').text(errors.image);
-                    $('#image').val('');
-                    $('#image').addClass('is-invalid');
+                for (let key in errors) {
+                    // Check if the field is a select element
+                    if ($(`#${key}`).is('select')) {
+                        $(`#${key}Error`).html(errors[key]);
+                    } else {
+                        $(`#${key}Error`).html(errors[key]);
+                        $(`#${key}`).val('');
+                        $(`#${key}`).addClass('is-invalid');
+                    }
                 }
             }
         });
     }
 
     function edit(id){
-        var url = "{{ route('admin.subcategories.edit', ':id') }}";
+        var url = "{{ route('admin.products.variants.edit', ':id') }}";
         url = url.replace(':id', id);
         $.ajax({
             type: "GET",
@@ -461,7 +463,12 @@
                 $('#variantsFormBox').collapse('toggle');
                 $('#update_id').val(data.id);
                 $('#product_id').val(data.product_id).trigger('change');
-                $('#name').val(data.name);
+                setTimeout(() => {
+                    $('#color_family').val(data.color_family).trigger('change');
+                }, 500);
+                $('#variant_type').val(data.variant_type).trigger('change');
+                $('#variant_value').val(data.variant_value);
+                $('#stock').val(data.stock);
 
                 $('#addVariantsTitle').addClass('d-none');
                 $('#updateVariantsTitle').removeClass('d-none');
@@ -477,18 +484,30 @@
 
     function updateVariant() {
         let update_id = $('#update_id').val();
-        let url = "{{ route('admin.subcategories.update', ':id') }}";
+        let url = "{{ route('admin.products.variants.update', ':id') }}";
         url = url.replace(':id', update_id);
 
         let product_id = $('#product_id').val();
-        let name = $('#name').val();
-        let image = $('#image')[0].files[0];
+        let color_family = $('#color_family').val();
+        let variant_type = $('#variant_type').val();
+        let variant_value = $('#variant_value').val();
+        let buy_price = $('#buy_price').val();
+        let mrp_price = $('#mrp_price').val();
+        let discount_price = $('#discount_price').val();
+        let sell_price = $('#sell_price').val();
+        let stock = $('#stock').val();
 
         // Prepare form data
         let formData = new FormData();
         formData.append('product_id', product_id);
-        formData.append('name', name);
-        formData.append('image', image);
+        formData.append('color_family', color_family);
+        formData.append('variant_type', variant_type);
+        formData.append('variant_value', variant_value);
+        formData.append('buy_price', buy_price);
+        formData.append('mrp_price', mrp_price);
+        formData.append('discount_price', discount_price);
+        formData.append('sell_price', sell_price);
+        formData.append('stock', stock);
 
         $.ajax({
             url: url,
@@ -498,32 +517,32 @@
             contentType: false,
             success: function(response) {
                 resetVariant();
-                show_success('Sub Category Updated Successfully!');
+                show_success('Variants Updated Successfully!');
 
                 $('.DataTable').DataTable().ajax.reload();
             },
             error: function(error) {
+
+                $('[id$="Error"]').html(''); // Clear all error message containers
+                $('.is-invalid').removeClass('is-invalid');
+
                 let errors = error.responseJSON.errors;
-                if(errors.product_id) {
-                    $('#categoryError').text(errors.product_id);
-                    $('#product_id').val('').trigger('change');
-                }
-                if(errors.name) {
-                    $('#nameError').text(errors.name);
-                    $('#name').val('');
-                    $('#name').addClass('is-invalid');
-                }
-                if(errors.image) {
-                    $('#imageError').text(errors.image);
-                    $('#image').val('');
-                    $('#image').addClass('is-invalid');
+                for (let key in errors) {
+                    // Check if the field is a select element
+                    if ($(`#${key}`).is('select')) {
+                        $(`#${key}Error`).html(errors[key]);
+                    } else {
+                        $(`#${key}Error`).html(errors[key]);
+                        $(`#${key}`).val('');
+                        $(`#${key}`).addClass('is-invalid');
+                    }
                 }
             }
         });
     }
 
     function destroy(id) {
-        let url = "{{ route('admin.subcategories.destroy', ':id') }}";
+        let url = "{{ route('admin.products.variants.destroy', ':id') }}";
         url = url.replace(':id', id);
 
         Swal.fire({
@@ -545,19 +564,14 @@
                     type: 'DELETE',
                     dataType: 'JSON',
                     success: function(data) {
-                        if(data == 'have_data') {
-                            show_error('Cannot delete the subcategory because it has related child category.');
-                            return;
-                        }else {
-                            show_success('Subcategory deleted successfully!');
-                            $('.DataTable').DataTable().ajax.reload();
-                        }
+                        show_success('Variant Deleted Successfully!');
+                        $('.DataTable').DataTable().ajax.reload();
                     },
                     error: function(error) {
                         if (error.responseJSON.error) {
                             show_error(error.responseJSON.error);
                         }else {
-                            show_error('Failed to delete the subcategory. Please try again.');
+                            show_error('Failed to delete the variant. Please try again.');
                         }
                     }
                 });
@@ -567,16 +581,38 @@
 
     function resetVariant() {
         $('#update_id').val('');
-        $('#categoryError').text('');
+        $('#product_idError').text('');
         $('#product_id').val('').trigger('change');
 
-        $('#nameError').text('');
-        $('#name').val('');
-        $('#name').removeClass('is-invalid');
+        $('#color_familyError').text('');
+        $('#color_family').val('').trigger('change');
 
-        $('#imageError').text('');
-        $('#image').val('');
-        $('#image').removeClass('is-invalid');
+        $('#variant_typeError').text('');
+        $('#variant_type').val('').trigger('change');
+
+        $('#variant_valueError').text('');
+        $('#variant_value').val('');
+        $('#variant_value').removeClass('is-invalid');
+
+        $('#buy_priceError').html('');
+        $('#buy_price').val('');
+        $('#buy_price').removeClass('is-invalid');
+
+        $('#mrp_priceError').html('');
+        $('#mrp_price').val('');
+        $('#mrp_price').removeClass('is-invalid');
+
+        $('#discount_priceError').html('');
+        $('#discount_price').val('');
+        $('#discount_price').removeClass('is-invalid');
+
+        $('#sell_priceError').html('');
+        $('#sell_price').val('');
+        $('#sell_price').removeClass('is-invalid');
+
+        $('#stockError').html('');
+        $('#stock').val('');
+        $('#stock').removeClass('is-invalid');
 
         $('#variantsFormBox').collapse('toggle');
 

@@ -90,10 +90,10 @@ Route::prefix('admin')->as('admin.')->middleware('auth:admin')->group(function (
         // Brands routes
         Route::prefix('variants')->as('variants.')->group(function () {
             Route::get('/', [VariantOptionsController::class, 'index'])->name('index');
-            // Route::post('/store', [VariantOptionsController::class,'store'])->name('store');
-            // Route::get('/edit/{id}', [VariantOptionsController::class, 'edit'])->name('edit');
-            // Route::post('/update/{id}', [VariantOptionsController::class, 'Update'])->name('update');
-            // Route::delete('/destroy/{id}', [VariantOptionsController::class, 'destroy'])->name('destroy');
+            Route::post('/store', [VariantOptionsController::class,'store'])->name('store');
+            Route::get('/edit/{id}', [VariantOptionsController::class, 'edit'])->name('edit');
+            Route::post('/update/{id}', [VariantOptionsController::class, 'update'])->name('update');
+            Route::delete('/destroy/{id}', [VariantOptionsController::class, 'destroy'])->name('destroy');
         });
         // Brands routes
         Route::prefix('brands')->as('brands.')->group(function () {

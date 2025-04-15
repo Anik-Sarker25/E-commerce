@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Helpers\Constant;
 use App\Helpers\Traits\RowIndex;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProductVariantsStoreRequest;
 use App\Models\VariantOption;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
@@ -38,11 +39,6 @@ class VariantOptionsController extends Controller
                 })
                 ->addColumn('color_family', function ($row) {
                     if ($row->variants) {
-                        $image = '<img src="'.asset($row->variants->color_image). '" alt="'. $row->variants->name. '" class="rounded" style="max-width: 32px;">';
-                        if($row->variants->color_image) {
-                            return $image;
-                        }
-
                         return $row->variants->color_name;
                     } else {
                         return '---';
@@ -65,5 +61,56 @@ class VariantOptionsController extends Controller
         }
 
         return view('admin.products.variantstock.product_variants_stock', compact('pageTitle', 'breadcrumbs'));
+    }
+
+
+    public function store(ProductVariantsStoreRequest $request)
+    {
+
+        $data = VariantOption::create([
+            'product_id' => $request->product_id,
+            'color_family' => $request->color_family,
+            'variant_type' => $request->variant_type,
+            'variant_value' => $request->variant_value,
+            'buy_price' => $request->buy_price,
+            'mrp_price' => $request->mrp_price,
+            'discount_price' => $request->discount_price,
+            'sell_price' => $request->sell_price,
+            'stock' => $request->stock,
+        ]);
+
+        return response()->json();
+    }
+
+    public function edit($id)  {
+        $data = VariantOption::find($id);
+        return response()->json($data);
+    }
+
+    public function update(ProductVariantsStoreRequest $request, $id)
+    {
+
+        $data = VariantOption::find($id);
+        $data->update([
+            'product_id' => $request->product_id,
+            'color_family' => $request->color_family,
+            'variant_type' => $request->variant_type,
+            'variant_value' => $request->variant_value,
+            'buy_price' => $request->buy_price,
+            'mrp_price' => $request->mrp_price,
+            'discount_price' => $request->discount_price,
+            'sell_price' => $request->sell_price,
+            'stock' => $request->stock,
+        ]);
+
+        return response()->json();
+    }
+
+    public function destroy($id) {
+        $data = VariantOption::find($id);
+        $data->delete();
+
+        return response()->json();
+
     }
 }

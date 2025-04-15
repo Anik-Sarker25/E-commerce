@@ -26,7 +26,7 @@ class VariantOption extends Model
     }
 
     public function variants() {
-        return $this->hasMany(ProductVariants::class, 'product_id');
+        return $this->belongsTo(ProductVariants::class, 'color_family');
     }
 
 
