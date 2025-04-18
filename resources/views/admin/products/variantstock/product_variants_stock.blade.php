@@ -139,7 +139,7 @@
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>Product Name</th>
+                                        <th style="width: 20%;">Product Name</th>
                                         <th>Item Code</th>
                                         <th>Color Family</th>
                                         <th>Variant Type</th>
@@ -309,56 +309,56 @@
                 {
                     data: 'item_code',
                     name: 'item_code',
-                    className: 'text-left',
+                    className: 'text-center',
                     searchable: true,
                     orderable: true
                 },
                 {
                     data: 'color_family',
                     name: 'color_family',
-                    className: 'text-left',
+                    className: 'text-center',
                     searchable: true,
                     orderable: true
                 },
                 {
                     data: 'variant_type',
                     name: 'variant_type',
-                    className: 'text-left',
+                    className: 'text-center',
                     searchable: true,
                     orderable: true
                 },
                 {
                     data: 'buy_price',
                     name: 'buy_price',
-                    className: 'text-left',
+                    className: 'text-center',
                     searchable: true,
                     orderable: true
                 },
                 {
                     data: 'mrp_price',
                     name: 'mrp_price',
-                    className: 'text-left',
+                    className: 'text-center',
                     searchable: true,
                     orderable: true
                 },
                 {
                     data: 'discount_price',
                     name: 'discount_price',
-                    className: 'text-left',
+                    className: 'text-center',
                     searchable: true,
                     orderable: true
                 },
                 {
                     data: 'sell_price',
                     name: 'sell_price',
-                    className: 'text-left',
+                    className: 'text-center',
                     searchable: true,
                     orderable: true
                 },
                 {
                     data: 'stock',
                     name: 'stock',
-                    className: 'text-left',
+                    className: 'text-center',
                     searchable: true,
                     orderable: true
                 },
