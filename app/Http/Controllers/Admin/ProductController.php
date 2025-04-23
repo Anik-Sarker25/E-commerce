@@ -10,6 +10,7 @@ use App\Http\Requests\ProductUpdateRequest;
 use App\Models\Product;
 use App\Models\ProductFeaturedImage;
 use App\Models\ProductVariants;
+use App\Models\VariantOption;
 use Illuminate\Http\Request;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
@@ -199,8 +200,10 @@ class ProductController extends Controller
     public function singleView($id) {
         $modalTitle = "Product Details";
         $data = Product::with(['featuredImages', 'category', 'subcategory'])->find($id);
+        $stocksWithoutVariant = VariantOption::whereNull('color_family')->first();
+
         return response()->json([
-            'view' => view('admin.products.models.model_body', compact('data'))->render(),
+            'view' => view('admin.products.models.model_body', compact('data', 'stocksWithoutVariant'))->render(),
             'modalTitle' => $modalTitle
         ]);
     }

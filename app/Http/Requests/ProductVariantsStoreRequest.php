@@ -34,4 +34,13 @@ class ProductVariantsStoreRequest extends FormRequest
         ];
 
     }
+
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'variant_type' => $this->variant_type === 'null' ? null : $this->variant_type,
+            'variant_value' => $this->variant_value === 'null' ? null : $this->variant_value,
+        ]);
+    }
+
 }

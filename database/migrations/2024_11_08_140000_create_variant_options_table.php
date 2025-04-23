@@ -23,8 +23,6 @@ return new class extends Migration
             $table->decimal('sell_price', 10, 0)->nullable()->default(0);
             $table->integer('stock')->nullable();
             $table->timestamps();
-
-            $table->unique(['product_id', 'variant_type', 'variant_value'], 'unique_product_variant');
         });
     }
 

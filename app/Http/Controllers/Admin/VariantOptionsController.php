@@ -66,22 +66,45 @@ class VariantOptionsController extends Controller
 
     public function store(ProductVariantsStoreRequest $request)
     {
-
-        $data = VariantOption::create([
-            'product_id' => $request->product_id,
-            'color_family' => $request->color_family,
-            'variant_type' => $request->variant_type,
-            'variant_value' => $request->variant_value,
-            'buy_price' => $request->buy_price,
-            'mrp_price' => $request->mrp_price,
-            'discount_price' => $request->discount_price,
-            'sell_price' => $request->sell_price,
-            'stock' => $request->stock,
-        ]);
-
-        return response()->json();
+        // Check if we should update existing stock
+        if (
+            $request->color_family !== null &&
+            $request->variant_type === null &&
+            $request->variant_value === null
+        ) {
+            $data = VariantOption::where('product_id', $request->product_id)
+                ->where('color_family', $request->color_family)
+                ->whereNotNull('variant_type')
+                ->first();
+        
+            if ($data) {
+                $data->buy_price = $request->buy_price;
+                $data->mrp_price = $request->mrp_price;
+                $data->discount_price = $request->discount_price;
+                $data->sell_price = $request->sell_price;
+                $data->stock += $request->stock;
+                $data->save();
+        
+                return response()->json('updated');
+            }
+        } else {
+            // Otherwise, create a new variant option
+            $data = new VariantOption();
+            $data->product_id = $request->product_id;
+            $data->color_family = $request->color_family;
+            $data->variant_type = $request->variant_type;
+            $data->variant_value = $request->variant_value;
+            $data->buy_price = $request->buy_price;
+            $data->mrp_price = $request->mrp_price;
+            $data->discount_price = $request->discount_price;
+            $data->sell_price = $request->sell_price;
+            $data->stock = $request->stock;
+            $data->save();
+        
+            return response()->json('created');
+        }
     }
-
+    
     public function edit($id)  {
         $data = VariantOption::find($id);
         return response()->json($data);
