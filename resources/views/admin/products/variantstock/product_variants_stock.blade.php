@@ -140,7 +140,7 @@
                                     <tr>
                                         <th>ID</th>
                                         <th style="width: 20%;">Product Name</th>
-                                        <th>Item Code</th>
+                                        <th>Variant Value</th>
                                         <th>Color Family</th>
                                         <th>Variant Type</th>
                                         <th>Buy Price</th>
@@ -307,8 +307,8 @@
                     orderable: true
                 },
                 {
-                    data: 'item_code',
-                    name: 'item_code',
+                    data: 'variant_value',
+                    name: 'variant_value',
                     className: 'text-center',
                     searchable: true,
                     orderable: true
@@ -428,8 +428,15 @@
             contentType: false,
             success: function(response) {
                 resetVariant();
-                show_success('Variants Added Successfully!');
 
+                if(response === 'updated') {
+                    show_success('Variants Updated Successfully!');
+                }else if(response === 'created') {
+                    show_success('Variants Added Successfully!');
+                }else if(response === 'duplicated') {
+                    show_error('Variants Already Exits');
+                }
+                
                 $('.DataTable').DataTable().ajax.reload();
             },
             error: function(error) {

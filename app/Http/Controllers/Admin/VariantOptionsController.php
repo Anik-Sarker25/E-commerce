@@ -30,13 +30,6 @@ class VariantOptionsController extends Controller
                 ->addColumn('product_id', function ($row) {
                     return $row->products->name ?? '---';
                 })
-                ->addColumn('item_code', function ($row) {
-                    if ($row->products) {
-                        return '#'.$row->products->item_code;
-                    } else {
-                        return '---';
-                    }
-                })
                 ->addColumn('color_family', function ($row) {
                     if ($row->variants) {
                         return $row->variants->color_name;
@@ -56,7 +49,7 @@ class VariantOptionsController extends Controller
                     $btn2 = '<button onclick="destroy(' . $row->id . ')" type="button" class="btn btn-sm btn-outline-danger mb-2"><i class="fas fa-trash-alt me-2"></i>Delete</button>';
                     return $btn1.$btn2;
                 })
-                ->rawColumns(['sl', 'product_id', 'item_code', 'color_family', 'variant_type', 'action'])
+                ->rawColumns(['sl', 'product_id', 'color_family', 'variant_type', 'action'])
                 ->make(true);
         }
 
@@ -66,6 +59,9 @@ class VariantOptionsController extends Controller
 
     public function store(ProductVariantsStoreRequest $request)
     {
+
+        // Check duplicate data from the requested data
+        $dupCheckData = VariantOption::where('product_id', $request->product_id)->where('color_family', $request->color_family)->where('variant_type', $request->variant_type)->where('variant_value', $request->variant_value)->first();
         // Check if we should update existing stock
         if (
             $request->color_family !== null &&
@@ -87,7 +83,9 @@ class VariantOptionsController extends Controller
         
                 return response()->json('updated');
             }
-        } else {
+        }else if ($dupCheckData) {
+            return response()->json('duplicated');
+        }else {
             // Otherwise, create a new variant option
             $data = new VariantOption();
             $data->product_id = $request->product_id;
