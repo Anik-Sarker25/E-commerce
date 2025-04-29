@@ -216,7 +216,7 @@
                                             <div class="variant d-flex" id="variant-{{ $variantIndex }}">
                                                 <strong class="me-3">{{ $variantIndex + 1 }}</strong>
                                                 <input type="hidden" class="up_variant-{{ $variantIndex }}" value="{{ $variant->id }}">
-                                                <div class="row mb-2">
+                                                <div class="row w-100 mb-2">
                                                     <div class="col-xl-3">
                                                         <label class="form-label">Color Name</label>
                                                         <input type="text" class="form-control form-control-sm cname-{{ $variantIndex }}" name="variants[{{ $variantIndex }}][color_name]" value="{{ $variant->color_name }}">
@@ -236,10 +236,6 @@
                                                                 <i class="fas fa-trash"></i>
                                                             </button>
                                                         </div>
-                                                    </div>
-                                                    <div class="col-xl-2">
-                                                        <label class="form-label">Buy Price</label>
-                                                        <input type="number" class="form-control form-control-sm vbp-{{ $variantIndex }}" name="variants[{{ $variantIndex }}][buy_price]" value="{{ $variant->buy_price }}" oninput="updateVSellPrice({{ $variantIndex }})">
                                                     </div>
                                                     <div class="col-xl-2">
                                                         <div class="d-flex flex-column justify-content-end" style="height: 100%;">
@@ -458,23 +454,23 @@
 
         setTimeout(() => {
             $("#category_id").val('{{ $data->category_id ?? '' }}').trigger('change');
-        }, 500);
-
-        setTimeout(() => {
-            $("#subcategory_id").val('{{ $data->subcategory_id ?? '' }}').trigger('change');
         }, 1000);
 
         setTimeout(() => {
-            $("#childcategory_id").val('{{ $data->childcategory_id ?? '' }}').trigger('change');
+            $("#subcategory_id").val('{{ $data->subcategory_id ?? '' }}').trigger('change');
         }, 1500);
 
         setTimeout(() => {
-            $("#brand_id").val('{{ $data->brand_id ?? '' }}').trigger('change');
+            $("#childcategory_id").val('{{ $data->childcategory_id ?? '' }}').trigger('change');
         }, 2000);
 
         setTimeout(() => {
-            $("#delivery_type").val('{{ $data->delivery_type ?? '1' }}').trigger('change');
+            $("#brand_id").val('{{ $data->brand_id ?? '' }}').trigger('change');
         }, 2500);
+
+        setTimeout(() => {
+            $("#delivery_type").val('{{ $data->delivery_type ?? '1' }}').trigger('change');
+        }, 3000);
 
         // Product price Calculations
         $('#buy_price, #mrp_price, #discount_price').on('input', function() {

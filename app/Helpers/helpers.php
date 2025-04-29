@@ -12,6 +12,7 @@ use App\Models\GeneralSettings;
 use App\Models\Invoice;
 use App\Models\Product;
 use App\Models\SocialMedia;
+use App\Models\VariantOption;
 use Illuminate\Support\Facades\Request;
 
 function admin() {
@@ -68,30 +69,6 @@ function getBodyClass()
     }
 }
 
-function colors() {
-    $colors = Product::pluck('color')->toArray(); // Fetch color column values
-    $allColors = [];
-
-    foreach ($colors as $color) {
-        if (!empty($color)) {
-            // Decode JSON-like string if valid, otherwise clean manually
-            if (str_starts_with($color, '[') && str_ends_with($color, ']')) {
-                $decoded = json_decode($color, true);
-                if (is_array($decoded)) {
-                    $allColors = array_merge($allColors, $decoded);
-                }
-            } else {
-                // Remove brackets and quotes manually
-                $cleanColor = trim($color, '[]"');
-                $allColors = array_merge($allColors, explode(',', $cleanColor));
-            }
-        }
-    }
-
-    // Trim whitespace, remove empty values, and return unique colors
-    return array_unique(array_filter(array_map('trim', $allColors)));
-}
-
 function maskEmail($email) {
     $emailParts = explode('@', $email);
     $namePart = $emailParts[0];
@@ -117,6 +94,10 @@ function adminFormatedInvoiceId($invoiceId) {
 function customerFormatedInvoiceId($invoiceId) {
     $invoice = Invoice::where('id', $invoiceId)->first();
     return "#" . str_pad($invoice->id, 6, '0', STR_PAD_LEFT);
+}
+
+function availableStock($productId) {
+    return VariantOption::where('product_id', $productId)->sum('stock');
 }
 
 

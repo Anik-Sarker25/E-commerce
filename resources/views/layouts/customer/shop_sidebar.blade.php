@@ -77,7 +77,7 @@
                                 <div class="filter-options-title">Colors</div>
                                 <div class="filter-options-content">
                                     <ol class="items">
-                                        @foreach (colors() as $color)
+                                        @foreach ($colors as $color)
                                             <li class="item ">
                                                 <label>
                                                     <input class="color_check" id="{{ $color }}" type="checkbox">

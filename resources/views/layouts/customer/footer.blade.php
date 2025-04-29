@@ -141,18 +141,29 @@
                         <ul class="links">
                             <li><strong class="title">{{ $subcategory->name }}:</strong></li>
 
+                            @php
+                                $hasKeywords = false;
+                            @endphp
+                            
                             @foreach ($subcategory->products as $product)
-                                @if ($product->keywords)
+                                @if (!empty($product->keywords) && $product->childcategory)
                                     @php
+                                        $hasKeywords = true;
                                         $keywords = explode(',', $product->keywords);
                                     @endphp
                                     @foreach ($keywords as $keyword)
-                                        <li><a href="{{ route('childcategory.show', $product->childcategory->slug) }}?childcat_id={{ $product->childcategory_id }}">{{ $keyword }}</a></li>
+                                        <li>
+                                            <a href="{{ route('childcategory.show', $product->childcategory->slug) }}?childcat_id={{ $product->childcategory_id }}">
+                                                {{ $keyword }}
+                                            </a>
+                                        </li>
                                     @endforeach
-                                @else
-                                    <p style="color: red; text-align-center;">keywords not found!</p>
                                 @endif
                             @endforeach
+                            
+                            @if (!$hasKeywords)
+                                <p style="color: red; text-align: center;">keywords not found!</p>
+                            @endif
                         </ul>
                     @endif
                 @endforeach

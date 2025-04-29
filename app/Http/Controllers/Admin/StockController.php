@@ -33,8 +33,8 @@ class StockController extends Controller
                     }
                 })
                 ->addColumn('stock_quantity', function ($row) {
-                    if ($row->stock_quantity) {
-                        return $row->stock_quantity;
+                    if ($row->variantOptions && $row->variantOptions->count()) {
+                        return $row->variantOptions->sum('stock');
                     } else {
                         return '0';
                     }

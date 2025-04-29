@@ -400,7 +400,7 @@
 
         let product_id = $('#product_id').val();
         let color_family = $('#color_family').val();
-        let variant_type = $('#variant_type').val() ?? null;
+        let variant_type = $('#variant_type').val();
         let variant_value = $('#variant_value').val();
         let buy_price = $('#buy_price').val();
         let mrp_price = $('#mrp_price').val();
@@ -467,7 +467,7 @@
             url: url,
             success: function(data) {
 
-                $('#variantsFormBox').collapse('toggle');
+                $('#variantsFormBox').addClass('show');
                 $('#update_id').val(data.id);
                 $('#product_id').val(data.product_id).trigger('change');
                 setTimeout(() => {

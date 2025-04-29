@@ -11,6 +11,7 @@ use App\Models\ChildCategory;
 use App\Models\Partnership;
 use App\Models\PaymentMethod;
 use App\Models\Product;
+use App\Models\ProductVariants;
 use App\Models\SubCategory;
 use Illuminate\Http\Request;
 
@@ -42,13 +43,15 @@ class ShopController extends Controller
             $colors = $request->filterColor;
 
             if (!empty($colors) && is_array($colors)) {
-                $products = Product::where(function ($query) use ($colors) {
-                    foreach ($colors as $color) {
-                        $query->orWhereJsonContains('color', $color);
-                    }
-                })->where('category_id', $category_id)
-                  ->orderBy('id', 'DESC')
-                  ->get();
+                
+                $productIds = ProductVariants::whereIn('color_name', $colors)
+                ->pluck('product_id')->unique();
+    
+                // Get products with matching IDs and category
+                $products = Product::whereIn('id', $productIds)
+                            ->where('category_id', $category_id)
+                            ->orderBy('id', 'DESC')
+                            ->get();
                 return response()->json($products);
             }
         }
@@ -59,25 +62,27 @@ class ShopController extends Controller
             $min = $request->min;
 
             if (!empty($colors) && is_array($colors)) {
-                $products = Product::where(function ($query) use ($colors) {
-                    foreach ($colors as $color) {
-                        $query->orWhereJsonContains('color', $color);
-                    }
-                })->where('category_id', $category_id)
-                  ->where('sell_price', '<=', $max)
-                  ->where('sell_price', '>=', $min)
-                  ->orderBy('id', 'DESC')
-                  ->get();
+                $productIds = ProductVariants::whereIn('color_name', $colors)
+                ->pluck('product_id')->unique();
+    
+                // Get products with matching IDs and category
+                $products = Product::whereIn('id', $productIds)
+                            ->where('category_id', $category_id)
+                            ->where('sell_price', '<=', $max)
+                            ->where('sell_price', '>=', $min)
+                            ->orderBy('id', 'DESC')
+                            ->get();
                 return response()->json($products);
             }
         }
         if (request()->has('filterColor') && empty($request->category_id) && empty($request->max) && empty($request->filterBrand_id)) {
             $colors = $request->filterColor;
-            $products = Product::where(function ($query) use ($colors) {
-                foreach ($colors as $color) {
-                    $query->orWhereJsonContains('color', $color);
-                }
-            })->get();
+            
+            $productIds = ProductVariants::whereIn('color_name', $colors)
+            ->pluck('product_id')->unique();
+
+            // Get products with matching IDs and category
+            $products = Product::whereIn('id', $productIds)->get();
             return response()->json($products);
         }
         if (request()->has('filterBrand_id') && request()->has('category_id') && empty($request->max) && empty($request->min)) {
@@ -158,6 +163,19 @@ class ShopController extends Controller
             $products = Product::orderBy('id', 'DESC')->get();
         }
 
+        $allProducts = Product::all();
+        $colors = collect();
+        
+        foreach ($allProducts as $product) {
+            foreach ($product->variants as $variant) {
+                if ($variant->color_name) { // make sure color_name exists
+                    $colors->push($variant->color_name);
+                }
+            }
+        }
+        
+        $colors = $colors->unique()->values();
+
         $categories           = Category::with('subcategories.products')->get();
         $paymentMethods       = PaymentMethod::orderBy('id', 'DESC')->get();
         $brands               = Brand::orderBy('id', 'ASC')->get();
@@ -189,6 +207,7 @@ class ShopController extends Controller
             'brands'               => $brands,
             'partnerships'         => $partnerships,
             'breadcrumbs'          => $breadcrumbs,
+            'colors'               => $colors,
         ]);
     }
 
@@ -197,8 +216,21 @@ class ShopController extends Controller
         if ($catId) {
             $products         = Product::where('category_id', $catId)->orderBy('id', 'DESC')->get();
         } else {
-            $products         = '';
+            $products         = collect();
         }
+        
+        $allProducts = Product::all();
+        $colors = collect();
+        
+        foreach ($allProducts as $product) {
+            foreach ($product->variants as $variant) {
+                if ($variant->color_name) { // make sure color_name exists
+                    $colors->push($variant->color_name);
+                }
+            }
+        }
+        $colors = $colors->unique()->values();
+
         $categories       = Category::with('subcategories.products')->get();
         $paymentMethods   = PaymentMethod::orderBy('id', 'DESC')->get();
         $brands           = Brand::orderBy('id', 'ASC')->get();
@@ -218,17 +250,34 @@ class ShopController extends Controller
             'paymentMethods'       => $paymentMethods,
             'brands'               => $brands,
             'partnerships'         => $partnerships,
-            'breadcrumbs'         => $breadcrumbs,
+            'breadcrumbs'          => $breadcrumbs,
+            'colors'               => $colors,
         ]);
     }
 
     public function subcategoryShow(Request $request, $slug) {
         $subcatId = $request->query('subcat_id');
         if ($subcatId) {
-            $products         = Product::where('subcategory_id', $subcatId)->orderBy('id', 'DESC')->get();
+            $products = Product::where('subcategory_id', $subcatId)->with('variants')->orderBy('id', 'DESC')->get();
         } else {
-            $products         = '';
+            $products = collect(); // make it an empty collection instead of ''
         }
+        
+        $allProducts = Product::all();
+        $colors = collect();
+        
+        foreach ($allProducts as $product) {
+            foreach ($product->variants as $variant) {
+                if ($variant->color_name) { // make sure color_name exists
+                    $colors->push($variant->color_name);
+                }
+            }
+        }
+        
+        $colors = $colors->unique()->values();
+        
+
+
         $categories       = Category::with('subcategories.products')->get();
         $paymentMethods   = PaymentMethod::orderBy('id', 'DESC')->get();
         $brands           = Brand::orderBy('id', 'ASC')->get();
@@ -250,6 +299,7 @@ class ShopController extends Controller
             'brands'               => $brands,
             'partnerships'         => $partnerships,
             'breadcrumbs'          => $breadcrumbs,
+            'colors'               => $colors,
         ]);
     }
 
@@ -257,10 +307,23 @@ class ShopController extends Controller
         $childcatId = $request->query('childcat_id');
         if ($childcatId) {
             $products         = Product::where('childcategory_id', $childcatId)->orderBy('id', 'DESC')->get();
+        }else {
+            $products         = collect();
         }
-        else {
-            $products         = '';
+        
+        $allProducts = Product::all();
+        $colors = collect();
+        
+        foreach ($allProducts as $product) {
+            foreach ($product->variants as $variant) {
+                if ($variant->color_name) { // make sure color_name exists
+                    $colors->push($variant->color_name);
+                }
+            }
         }
+        
+        $colors = $colors->unique()->values();
+
         $categories       = Category::with('subcategories.products')->get();
         $paymentMethods   = PaymentMethod::orderBy('id', 'DESC')->get();
         $brands           = Brand::orderBy('id', 'ASC')->get();
@@ -284,6 +347,7 @@ class ShopController extends Controller
             'brands'               => $brands,
             'partnerships'         => $partnerships,
             'breadcrumbs'          => $breadcrumbs,
+            'colors'               => $colors,
         ]);
     }
 
@@ -293,7 +357,7 @@ class ShopController extends Controller
         if ($product_id) {
             $product          = Product::with('featuredImages')->where('id', $product_id)->first();
         } else {
-            $product          = '';
+            $product          = collect();
         }
 
 

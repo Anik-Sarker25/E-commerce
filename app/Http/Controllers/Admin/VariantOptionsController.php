@@ -90,7 +90,7 @@ class VariantOptionsController extends Controller
             $data = new VariantOption();
             $data->product_id = $request->product_id;
             $data->color_family = $request->color_family;
-            $data->variant_type = $request->variant_type;
+            $data->variant_type = $request->variant_type ?? null;
             $data->variant_value = $request->variant_value;
             $data->buy_price = $request->buy_price;
             $data->mrp_price = $request->mrp_price;

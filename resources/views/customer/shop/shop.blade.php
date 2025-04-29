@@ -46,7 +46,7 @@
                                                     <a href="" class="btn btn-quickview"><span>quickview</span></a>
                                                 </div>
 
-                                                @if ($product->stock_quantity > 0)
+                                                @if (availableStock($product->id) > 0)
                                                     <button type="button" class="btn btn-cart" onclick="addCart({{ $product->id }}, 1)"><span>Add to Cart</span></button>
                                                 @else
                                                     <button type="button" class="btn btn-cart btn-disabled"><span>Out of Stock</span></button>
@@ -223,13 +223,14 @@
         // Get the selected checkbox ID
         let category_id = $('.items .category_check:checked').attr('id');
         let brand_id = $('.items .brand_check:checked').attr('id');
-        let colors = [];
-        $('.items .color_check:checked').each(function () {
-            colors.push($(this).attr('id'));
-        });
         let warrenties = [];
         $('.items .warranty_check:checked').each(function () {
             warrenties.push($(this).attr('id'));
+        });
+
+        let colors = [];
+        $('.items .color_check:checked').each(function () {
+            colors.push($(this).attr('id'));
         });
 
 
