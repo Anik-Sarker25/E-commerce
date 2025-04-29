@@ -247,7 +247,8 @@
                                                         <a class="btn btn-quickview" href=""><span>quickview</span></a>
                                                     </div>
 
-                                                    @if ($product->stock_quantity > 0)
+                                                    
+                                                    @if (availableStock($product->id) > 0)
                                                         <button type="button" onclick="addCart({{ $product->id }}, 1)" class="btn btn-cart add-to-cart"><span>Add to Cart</span></button>
                                                     @else
                                                         <button type="button" class="btn btn-cart btn-disabled"><span>Out of Stock</span></button>
@@ -313,7 +314,8 @@
                                                             <a class="btn btn-quickview" href=""><span>quickview</span></a>
                                                         </div>
 
-                                                        @if ($product->stock_quantity > 0)
+                                                        
+                                                        @if (availableStock($product->id) > 0)
                                                             <button type="button"  onclick="addCart({{ $product->id }}, 1)" class="btn btn-cart add-to-cart"><span>Add to Cart</span></button>
                                                         @else
                                                             <button type="button" class="btn btn-cart btn-disabled"><span>Out of Stock</span></button>
@@ -377,7 +379,8 @@
                                                         <a class="btn btn-quickview" href=""><span>quickview</span></a>
                                                     </div>
 
-                                                    @if ($product->stock_quantity > 0)
+                                                    
+                                                    @if (availableStock($product->id) > 0)
                                                         <button type="button"  onclick="addCart({{ $product->id }}, 1)" class="btn btn-cart add-to-cart"><span>Add to Cart</span></button>
                                                     @else
                                                         <button type="button" class="btn btn-cart btn-disabled"><span>Out of Stock</span></button>
@@ -458,7 +461,8 @@
                                                             <a class="btn btn-quickview" href=""><span>quickview</span></a>
                                                         </div>
 
-                                                        @if ($product->stock_quantity > 0)
+                                                        
+                                                        @if (availableStock($product->id) > 0)
                                                             <button type="button"  onclick="addCart({{ $product->id }}, 1)" class="btn btn-cart add-to-cart"><span>Add to Cart</span></button>
                                                         @else
                                                             <button type="button" class="btn btn-cart btn-disabled"><span>Out of Stock</span></button>
@@ -507,7 +511,8 @@
                                                             <a class="btn btn-quickview" href=""><span>quickview</span></a>
                                                         </div>
 
-                                                        @if ($product->stock_quantity > 0)
+                                                        
+                                                        @if (availableStock($product->id) > 0)
                                                             <button type="button"  onclick="addCart({{ $product->id }}, 1)" class="btn btn-cart add-to-cart"><span>Add to Cart</span></button>
                                                         @else
                                                             <button type="button" class="btn btn-cart btn-disabled"><span>Out of Stock</span></button>
@@ -665,7 +670,7 @@
                                                                     <a class="btn btn-quickview" href=""><span>quickview</span></a>
                                                                 </div>
 
-                                                                @if ($product->stock_quantity > 0)
+                                                                @if (availableStock($product->id) > 0)
                                                                     <button type="button"  onclick="addCart({{ $product->id }}, 1)" class="btn btn-cart add-to-cart"><span>Add to Cart</span></button>
                                                                 @else
                                                                     <button type="button" class="btn btn-cart btn-disabled"><span>Out of Stock</span></button>

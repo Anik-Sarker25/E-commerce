@@ -41,7 +41,7 @@ class CartController extends Controller
                 }
             }
             // Check if the requested quantity is greater than available stock
-            if (($cartItem->quantity + ($request->quantity ?? 1)) > $product->stock_quantity) {
+            if (($cartItem->quantity + ($request->quantity ?? 1)) > availableStock($request->product_id)) {
                 return response()->json('stockout');
             }
             // Update quantity if it exists

@@ -210,22 +210,6 @@
                                         </div>
                                     @endif
                                 </div>
-                                @if ($product->condition)
-                                    <div class="product-condition">
-                                        @if ($product->condition == App\Helpers\Constant::CONDITIONS['new'])
-                                                Condition: New
-                                        @elseif ($product->condition == App\Helpers\Constant::CONDITIONS['used'])
-                                                Condition: Used
-                                        @elseif ($product->condition == App\Helpers\Constant::CONDITIONS['refurbished'])
-                                                Condition: Refurbished
-                                        @endif
-                                    </div>
-                                @endif
-                                <div class="product-overview">
-                                    <div class="overview-content">
-                                        {{ $product->short_description }}
-                                    </div>
-                                </div>
 
                                 <div class="product-add-form">
                                     <p>Available Options:</p>
@@ -276,13 +260,11 @@
                                             @endif
                                         </div>
 
-
-
                                         <div class="product-options-bottom clearfix">
 
                                             <div class="actions">
 
-                                                <button type="submit" title="Buy Now" class="action btn-buy">
+                                                <button type="button" title="Buy Now" class="action btn-buy">
                                                     <span>Buy Now</span>
                                                 </button>
 
