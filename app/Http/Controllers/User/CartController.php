@@ -29,7 +29,9 @@ class CartController extends Controller
             ->first();
 
         if ($cartItem) {
-            if ($request->quantity == -1) {
+            $quantity = (int) $request->quantity;
+
+            if ($quantity === -1) {
                 // Check if quantity is greater than 1 to decrement
                 if ($cartItem->quantity > 1) {
                     $cartItem->quantity -= 1;
@@ -45,19 +47,25 @@ class CartController extends Controller
                 return response()->json('stockout');
             }
             // Update quantity if it exists
-            $cartItem->quantity += $request->quantity ?? 1;
+            $increment = $request->has('quantity') ? (int)$request->quantity : 1;
+            $cartItem->quantity += $increment;
+            $cartItem->size = $request->size ?? $cartItem->size;
+            $cartItem->color = $request->color ?? $cartItem->color;
             $cartItem->total_price = $cartItem->quantity * $cartItem->price;
             $cartItem->save();
             return response()->json('increased');
         } else {
             // Create a new cart item
+            $quantity = $request->has('quantity') ? (int)$request->quantity : 1;
             Cart::create([
                 'user_id' => Auth::id(),
                 'session_id' => Auth::check() ? null : session()->getId(),
-                'product_id' => $product->id,
-                'quantity' => $request->quantity ?? 1,
-                'price' => $product->sell_price,
-                'total_price' => ($request->quantity ?? 1) * $product->sell_price,
+                'product_id' => $request->product_id,
+                'quantity' => $quantity,
+                'size' => $request->size,
+                'color' => $request->color,
+                'price' => $request->sell_price,
+                'total_price' => ($request->quantity ?? 1) * $request->sell_price,
             ]);
             return response()->json('success');
         }

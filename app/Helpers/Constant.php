@@ -97,13 +97,6 @@ class Constant {
         'can' => 8,
         'gallon' => 9,
     ];
-    const SIZES = [
-        's' => 1,
-        'm' => 2,
-        'l' => 3,
-        'xl' => 4,
-        'xxl' => 5,
-    ];
     const COLORS = [
         'black' => 'black',
         'white' => 'white',

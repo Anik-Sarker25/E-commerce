@@ -126,14 +126,22 @@
     }
 
     function cartStore(product_id, quantity) {
-        let qty = $('#quantity').val() ?? quantity;
+        let qty = (typeof quantity !== 'undefined') ? quantity : parseInt($('#quantity').val());
+        let sell_price = $('.sell_price').attr('id');
         let url = "{{ route('cart.store') }}";
+
+        let color = $('.swatch-option.color.active').attr('id');
+        let size = $('.swatch-option.size.active').attr('id');
+
         $.ajax({
             type: "POST",
             dataType: "json",
             data: {
                 product_id: product_id,
                 quantity: qty,
+                sell_price: sell_price,
+                color: color,
+                size: size
             },
             url: url,
             success: function(data) {

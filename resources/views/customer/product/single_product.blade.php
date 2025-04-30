@@ -2,7 +2,7 @@
 @push('css')
 <style>
     .swatch-option.active {
-        outline: #f36 solid 3px;
+        outline: #f36 solid 2px;
     }
 
     .form-qty input[type="number"]::-webkit-inner-spin-button,
@@ -103,6 +103,12 @@
         margin-right: 5px;
         text-align: center;
     }
+    .swatch-option.size {
+        width: 30px !important;
+        height: 25px !important;
+        text-align: center !important;
+        padding-top: 2px !important;
+    }
 
 </style>
 
@@ -191,7 +197,7 @@
 
                                 <div class="product-info-price">
                                     <div class="price-box">
-                                        <span class="price">{{ country()->symbol.$product->sell_price }}</span>
+                                        <span class="price sell_price" id="{{ $product->sell_price }}">{{ country()->symbol.$product->sell_price }}</span>
                                         <span class="old-price">{{ country()->symbol.$product->mrp_price }}</span>
                                         <span class="label-sale">-{{ $product->discount_price }}%</span>
                                     </div>
@@ -200,7 +206,7 @@
                                     Item Code: #{{ $product->item_code }}
                                 </div>
                                 <div class="product-info-stock">
-                                    @if ($product->stock_quantity > 0)
+                                    @if (availableStock($product->id) > 0)
                                         <div class="stock available">
                                             <span class="label">Availability: </span>In stock
                                         </div>
@@ -217,19 +223,49 @@
 
                                         <div class="product-options-wrapper">
                                             <div class="swatch-opt">
-                                                <div class="swatch-attribute color">
-                                                    <span class="swatch-attribute-label">Color:</span>
+                                                <div class="swatch-attribute color d-flex">
+                                                    <p class="color-label me-2">Color Family:</p>
                                                     <div class="swatch-attribute-options">
+                                                        <p class="selected-label text-capitalize">
+                                                            Not Specified
+                                                        </p>
                                                         @php
-                                                            $colors = json_decode($product->color);
+                                                            $variants = $product->variants;
+                                                            $variantOptions = $product->variantOptions;
                                                         @endphp
                                                         <!-- Swatch buttons -->
-                                                        @foreach ($colors ?? [] as $key => $color)
-                                                            <div class="swatch-option {{ ($key == 0) ? 'active' : '' }}" style="background-color: {{ $color }};" id="{{ $color }}"></div>
+                                                        @foreach ($variants ?? [] as $key => $variant)
+                                                            <div class="swatch-option color {{ ($key == 0) ? 'active' : '' }}" style="background-color: {{ $variant->color_code }};" id="{{ $variant->color_name }}"></div>
                                                         @endforeach
                                                     </div>
                                                 </div>
                                             </div>
+
+                                            @php
+                                                $sizeVariants = $variantOptions->filter(function($variant) {
+                                                    return !is_null($variant->variant_type) && $variant->variant_type === App\Helpers\Constant::VARIANT_TYPES['size'];
+                                                })->values(); // reindex the filtered collection
+                                            @endphp
+
+                                            @if ($sizeVariants->isNotEmpty())
+                                                <div class="swatch-opt">
+                                                    <div class="swatch-attribute size d-flex">
+                                                        <p class="size-label me-2">Size:</p>
+                                                        <div class="swatch-attribute-options">
+                                                            <p class="text-capitalize">
+                                                                EU
+                                                            </p>
+                                                            @foreach ($sizeVariants as $key => $variant)
+                                                                <div class="swatch-option size {{ ($key == 0) ? 'active' : '' }}" id="{{ $variant->variant_value }}">
+                                                                    {{ $variant->variant_value }}
+                                                                </div>
+                                                            @endforeach
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endif
+
+                                        
 
                                             <div class="form-qty">
                                                 <label class="label">Qty: </label>
@@ -237,27 +273,6 @@
                                                     <input type="number" class="form-control input-qty" value='1' id="quantity" name="quantity" min="1">
                                                 </div>
                                             </div>
-                                            @if (json_decode($product->size) !== null)
-                                                <div class="form-configurable">
-
-                                                    <label for="forSize" class="label">Size: </label>
-                                                    <div class="control">
-                                                        @php
-                                                            $sizes = App\Helpers\Constant::SIZES;
-                                                            $dataSize = json_decode($product->size ?? '[]');
-                                                        @endphp
-                                                        <select  id="forSize" class="form-control attribute-select">
-                                                            @foreach ($sizes as $key => $sizeName)
-
-                                                                @if(is_array($dataSize) && in_array($sizeName, $dataSize))
-                                                                    <option value="{{ $sizeName }}">{{ $key }}</option>
-                                                                @endif
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                    <a href="" class="size-chart">Size chart</a>
-                                                </div>
-                                            @endif
                                         </div>
 
                                         <div class="product-options-bottom clearfix">
@@ -361,7 +376,7 @@
                                                         <a class="btn btn-quickview" href=""><span>quickview</span></a>
                                                     </div>
 
-                                                    @if ($product->stock_quantity > 0)
+                                                    @if (availableStock($product->id) > 0)
                                                         <button type="button" class="btn btn-cart"  onclick="addCart({{ $product->id }}, 1)"><span>Add to Cart</span></button>
                                                     @else
                                                         <button type="button" class="btn btn-cart btn-disabled"><span>Out of Stock</span></button>
@@ -418,7 +433,7 @@
                                                         <a class="btn btn-quickview" href=""><span>quickview</span></a>
                                                     </div>
 
-                                                    @if ($product->stock_quantity > 0)
+                                                    @if (availableStock($product->id) > 0)
                                                         <button type="button" class="btn btn-cart"  onclick="addCart({{ $product->id }}, 1)"><span>Add to Cart</span></button>
                                                     @else
                                                         <button type="button" class="btn btn-cart btn-disabled"><span>Out of Stock</span></button>
@@ -558,14 +573,27 @@
 <script>
     // jQuery to handle color selection
     $(document).ready(function () {
-        $('.swatch-option').on('click', function () {
-            // Remove the 'active' class from all options
-            $('.swatch-option').removeClass('active');
+        $('.swatch-option.color').on('click', function () {
+            // Deselect all swatches
+            $('.swatch-option.color').removeClass('active');
 
+            // Activate the selected swatch
             $(this).addClass('active');
 
+            // Get the color name from the ID and display it
+            let color_name = $(this).attr('id');
+            $('.selected-label').text(color_name);
+        });
+
+        $('.swatch-option.size').on('click', function () {
+            // Deselect all swatches
+            $('.swatch-option.size').removeClass('active');
+
+            // Activate the selected swatch
+            $(this).addClass('active');
         });
     });
+
 
 </script>
 
