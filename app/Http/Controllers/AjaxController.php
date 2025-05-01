@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Constant;
 use App\Models\AdvertiseBanner;
 use App\Models\Brand;
 use App\Models\Category;
@@ -11,6 +12,7 @@ use App\Models\DeliveryOption;
 use App\Models\Product;
 use App\Models\ProductVariants;
 use App\Models\SubCategory;
+use App\Models\VariantOption;
 use Devfaysal\BangladeshGeocode\Models\District;
 use Devfaysal\BangladeshGeocode\Models\Division;
 use Devfaysal\BangladeshGeocode\Models\Union;
@@ -61,6 +63,22 @@ class AjaxController extends Controller
     public function getProductsPrice($id) {
         $data = Product::where('id', $id)->first();
         return response()->json($data);
+    }
+    
+    public function getProductsvariantOptions(Request $request)
+    {
+        $product_id = $request->product_id;
+        $color = $request->color;
+
+        $variantOptions = VariantOption::where('product_id', $product_id)
+        ->where('color_family', $color)
+        ->where('variant_type', Constant::VARIANT_TYPES['size'])
+        ->get();
+    
+
+        return response()->json([
+            'options' => $variantOptions
+        ]);
     }
 
     public function getAllSubCategory() {

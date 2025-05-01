@@ -70,6 +70,7 @@ Route::prefix('ajax')->as('ajax.')->group(function () {
     Route::get('/get/products', [AjaxController::class, 'getProducts'])->name('get.products');
     Route::get('/get/colorfamily/{id}', [AjaxController::class, 'getColorFamily'])->name('get.colorFamily');
     Route::get('/get/price/{id}', [AjaxController::class, 'getProductsPrice'])->name('get.product.price');
+    Route::post('/get/product/variant/options', [AjaxController::class, 'getProductsvariantOptions'])->name('get.product.variant.options');
 });
 
 // Show email verification notice

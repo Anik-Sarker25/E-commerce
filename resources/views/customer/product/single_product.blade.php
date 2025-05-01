@@ -104,10 +104,11 @@
         text-align: center;
     }
     .swatch-option.size {
-        width: 30px !important;
+        width: auto !important;
+        display: inline-block !important;
         height: 25px !important;
         text-align: center !important;
-        padding-top: 2px !important;
+        padding: 2px 5px 5px !important;
     }
 
 </style>
@@ -220,6 +221,7 @@
                                 <div class="product-add-form">
                                     <p>Available Options:</p>
                                     <form>
+                                        <input type="hidden" id="product_id" value="{{ $product->id }}">
 
                                         <div class="product-options-wrapper">
                                             <div class="swatch-opt">
@@ -235,37 +237,36 @@
                                                         @endphp
                                                         <!-- Swatch buttons -->
                                                         @foreach ($variants ?? [] as $key => $variant)
-                                                            <div class="swatch-option color {{ ($key == 0) ? 'active' : '' }}" style="background-color: {{ $variant->color_code }};" id="{{ $variant->color_name }}"></div>
+                                                            <div class="swatch-option color {{ ($key == 0) ? 'active' : '' }}" style="background-color: {{ $variant->color_code }};" title="{{ $variant->color_name }}" id="{{ $variant->id }}"></div>
                                                         @endforeach
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            @php
+                                            {{-- @php
                                                 $sizeVariants = $variantOptions->filter(function($variant) {
                                                     return !is_null($variant->variant_type) && $variant->variant_type === App\Helpers\Constant::VARIANT_TYPES['size'];
                                                 })->values(); // reindex the filtered collection
-                                            @endphp
+                                            @endphp --}}
 
-                                            @if ($sizeVariants->isNotEmpty())
-                                                <div class="swatch-opt">
+                                            {{-- Wrapper to be updated via JS --}}
+                                            <div id="size-variant-container">
+                                                {{-- <div class="swatch-opt">
                                                     <div class="swatch-attribute size d-flex">
                                                         <p class="size-label me-2">Size:</p>
                                                         <div class="swatch-attribute-options">
-                                                            <p class="text-capitalize">
-                                                                EU
-                                                            </p>
+                                                            <p class="text-capitalize">EU</p>
+
                                                             @foreach ($sizeVariants as $key => $variant)
-                                                                <div class="swatch-option size {{ ($key == 0) ? 'active' : '' }}" id="{{ $variant->variant_value }}">
+                                                                <div class="swatch-option size {{ ($key == 0) ? 'active' : '' }}"
+                                                                    data-value="{{ $variant->variant_value }}">
                                                                     {{ $variant->variant_value }}
                                                                 </div>
                                                             @endforeach
                                                         </div>
                                                     </div>
-                                                </div>
-                                            @endif
-
-                                        
+                                                </div> --}}
+                                            </div>
 
                                             <div class="form-qty">
                                                 <label class="label">Qty: </label>
@@ -573,17 +574,62 @@
 <script>
     // jQuery to handle color selection
     $(document).ready(function () {
-        $('.swatch-option.color').on('click', function () {
-            // Deselect all swatches
-            $('.swatch-option.color').removeClass('active');
 
-            // Activate the selected swatch
+        $('.swatch-option.color').on('click', function () {
+            let url = "{{ route('ajax.get.product.variant.options') }}";
+            let selectedColor = $(this).attr('id');
+            let selectedColorName = $(this).attr('title');
+            let productId = $('#product_id').val();
+
+            // Highlight active color
+            $('.swatch-option.color').removeClass('active');
             $(this).addClass('active');
 
-            // Get the color name from the ID and display it
-            let color_name = $(this).attr('id');
-            $('.selected-label').text(color_name);
+            $('.selected-label').text(selectedColorName);
+
+            $.ajax({
+                url: url,
+                method: "POST",
+                data: {
+                    product_id: productId,
+                    color: selectedColor,
+                },
+                success: function (response) {
+                    let html = `
+                    <div class="swatch-opt">
+                        <div class="swatch-attribute size d-flex">
+                            <p class="size-label me-2">Size:</p>
+                            <div class="swatch-attribute-options">
+                                <p class="text-capitalize">EU</p>`;
+
+                        response.options.forEach((option, index) => {
+                            html += `
+                                <div class="swatch-option size ${index === 0 ? 'active' : ''}"
+                                    id="${option.variant_value}">
+                                    ${option.variant_value}
+                                </div>`;
+                        });
+
+
+                    if (response.options.length > 0) {
+                        html += `</div></div></div>`;
+                        $('#size-variant-container').html(html);
+
+                    }else {
+                        html += `
+                                <div class="swatch-option size active"
+                                    id="One Size">
+                                    One Size
+                                </div>`;
+                        html += `</div></div></div>`;
+                        
+                        $('#size-variant-container').html(html);
+                    }
+                    
+                }
+            });
         });
+
 
         $('.swatch-option.size').on('click', function () {
             // Deselect all swatches

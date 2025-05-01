@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('variant_options', function (Blueprint $table) {
             $table->id();
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
-            $table->string('color_family')->nullable();
+            $table->foreignId('color_family')->nullable()->constrained('product_variants')->onDelete('set null');
             $table->string('variant_type')->nullable();
             $table->string('variant_value')->nullable(); // e.g. '64GB', '12 Months', 'Large'
             $table->decimal('buy_price', 10, 0)->nullable()->default(0);
