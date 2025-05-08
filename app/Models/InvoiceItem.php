@@ -12,6 +12,9 @@ class InvoiceItem extends Model
     protected $fillable = [
         'invoice_id',
         'product_id',
+        'color_id',
+        'size_id',
+        'instalment_id',
         'product_name',
         'price',
         'total_price',
@@ -24,6 +27,15 @@ class InvoiceItem extends Model
 
     public function invoices() {
         return $this->belongsTo(Invoice::class, 'invoice_id');
+    }
+
+    public function color()
+    {
+        return $this->belongsTo(ProductVariants::class, 'color_id');
+    }
+    public function size()
+    {
+        return $this->belongsTo(VariantOption::class, 'size_id');
     }
 
 }

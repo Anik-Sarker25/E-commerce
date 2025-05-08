@@ -17,8 +17,9 @@ return new class extends Migration
             $table->foreignId('product_id')->nullable()->constrained('products')->onDelete('cascade');
             $table->string('session_id')->nullable(); // For guest users
             $table->integer('quantity')->default(1);
-            $table->string('size')->nullable();
-            $table->string('color')->nullable();
+            $table->string('size_id')->nullable();
+            $table->string('color_id')->nullable();
+            $table->string('instalment_id')->nullable();
             $table->decimal('price', 10, 2);
             $table->decimal('total_price', 12, 2)->nullable();
             $table->timestamps();

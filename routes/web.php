@@ -38,6 +38,8 @@ Route::prefix('cart')->as('cart.')->group(function () {
     Route::get('/', [CartController::class, 'getCartItems'])->name('index');
     Route::get('/auth/check', [CartController::class, 'authCheck'])->name('auth.check');
     Route::post('/store', [CartController::class, 'addToCart'])->name('store');
+    Route::post('/increment/{id}', [CartController::class, 'increment'])->name('increment');
+    Route::post('/decrement/{id}', [CartController::class, 'decrement'])->name('decrement');
     Route::delete('/remove/{id}', [CartController::class, 'removeItem'])->name('remove');
 });
 
@@ -71,6 +73,7 @@ Route::prefix('ajax')->as('ajax.')->group(function () {
     Route::get('/get/colorfamily/{id}', [AjaxController::class, 'getColorFamily'])->name('get.colorFamily');
     Route::get('/get/price/{id}', [AjaxController::class, 'getProductsPrice'])->name('get.product.price');
     Route::post('/get/product/variant/options', [AjaxController::class, 'getProductsvariantOptions'])->name('get.product.variant.options');
+    Route::get('/get/product/variant/options/data/{id}', [AjaxController::class, 'getProductsvariantOptionsData'])->name('get.product.variant.options.data');
 });
 
 // Show email verification notice

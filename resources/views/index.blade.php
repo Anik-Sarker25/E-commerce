@@ -248,11 +248,11 @@
                                                     </div>
 
                                                     
-                                                    @if (availableStock($product->id) > 0)
+                                                    {{-- @if (availableStock($product->id) > 0)
                                                         <button type="button" onclick="addCart({{ $product->id }}, 1)" class="btn btn-cart add-to-cart"><span>Add to Cart</span></button>
                                                     @else
                                                         <button type="button" class="btn btn-cart btn-disabled"><span>Out of Stock</span></button>
-                                                    @endif
+                                                    @endif --}}
 
                                                     @if ($product->discount_price > 0)
                                                         <span class="product-item-label label-price">{{ $product->discount_price }}% <span>off</span></span>
@@ -315,11 +315,11 @@
                                                         </div>
 
                                                         
-                                                        @if (availableStock($product->id) > 0)
+                                                        {{-- @if (availableStock($product->id) > 0)
                                                             <button type="button"  onclick="addCart({{ $product->id }}, 1)" class="btn btn-cart add-to-cart"><span>Add to Cart</span></button>
                                                         @else
                                                             <button type="button" class="btn btn-cart btn-disabled"><span>Out of Stock</span></button>
-                                                        @endif
+                                                        @endif --}}
 
                                                         <span class="product-item-label label-price">{{ $product->discount_price ?? '' }}% <span>off</span></span>
                                                     </div>
@@ -380,11 +380,11 @@
                                                     </div>
 
                                                     
-                                                    @if (availableStock($product->id) > 0)
+                                                    {{-- @if (availableStock($product->id) > 0)
                                                         <button type="button"  onclick="addCart({{ $product->id }}, 1)" class="btn btn-cart add-to-cart"><span>Add to Cart</span></button>
                                                     @else
                                                         <button type="button" class="btn btn-cart btn-disabled"><span>Out of Stock</span></button>
-                                                    @endif
+                                                    @endif --}}
 
                                                     <span class="product-item-label label-price">{{ $product->discount_price ?? '' }}% <span>off</span></span>
                                                 </div>
@@ -462,11 +462,11 @@
                                                         </div>
 
                                                         
-                                                        @if (availableStock($product->id) > 0)
+                                                        {{-- @if (availableStock($product->id) > 0)
                                                             <button type="button"  onclick="addCart({{ $product->id }}, 1)" class="btn btn-cart add-to-cart"><span>Add to Cart</span></button>
                                                         @else
                                                             <button type="button" class="btn btn-cart btn-disabled"><span>Out of Stock</span></button>
-                                                        @endif
+                                                        @endif --}}
 
                                                         <span class="product-item-label label-price">{{ $product->discount_price ?? '' }}% <span>off</span></span>
                                                     </div>
@@ -512,11 +512,11 @@
                                                         </div>
 
                                                         
-                                                        @if (availableStock($product->id) > 0)
+                                                        {{-- @if (availableStock($product->id) > 0)
                                                             <button type="button"  onclick="addCart({{ $product->id }}, 1)" class="btn btn-cart add-to-cart"><span>Add to Cart</span></button>
                                                         @else
                                                             <button type="button" class="btn btn-cart btn-disabled"><span>Out of Stock</span></button>
-                                                        @endif
+                                                        @endif --}}
 
                                                         <span class="product-item-label label-price">{{ $product->discount_price ?? '' }}% <span>off</span></span>
                                                     </div>
@@ -670,11 +670,11 @@
                                                                     <a class="btn btn-quickview" href=""><span>quickview</span></a>
                                                                 </div>
 
-                                                                @if (availableStock($product->id) > 0)
+                                                                {{-- @if (availableStock($product->id) > 0)
                                                                     <button type="button"  onclick="addCart({{ $product->id }}, 1)" class="btn btn-cart add-to-cart"><span>Add to Cart</span></button>
                                                                 @else
                                                                     <button type="button" class="btn btn-cart btn-disabled"><span>Out of Stock</span></button>
-                                                                @endif
+                                                                @endif --}}
                                                             </div>
                                                             <div class="product-item-detail">
                                                                 <strong class="product-item-name"><a href="{{ route('product.show', $product->slug) }}?itemcode={{ $product->item_code }}&pro={{ $product->id }}">{{ $product->name }}</a></strong>
@@ -727,9 +727,13 @@
                                                                         <a class="btn btn-compare" href=""><span>compare</span></a>
                                                                         <a class="btn btn-quickview" href=""><span>quickview</span></a>
                                                                     </div>
-                                                                    <button type="button" class="btn btn-cart" onclick="addCart({{ $product->id }}, 1)">
-                                                                        <span>Add to Cart</span>
-                                                                    </button>
+
+                                                                    {{-- @if (availableStock($product->id) > 0)
+                                                                        <button type="button" onclick="addCart({{ $product->id }}, 1)" class="btn btn-cart add-to-cart"><span>Add to Cart</span></button>
+                                                                    @else
+                                                                        <button type="button" class="btn btn-cart btn-disabled"><span>Out of Stock</span></button>
+                                                                    @endif --}}
+
                                                                 </div>
                                                                 <div class="product-item-detail">
                                                                     <strong class="product-item-name"><a href="{{ route('product.show', $product->slug) }}?itemcode={{ $product->item_code }}&pro={{ $product->id }}">{{ $product->name }}</a></strong>

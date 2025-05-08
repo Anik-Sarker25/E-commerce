@@ -46,11 +46,11 @@
                                                     <a href="" class="btn btn-quickview"><span>quickview</span></a>
                                                 </div>
 
-                                                @if (availableStock($product->id) > 0)
+                                                {{-- @if (availableStock($product->id) > 0)
                                                     <button type="button" class="btn btn-cart" onclick="addCart({{ $product->id }}, 1)"><span>Add to Cart</span></button>
                                                 @else
                                                     <button type="button" class="btn btn-cart btn-disabled"><span>Out of Stock</span></button>
-                                                @endif
+                                                @endif --}}
 
                                                 @if ($product->discount_price > 0)
                                                     <span class="product-item-label label-price">{{ $product->discount_price }}% <span>off</span></span>

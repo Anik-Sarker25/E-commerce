@@ -25,9 +25,6 @@
     @php
         $units = App\Helpers\Constant::UNIT;
         $activeStatus = App\Helpers\Constant::STATUS;
-        $sizes = App\Helpers\Constant::SIZES;
-        $colors = App\Helpers\Constant::COLORS;
-        $conditions = App\Helpers\Constant::CONDITIONS;
         $product_type = App\Helpers\Constant::PRODUCT_TYPE;
         $returns = App\Helpers\Constant::PRODUCT_RETURNS;
         $warranties = App\Helpers\Constant::PRODUCT_WARRANTY;

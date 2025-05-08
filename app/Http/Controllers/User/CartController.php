@@ -15,62 +15,88 @@ class CartController extends Controller
 {
     public function addToCart(Request $request)
     {
-        $product = Product::findOrFail($request->product_id);
-
-        // Check if the cart item already exists
-        $cartItem = Cart::where(function ($query) {
-                if (Auth::check()) {
-                    $query->where('user_id', Auth::id());
-                } else {
-                    $query->where('session_id', session()->getId());
-                }
-            })
-            ->where('product_id', $request->product_id)
-            ->first();
-
-        if ($cartItem) {
-            $quantity = (int) $request->quantity;
-
-            if ($quantity === -1) {
-                // Check if quantity is greater than 1 to decrement
-                if ($cartItem->quantity > 1) {
-                    $cartItem->quantity -= 1;
-                    $cartItem->total_price = $cartItem->quantity * $cartItem->price;
-                    $cartItem->save();
-                    return response()->json('decreased');
-                } else {
-                    return response()->json('min_quantity');
-                }
+        // Determine user or session
+        $userCondition = function ($query) {
+            if (Auth::check()) {
+                $query->where('user_id', Auth::id());
+            } else {
+                $query->where('session_id', session()->getId());
             }
-            // Check if the requested quantity is greater than available stock
-            if (($cartItem->quantity + ($request->quantity ?? 1)) > availableStock($request->product_id)) {
+        };
+    
+        // Check if the same product with same color & size already exists
+        $cartItem = Cart::where($userCondition)
+            ->where('product_id', $request->product_id)
+            ->where('size_id', $request->size)
+            ->where('color_id', $request->color)
+            ->first();
+    
+        $quantity = (int) ($request->quantity ?? 1);
+        $sellPrice = (float) $request->sell_price;
+        $totalPrice = $quantity * $sellPrice;
+    
+        if ($cartItem) {
+            // Check stock limit
+            if (($cartItem->quantity + $quantity) > availableStock($request->product_id)) {
                 return response()->json('stockout');
             }
-            // Update quantity if it exists
-            $increment = $request->has('quantity') ? (int)$request->quantity : 1;
-            $cartItem->quantity += $increment;
-            $cartItem->size = $request->size ?? $cartItem->size;
-            $cartItem->color = $request->color ?? $cartItem->color;
+    
+            // Update quantity and total
+            $cartItem->quantity += $quantity;
             $cartItem->total_price = $cartItem->quantity * $cartItem->price;
             $cartItem->save();
+    
             return response()->json('increased');
         } else {
-            // Create a new cart item
-            $quantity = $request->has('quantity') ? (int)$request->quantity : 1;
+            // Create new cart item
             Cart::create([
                 'user_id' => Auth::id(),
                 'session_id' => Auth::check() ? null : session()->getId(),
                 'product_id' => $request->product_id,
                 'quantity' => $quantity,
-                'size' => $request->size,
-                'color' => $request->color,
-                'price' => $request->sell_price,
-                'total_price' => ($request->quantity ?? 1) * $request->sell_price,
+                'size_id' => $request->size,
+                'color_id' => $request->color,
+                'price' => $sellPrice,
+                'total_price' => $totalPrice,
             ]);
+    
             return response()->json('success');
         }
-
+    
         return response()->json('error');
+    }
+    
+    public function increment($id) {
+        $cartItem = Cart::findOrFail($id);
+    
+        // Check if increment is allowed within stock
+        if (($cartItem->quantity + 1) <= availableStock($cartItem->product_id)) {
+            $cartItem->quantity += 1;
+            $cartItem->total_price = $cartItem->quantity * $cartItem->price;
+            $cartItem->save();
+            return response()->json('increased');
+        }
+    
+        return response()->json('stockout');
+    }
+
+    public function decrement($id)
+    {
+        $cartItem = Cart::findOrFail($id);
+
+        if ($cartItem->quantity > 1) {
+            $cartItem->quantity -= 1;
+            $cartItem->total_price = $cartItem->quantity * $cartItem->price;
+            $cartItem->save();
+            return response()->json([
+                'status' => 'decreased'
+            ]);
+        } else {
+            $cartItem->delete();
+            return response()->json([
+                'status' => 'removed'
+            ]);
+        }
     }
 
     // Get Cart Items
@@ -157,6 +183,8 @@ class CartController extends Controller
                 'quantity' => $item->quantity,
                 'brand' => $item->product->brand->name ?? '',
                 'product_id' => $item->product_id,
+                'size_id' => $item->size_id,
+                'color_id' => $item->color_id,
             ];
         });
 

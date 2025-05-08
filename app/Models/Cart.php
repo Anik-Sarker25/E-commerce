@@ -14,8 +14,9 @@ class Cart extends Model
         'session_id',
         'product_id',
         'quantity',
-        'size',
-        'color',
+        'size_id',
+        'color_id',
+        'instalment_id',
         'price',
         'total_price',
     ];

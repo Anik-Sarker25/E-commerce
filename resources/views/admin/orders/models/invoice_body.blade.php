@@ -18,7 +18,7 @@
     </div>
     <article>
         <div class="row mb-4">
-            <div class="col-md-6">
+            <div class="col-md-6 col-sm-6">
                 <div class="details">
                     <table>
                         <tr>
@@ -39,7 +39,7 @@
                     </table>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6 col-sm-6">
                 <div class="d-flex align-items-end justify-content-end">
                     <table class="urTable">
                         <tr>
@@ -87,6 +87,13 @@
                             <td>
                                 <img src="{{ asset($item->products->thumbnail) }}" class="rounded" width="24px" alt="image">
                                 {{ $item->product_name }}
+                                @if($item->color)
+                                    <span class="color">(Color: {{ $item->color->color_name  ?? ''}}) </span>
+                                @endif
+                                @if($item->size)
+                                    <span class="size">(Size: {{ $item->size->variant_value  ?? ''}}) </span>
+                                @endif
+
                             </td>
                             <td class="text-center">{{ country()->symbol . $item->price }}</td>
                             <td class="text-center">{{ $item->quantity }}</td>

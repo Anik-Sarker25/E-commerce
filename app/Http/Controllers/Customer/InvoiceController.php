@@ -104,6 +104,8 @@ class InvoiceController extends Controller
                 'invoice_id' => $invoice->id,
                 'product_id' => $item->product_id,
                 'product_name' => $item->product->name,
+                'color_id' => $item->color_id,
+                'size_id' => $item->size_id,
                 'price' => $item->price,
                 'total_price' => $item->total_price,
                 'quantity' => $item->quantity,

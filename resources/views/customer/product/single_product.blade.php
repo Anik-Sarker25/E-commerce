@@ -133,7 +133,7 @@
 
                     <div class="row">
 
-                        <div class="col-sm-6 col-md-6 col-lg-6">
+                        {{-- <div class="col-sm-6 col-md-6 col-lg-6">
 
                             <div class="product-media media-horizontal">
 
@@ -173,7 +173,53 @@
 
                             </div>
                             <!-- image product -->
+                        </div> --}}
+                        <div class="col-sm-6 col-md-6 col-lg-6">
+
+                            <div class="product-media media-horizontal">
+                        
+                                <!-- Main Image Container -->
+                                <div class="image_preview_container images-large">
+                        
+                                    <div class="img-contain">
+                                        <img id="img_zoom" 
+                                             src="{{ asset($product->thumbnail ?? 'frontend/assets/images/media/detail/thumb-img1.jpg') }}" 
+                                             data-zoom-image="{{ asset($product->thumbnail ?? 'frontend/assets/images/media/detail/thumb-img1.jpg') }}" 
+                                             alt="Product Image">
+                                    </div>
+                        
+                                    <button class="btn-zoom open_qv"><span>Zoom</span></button>
+                        
+                                </div>
+                        
+                                <!-- Thumbnails Section -->
+                                <div class="product_preview images-small">
+                        
+                                    <div class="owl-carousel thumbnails_carousel custompro" id="thumbnails" 
+                                         data-nav="true" data-dots="false" data-margin="10" data-responsive='{"0":{"items":3},"480":{"items":4},"600":{"items":5},"768":{"items":5}}'>
+                                        
+                                        <!-- Main Thumbnail (Default) -->
+                                        <a href="#" data-image="{{ asset($product->thumbnail ?? 'frontend/assets/images/media/detail/thumb-img1.jpg') }}" 
+                                           data-zoom-image="{{ asset($product->thumbnail ?? 'frontend/assets/images/media/detail/thumb-img1.jpg') }}">
+                                            <img src="{{ asset($product->thumbnail ?? 'frontend/assets/images/media/detail/thumb-img1.jpg') }}" 
+                                                 alt="Thumbnail">
+                                        </a>
+                        
+                                        <!-- Featured Images (Variant Thumbnails) -->
+                                        @foreach ($product->featuredImages as $featuredImage)
+                                            <a href="#" data-image="{{ asset($featuredImage->image ?? 'frontend/assets/images/media/detail/thumb-img2.jpg') }}" 
+                                               data-zoom-image="{{ asset($featuredImage->image ?? 'frontend/assets/images/media/detail/thumb-img2.jpg') }}">
+                                                <img src="{{ asset($featuredImage->image ?? 'frontend/assets/images/media/detail/thumb-img2.jpg') }}" 
+                                                     alt="Thumbnail">
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                </div>
+                        
+                            </div>
                         </div>
+                        
+                        
 
                         <div class="col-sm-6 col-md-6 col-lg-6">
 
@@ -199,8 +245,8 @@
                                 <div class="product-info-price">
                                     <div class="price-box">
                                         <span class="price sell_price" id="{{ $product->sell_price }}">{{ country()->symbol.$product->sell_price }}</span>
-                                        <span class="old-price">{{ country()->symbol.$product->mrp_price }}</span>
-                                        <span class="label-sale">-{{ $product->discount_price }}%</span>
+                                        <span class="old-price mrp_price">{{ country()->symbol.$product->mrp_price }}</span>
+                                        <span class="label-sale discount_price">-{{ $product->discount_price }}%</span>
                                     </div>
                                 </div>
                                 <div class="product-code">
@@ -221,7 +267,7 @@
                                 <div class="product-add-form">
                                     <p>Available Options:</p>
                                     <form>
-                                        <input type="hidden" id="product_id" value="{{ $product->id }}">
+                                        <input type="hidden" id="varProduct_id" value="{{ $product->id }}">
 
                                         <div class="product-options-wrapper">
                                             <div class="swatch-opt">
@@ -237,20 +283,18 @@
                                                         @endphp
                                                         <!-- Swatch buttons -->
                                                         @foreach ($variants ?? [] as $key => $variant)
-                                                            <div class="swatch-option color {{ ($key == 0) ? 'active' : '' }}" style="background-color: {{ $variant->color_code }};" title="{{ $variant->color_name }}" id="{{ $variant->id }}"></div>
+                                                            <div class="swatch-option color {{ ($key == 0) ? 'active' : '' }}" style="background-color: {{ $variant->color_code }};" title="{{ $variant->color_name }}"
+                                                                data-image="{{ asset($variant->color_image ?? $product->thumbnail) }}"
+                                                                id="{{ $variant->id }}">
+                                                            </div>
                                                         @endforeach
                                                     </div>
                                                 </div>
                                             </div>
-
-                                            {{-- @php
-                                                $sizeVariants = $variantOptions->filter(function($variant) {
-                                                    return !is_null($variant->variant_type) && $variant->variant_type === App\Helpers\Constant::VARIANT_TYPES['size'];
-                                                })->values(); // reindex the filtered collection
-                                            @endphp --}}
+                                            
 
                                             {{-- Wrapper to be updated via JS --}}
-                                            <div id="size-variant-container">
+                                            <div id="variant-container-wrapper" style="margin-bottom: 16px;">
                                                 {{-- <div class="swatch-opt">
                                                     <div class="swatch-attribute size d-flex">
                                                         <p class="size-label me-2">Size:</p>
@@ -267,6 +311,8 @@
                                                     </div>
                                                 </div> --}}
                                             </div>
+                                            {{-- Wrapper to be updated via JS --}}
+                                            
 
                                             <div class="form-qty">
                                                 <label class="label">Qty: </label>
@@ -283,10 +329,15 @@
                                                 <button type="button" title="Buy Now" class="action btn-buy">
                                                     <span>Buy Now</span>
                                                 </button>
-
-                                                <button type="button" title="Add to Cart" onclick="addCart({{ $product->id }}, 1)" class="action btn-cart">
-                                                    <span>Add to Cart</span>
-                                                </button>
+                                                @if (availableStock($product->id) > 0)
+                                                    <button type="button" title="Add to Cart" onclick="addCart({{ $product->id }}, 1)" class="action btn-cart">
+                                                        <span>Add to Cart</span>
+                                                    </button>
+                                                @else
+                                                    <button type="button" class="action btn-cart btn-disabled"><span>Out of Stock</span></button>
+                                                @endif
+                                                
+                                                
                                                 <div class="product-addto-links">
 
                                                     <a href="#" class="action btn-wishlist" title="Wish List">
@@ -377,11 +428,11 @@
                                                         <a class="btn btn-quickview" href=""><span>quickview</span></a>
                                                     </div>
 
-                                                    @if (availableStock($product->id) > 0)
+                                                    {{-- @if (availableStock($product->id) > 0)
                                                         <button type="button" class="btn btn-cart"  onclick="addCart({{ $product->id }}, 1)"><span>Add to Cart</span></button>
                                                     @else
                                                         <button type="button" class="btn btn-cart btn-disabled"><span>Out of Stock</span></button>
-                                                    @endif
+                                                    @endif --}}
 
                                                 </div>
                                                 <div class="product-item-detail">
@@ -434,11 +485,11 @@
                                                         <a class="btn btn-quickview" href=""><span>quickview</span></a>
                                                     </div>
 
-                                                    @if (availableStock($product->id) > 0)
+                                                    {{-- @if (availableStock($product->id) > 0)
                                                         <button type="button" class="btn btn-cart"  onclick="addCart({{ $product->id }}, 1)"><span>Add to Cart</span></button>
                                                     @else
                                                         <button type="button" class="btn btn-cart btn-disabled"><span>Out of Stock</span></button>
-                                                    @endif
+                                                    @endif --}}
 
                                                 </div>
                                                 <div class="product-item-detail">
@@ -574,18 +625,39 @@
 <script>
     // jQuery to handle color selection
     $(document).ready(function () {
-
         $('.swatch-option.color').on('click', function () {
             let url = "{{ route('ajax.get.product.variant.options') }}";
             let selectedColor = $(this).attr('id');
             let selectedColorName = $(this).attr('title');
-            let productId = $('#product_id').val();
+            let productId = $('#varProduct_id').val();
 
             // Highlight active color
             $('.swatch-option.color').removeClass('active');
             $(this).addClass('active');
 
             $('.selected-label').text(selectedColorName);
+
+            let selectedColorImage = $(this).data('image');
+            
+            // Update the zoom image dynamically
+            $('#img_zoom').attr('src', selectedColorImage);
+            $('#img_zoom').attr('data-zoom-image', selectedColorImage);
+
+            // Apply the zoom functionality to the new image
+            if ($.fn.elevateZoom) {
+                $('#img_zoom').elevateZoom({
+                    zoomType: "inner",
+                    gallery: 'thumbnails',
+                    galleryActiveClass: 'active',
+                    cursor: "crosshair",
+                    responsive: true,
+                    easing: true,
+                    zoomWindowFadeIn: 500,
+                    zoomWindowFadeOut: 500,
+                    lensFadeIn: 500,
+                    lensFadeOut: 500
+                });
+            }
 
             $.ajax({
                 url: url,
@@ -595,50 +667,97 @@
                     color: selectedColor,
                 },
                 success: function (response) {
-                    let html = `
-                    <div class="swatch-opt">
-                        <div class="swatch-attribute size d-flex">
-                            <p class="size-label me-2">Size:</p>
-                            <div class="swatch-attribute-options">
-                                <p class="text-capitalize">EU</p>`;
+                    $('#variant-container-wrapper').html('');
 
-                        response.options.forEach((option, index) => {
+                    const labels = response.labels;
+
+                    const VARIANT_TYPES = @json(\App\Helpers\Constant::VARIANT_TYPES);
+
+                    $.each(response.options, function (variantType, options) {
+                        if (options.length === 0) return;
+
+                        let label = labels[variantType] ?? 'Variant Option';
+                        const isInstalment = variantType === VARIANT_TYPES.instalment;
+
+                        let html = `
+                        <div class="swatch-opt">
+                            <div class="swatch-attribute size d-flex">
+                                <p class="size-label me-2">${label}:</p>
+                                <div class="swatch-attribute-options">`;
+                        if (variantType === VARIANT_TYPES.size) {
+                            html += `<p class="text-capitalize">EU</p>`;
+                        } else if (variantType === VARIANT_TYPES.instalment) {
+                            html += ``; // no extra line
+                        } else {
+                            html += `<div style="margin-bottom: 28px"></div>`; 
+                        }
+
+
+                        options.forEach((option, index) => {
                             html += `
-                                <div class="swatch-option size ${index === 0 ? 'active' : ''}"
-                                    id="${option.variant_value}">
+                                <div class="swatch-option size ${(!isInstalment && index === 0) ? 'active' : ''}"
+                                    data-type="${variantType}"
+                                    id="${option.id}">
                                     ${option.variant_value}
                                 </div>`;
                         });
 
-
-                    if (response.options.length > 0) {
-                        html += `</div></div></div>`;
-                        $('#size-variant-container').html(html);
-
-                    }else {
                         html += `
-                                <div class="swatch-option size active"
-                                    id="One Size">
-                                    One Size
-                                </div>`;
-                        html += `</div></div></div>`;
-                        
-                        $('#size-variant-container').html(html);
-                    }
-                    
+                                </div>
+                            </div>
+                        </div>`;
+
+                        $('#variant-container-wrapper').append(html);
+                    });
+                },
+                error: function(error) {
+                    showErrorMessage(error);
+                }
+
+            });
+        });
+
+        $(document).on('click', '.swatch-option.size', function () {
+
+            $('.swatch-option.size').removeClass('active');
+            $(this).addClass('active');
+
+            let selectedSizeId = $(this).attr('id');
+            let url = "{{ route('ajax.get.product.variant.options.data', ':id') }}";
+            url = url.replace(':id', selectedSizeId);
+
+            $.ajax({
+                url: url,
+                method: 'GET',
+                success: function(response) {
+                    // Update the price and stock on the page$
+                    $('.price-box .sell_price').text("{{ country()->symbol }}" + response.sell_price);
+                    $('.price-box .sell_price').attr('id',response.sell_price);
+                    $('.price-box .mrp_price').text("{{ country()->symbol }}" + response.mrp_price);
+                    $('.price-box .discount_price').text("-" + response.discount_price + '%');
+                    // $('#product-stock').text(response.stock);
+                },
+                error: function(error) {
+                    showErrorMessage(error);
                 }
             });
         });
 
+        // Trigger the AJAX for the initially active color swatch
+        if ($('.swatch-option.color.active').length) {
+            $('.swatch-option.color.active').trigger('click');
+        }
 
-        $('.swatch-option.size').on('click', function () {
-            // Deselect all swatches
-            $('.swatch-option.size').removeClass('active');
+        // Trigger the AJAX for the initially active size swatch
+        if ($('.swatch-option.size.active').length) {
+            $('.swatch-option.size.active').trigger('click');
+        }
 
-            // Activate the selected swatch
-            $(this).addClass('active');
-        });
+
+       
     });
+
+
 
 
 </script>

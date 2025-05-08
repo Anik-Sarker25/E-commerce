@@ -18,6 +18,7 @@ use Devfaysal\BangladeshGeocode\Models\Division;
 use Devfaysal\BangladeshGeocode\Models\Union;
 use Devfaysal\BangladeshGeocode\Models\Upazila;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class AjaxController extends Controller
 {
@@ -69,17 +70,29 @@ class AjaxController extends Controller
     {
         $product_id = $request->product_id;
         $color = $request->color;
-
-        $variantOptions = VariantOption::where('product_id', $product_id)
-        ->where('color_family', $color)
-        ->where('variant_type', Constant::VARIANT_TYPES['size'])
-        ->get();
     
+        $variantOptions = VariantOption::where('product_id', $product_id)
+            ->where('color_family', $color)
+            ->get()
+            ->groupBy('variant_type');
+    
+        $flippedTypes = array_flip(Constant::VARIANT_TYPES);
 
+        $variantLabels = [];
+        foreach ($flippedTypes as $id => $key) {
+            $variantLabels[$id] = Str::title(str_replace('_', ' ', $key));
+        }
         return response()->json([
-            'options' => $variantOptions
+            'options' => $variantOptions,
+            'labels' => $variantLabels
         ]);
     }
+
+    public function getProductsvariantOptionsData($id) {
+        $data = VariantOption::where('id', $id)->first();
+        return response()->json($data);
+    }
+    
 
     public function getAllSubCategory() {
         $data = SubCategory::all();

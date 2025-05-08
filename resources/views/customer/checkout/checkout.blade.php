@@ -522,7 +522,7 @@
             processData: false,
             success: function(data) {
                 if (data.status == 'success') {
-                    let routeUrl = "{{ route('customer.addressBook.index') }}";
+                    let routeUrl = "{{ route('customer.order.index') }}";
                     Swal.fire({
                         html: `
                             <div style="text-align: center;">

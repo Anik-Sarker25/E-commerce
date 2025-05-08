@@ -54,6 +54,46 @@
         });
 
     }
+    function increment(id) {
+
+        let url = "{{ route('cart.increment', ':id') }}";
+        url = url.replace(':id', id);
+
+        $.ajax({
+            url: url,
+            type: "POST",
+            dataType: "json",
+            success: function(data) {
+                if (data == 'increased') {
+                    showCartData();
+                }else if(data == 'stockout') {
+                    $('.stockOut').html('Out Of Stock').show();
+                    $('#quantity').val(1);
+
+                    setTimeout(function() {
+                        $('.stockOut').fadeOut();
+                        showCartData();
+                    }, 2000);
+                }
+            }
+        });
+
+    }
+    function decrement(id) {
+
+        let url = "{{ route('cart.decrement', ':id') }}";
+        url = url.replace(':id', id);
+
+        $.ajax({
+            url: url,
+            type: "POST",
+            dataType: "json",
+            success: function(data) {
+                showCartData();
+            }
+        });
+
+    }
 
 
     function cartLogin() {
@@ -126,24 +166,31 @@
     }
 
     function cartStore(product_id, quantity) {
-        let qty = (typeof quantity !== 'undefined') ? quantity : parseInt($('#quantity').val());
-        let sell_price = $('.sell_price').attr('id');
-        let url = "{{ route('cart.store') }}";
 
-        let color = $('.swatch-option.color.active').attr('id');
-        let size = $('.swatch-option.size.active').attr('id');
+        let url = "{{ route('cart.store') }}";
+        
+        let qty = parseInt($('#quantity').val());
+        if (isNaN(qty) || qty <= 0) {
+            qty = (typeof quantity !== 'undefined') ? quantity : 1;
+        }
+
+        // let qty = (typeof quantity !== 'undefined') ? quantity : parseInt($('#quantity').val());
+        let color_id = $('.swatch-option.color.active').attr('id');
+        let size_id = $('.swatch-option.size.active').attr('id');
+        let sell_price = $('.sell_price').attr('id');
+
 
         $.ajax({
+            url: url,
             type: "POST",
             dataType: "json",
             data: {
                 product_id: product_id,
                 quantity: qty,
+                color: color_id,
+                size: size_id,
                 sell_price: sell_price,
-                color: color,
-                size: size
             },
-            url: url,
             success: function(data) {
                 if (data == 'success') {
                     Swal.fire({
@@ -274,9 +321,9 @@
                                             </div>
                                             <div class="col-xs-3">
                                                 <div class="d-flex align-items-center">
-                                                    <button type="button" class="btn btn-sm decrement" onclick="addCart(${item.product_id}, -1)">-</button>
+                                                    <button type="button" class="btn btn-sm decrement" onclick="decrement(${item.id})">-</button>
                                                     <input type="text" class="form-control input-sm text-center quantity" min="1" value="${item.quantity}">
-                                                    <button type="button" class="btn btn-sm increment" onclick="addCart(${item.product_id}, 1)">+</button>
+                                                    <button type="button" class="btn btn-sm increment" onclick="increment(${item.id})">+</button>
                                                 </div>
                                                 <span class="stockOut text-danger" style="display: none;"></span>
                                             </div>

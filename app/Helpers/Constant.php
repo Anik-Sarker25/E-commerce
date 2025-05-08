@@ -97,31 +97,11 @@ class Constant {
         'can' => 8,
         'gallon' => 9,
     ];
-    const COLORS = [
-        'black' => 'black',
-        'white' => 'white',
-        'gray' => 'gray',
-        'blue' => 'blue',
-        'red' => 'red',
-        'green' => 'green',
-        'yellow' => 'yellow',
-        'orange' => 'orange',
-        'pink' => 'pink',
-        'purple' => 'purple',
-        'brown' => 'brown',
-        'pink' => 'pink',
-        'brown' => 'brown',
-    ];
     const VARIANT_TYPES = [
         'size' => '1',
         'storage_capacity' => '2',
         'instalment' => '3',
         'case_size' => '4',
-    ];
-    const CONDITIONS = [
-        'new' => 1,
-        'used' => 2,
-        'refurbished' => 3,
     ];
     const DELIVERY_PLACE = [
         'home' => 1,

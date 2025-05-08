@@ -29,6 +29,8 @@ class VariantOption extends Model
         return $this->belongsTo(ProductVariants::class, 'color_family');
     }
 
-
+    public function invoiceItem() {
+        return $this->hasMany(InvoiceItem::class, 'size_id');
+    }
 
 }

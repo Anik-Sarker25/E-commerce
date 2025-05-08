@@ -24,9 +24,8 @@ class ProductVariants extends Model
     {
         return $this->hasMany(VariantOption::class, 'color_family');
     }
-
-
-
-
+    public function invoiceItem() {
+        return $this->hasMany(InvoiceItem::class, 'color_id');
+    }
 
 }
