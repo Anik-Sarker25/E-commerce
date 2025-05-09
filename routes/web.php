@@ -41,6 +41,11 @@ Route::prefix('cart')->as('cart.')->group(function () {
     Route::post('/increment/{id}', [CartController::class, 'increment'])->name('increment');
     Route::post('/decrement/{id}', [CartController::class, 'decrement'])->name('decrement');
     Route::delete('/remove/{id}', [CartController::class, 'removeItem'])->name('remove');
+    
+    Route::post('/buy-now', [CartController::class, 'buyNow'])->name('buy.now');
+    Route::post('/buy-now/seasion/clear', [CartController::class, 'buyNowSessionClear'])->name('buy.now.session.clear');
+
+
 });
 
 // chackout routes
@@ -50,8 +55,9 @@ Route::prefix('checkout')->as('checkout.')->group(function () {
     Route::post('/change/status/{id}', [CheckoutController::class,'changeStatus'])->name('change.status');
     Route::get('/get-selected-address', [CheckoutController::class, 'getSelectedAddress'])->name('get.selected.address');
 
+    Route::get('/buy-now', [CheckoutController::class, 'index'])->name('buy-now');
+    Route::get('/submission/expired', [CheckoutController::class, 'submissionExpired'])->name('submission.expired');
 });
-
 
 
 Route::prefix('ajax')->as('ajax.')->group(function () {
@@ -75,6 +81,7 @@ Route::prefix('ajax')->as('ajax.')->group(function () {
     Route::post('/get/product/variant/options', [AjaxController::class, 'getProductsvariantOptions'])->name('get.product.variant.options');
     Route::get('/get/product/variant/options/data/{id}', [AjaxController::class, 'getProductsvariantOptionsData'])->name('get.product.variant.options.data');
 });
+
 
 // Show email verification notice
 Route::get('/email/verify', function (Request $request) {

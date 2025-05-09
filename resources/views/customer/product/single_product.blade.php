@@ -323,18 +323,24 @@
                                         </div>
 
                                         <div class="product-options-bottom clearfix">
-
+                                            
+                                            
+                                            
                                             <div class="actions">
-
-                                                <button type="button" title="Buy Now" class="action btn-buy">
-                                                    <span>Buy Now</span>
-                                                </button>
                                                 @if (availableStock($product->id) > 0)
+                                                    <button type="button" onclick="buyNow({{ $product->id }});" title="Buy Now" class="action btn-buy">
+                                                        <span>Buy Now</span>
+                                                    </button>
                                                     <button type="button" title="Add to Cart" onclick="addCart({{ $product->id }}, 1)" class="action btn-cart">
                                                         <span>Add to Cart</span>
                                                     </button>
                                                 @else
-                                                    <button type="button" class="action btn-cart btn-disabled"><span>Out of Stock</span></button>
+                                                    <button type="button" title="Buy Now" class="action btn-buy btn-disabled" disabled>
+                                                        <span>Buy Now</span>
+                                                    </button>
+                                                    <button type="button" class="action btn-cart btn-disabled" disabled>
+                                                        <span>Out of Stock</span>
+                                                    </button>
                                                 @endif
                                                 
                                                 
@@ -753,11 +759,52 @@
             $('.swatch-option.size.active').trigger('click');
         }
 
-
-       
     });
 
+    function buyNow(product_id) {
 
+        $.ajax({
+            type: "GET",
+            dataType: "json",
+            url: "{{ route('cart.auth.check') }}",
+            success: function(data) {
+                if (data.logged_in) {
+                    buyNowStore(product_id);
+                }else {
+                    $('.loginModal').modal('show');
+                }
+            }
+        });
+
+    }
+
+    function buyNowStore(product_id) {
+        let url = "{{ route('cart.buy.now') }}";
+
+        let qty = parseInt($('#quantity').val());
+        qty = (!isNaN(qty) && qty > 0) ? qty : 1;
+
+        let color_id = $('.swatch-option.color.active').attr('id');
+        let size_id = $('.swatch-option.size.active').attr('id');
+        let sell_price = $('.sell_price').attr('id');
+
+        $.ajax({
+            url: url,
+            type: "POST",
+            dataType: "json",
+            data: {
+                product_id: product_id,
+                quantity: qty,
+                color: color_id,
+                size: size_id,
+                sell_price: sell_price,
+            },
+            success: function(data) {
+                localStorage.setItem("buy_now_valid", "1");
+                window.location.href = "{{ route('checkout.buy-now') }}";
+            }
+        });
+    }
 
 
 </script>

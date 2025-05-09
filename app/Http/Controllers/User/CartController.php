@@ -32,7 +32,17 @@ class CartController extends Controller
             ->first();
     
         $quantity = (int) ($request->quantity ?? 1);
-        $sellPrice = (float) $request->sell_price;
+
+        $sellPrice = null;
+
+        if (!empty($request->size)) {
+            // Use variant ID (size)
+            $sellPrice = productVariantSellPrice($request->size);
+        } else {
+            // Fallback: use product ID
+            $sellPrice = productSellPrice($request->product_id);
+        }
+
         $totalPrice = $quantity * $sellPrice;
     
         if ($cartItem) {
@@ -215,4 +225,73 @@ class CartController extends Controller
 
         return response()->json(['message' => 'Unauthorized'], 403);
     }
+
+    public function buyNow(Request $request)
+    {
+        $productId = $request->product_id;
+
+        $product = Product::findOrFail($productId);
+
+        $sellPrice = null;
+
+        if (!empty($request->size)) {
+            // Use variant ID (size)
+            $sellPrice = productVariantSellPrice($request->size);
+        } else {
+            // Fallback: use product ID
+            $sellPrice = productSellPrice($productId);
+        }
+
+        $deliveryType = DeliveryOption::where('id', $product->delivery_type)->first();
+
+        $delId = $deliveryType->id;
+        $name = $deliveryType->name ?? '';
+        $amount = number_format2($deliveryType->cost) ?? 0;
+
+        $time = null;
+
+        if ($deliveryType->estimated_time == Constant::ESTIMATED_TIME['1 to 3 days']) {
+            $today = Carbon::today();
+            $threeDaysLater = Carbon::today()->addDays(3);
+            $time = 'Guaranteed by ' . $today->format('j M') . ' to ' . $threeDaysLater->format('j M');
+            $time2 = Constant::ESTIMATED_TIME['1 to 3 days'];
+        } elseif ($deliveryType->estimated_time == Constant::ESTIMATED_TIME['3 to 7 days']) {
+            $today = Carbon::today();
+            $sevenDaysLater = Carbon::today()->addDays(7);
+            $time = 'Guaranteed by ' . $today->format('j M') . ' to ' . $sevenDaysLater->format('j M');
+            $time2 = Constant::ESTIMATED_TIME['3 to 7 days'];
+        } elseif ($deliveryType->estimated_time == Constant::ESTIMATED_TIME['within 24 hours']) {
+            $today = Carbon::today();
+            $time = 'Guaranteed by within 24 hours';
+            $time2 = Constant::ESTIMATED_TIME['within 24 hours'];
+        }
+
+        // Store temporary "buy now" session item
+        session(['buy_now_item' => [
+            'product_id' => $product->id,
+            'product_name' => $product->name,
+            'product_thumbnail' => $product->thumbnail,
+            'brand_name' => $product->brand->name ?? '',
+            'quantity' => $request->quantity,
+            'color' => $request->color,
+            'size' => $request->size,
+            'price' => $sellPrice,
+            'total_price' => $sellPrice * $request->quantity,
+            'deliveryType'     => [
+                'id'     => $delId,
+                'name'   => $name,
+                'amount' => $amount,
+                'time'   => $time,
+                'time2'  => $time2,
+            ],
+        ]]);
+
+        return response()->json();
+    }
+
+    public function buyNowSessionClear() {
+        session()->forget('buy_now_item');
+        return response()->json(['status' => 'cleared']);
+    }
+
 }

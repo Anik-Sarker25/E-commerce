@@ -9,6 +9,11 @@
 
     $(document).ready(function() {
         showCartData(); // show data after page load
+
+        @if (Route::currentRouteName() == 'checkout.buy-now')
+            buyNowDeliveryTypeSet();
+        @endif
+        
     });
 
     function updateNavAfterLogin() {
@@ -129,7 +134,9 @@
                         });
                     }
                     $(".loginModal").modal("hide"); // Hide modal after login
-                    addCart(product_id, quantity); // Add product to cart after login
+                    if (product_id !== "" && quantity !== "") {
+                        addCart(product_id, quantity);
+                    }
                     updateNavAfterLogin();
                 } else if(response.cartLoginSuccess === 'unverified') {
                     if(response.redirectUrl === true) {
@@ -276,6 +283,7 @@
                     $('.cart-item-count').text(data.total_items);
                     $('.subtitle').text(`You have ${data.total_items} item(s) in your cart`);
 
+                    let currentRoute = "{{ Route::currentRouteName() }}";
 
                     // Render cart items
                     let cartItemsHTML = '';
@@ -349,15 +357,15 @@
                                 </div>
                             </div>
                         `;
-                        $('.proceedToPayBtn, .couponApply').prop('disabled', true);
+
+                        if (currentRoute === 'checkout.index') {
+                            $('.proceedToPayBtn, .couponApply').prop('disabled', true);
+                        }
                     }
 
                     $('.subtotal .price').text(`{{ country()->symbol }}${data.total_price}`);
 
                     $('.minicart-items').html(cartItemsHTML);
-
-
-                    let currentRoute = "{{ Route::currentRouteName() }}";
 
                     if (currentRoute === 'checkout.index') {
 
@@ -366,9 +374,9 @@
                                 <input type="hidden" id="delivery_type" value="${data.delivery[0].id}">
                                 <input type="hidden" id="estimated_delivery_date" value="${data.delivery[0].time2}">
                                 <input type="hidden" id="shipping_fee" value="${data.delivery[0].amount}">
-                                <p>{{ country()->symbol }}${data.delivery[0].amount}</p>
-                                <p>${data.delivery[0].name || 'Standard Delivery'}</p>
-                                <p class="mb-0">${data.delivery[0].time}</p>
+                                <p id="dvAmount">{{ country()->symbol }}${data.delivery[0].amount}</p>
+                                <p id="dvName">${data.delivery[0].name || 'Standard Delivery'}</p>
+                                <p class="mb-0" id="dvTime">${data.delivery[0].time}</p>
                             `;
                             $('label.standard_delivery .right').html(deliveryType);
 
@@ -416,6 +424,38 @@
             }
         });
     }
+
+    function buyNowDeliveryTypeSet() {
+
+        let bnDeliveryType = $('#bnDeliveryType').val();
+        let bnDeliveryName = $('#bnDeliveryName').val();
+        let bnDeliveryAmount = $('#bnDeliveryAmount').val();
+        let bnDeliveryTime = $('#bnDeliveryTime').val();
+        let bnDeliveryTime2 = $('#bnDeliveryTime2').val();
+        let bnSubTotal = $('#bnSubTotal').val();
+
+        bnDeliveryType = `
+                    <input type="hidden" id="delivery_type" value="${bnDeliveryType}">
+                    <input type="hidden" id="estimated_delivery_date" value="${bnDeliveryTime2}">
+                    <input type="hidden" id="shipping_fee" value="${bnDeliveryAmount}">
+                    <p id="dvAmount">{{ country()->symbol }}${bnDeliveryAmount}</p>
+                    <p id="dvName">${bnDeliveryName || 'Standard Delivery'}</p>
+                    <p class="mb-0" id="dvTime">${bnDeliveryTime}</p>
+                `;
+        $('label.standard_delivery .right').html(bnDeliveryType);
+        $('.order_shipping_fee').text(`{{ country()->symbol }}${bnDeliveryAmount}`);
+        $('.order_subtotal').text(`{{ country()->symbol }}${bnSubTotal}`);
+        
+        let bnTotalPrice = Number(bnSubTotal) || 0;
+        let bnTotalShippingFee = Number(bnDeliveryAmount) || 0;
+        let bnTotalOrderPrice = bnTotalPrice + bnTotalShippingFee;
+
+        $('.order_total').text(`{{ country()->symbol }}${bnTotalOrderPrice}`);
+
+        $('.proceedToPayBtn, .couponApply').prop('disabled', false);
+
+    }
+
 
 
     function removeCartItem(id) {

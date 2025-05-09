@@ -1,5 +1,14 @@
 @php
-    $payment_status = App\Helpers\Constant::PAYMENT_STATUS;
+    use App\Helpers\Constant;
+
+    $payment_status = Constant::PAYMENT_STATUS;
+    $variantTypes = Constant::VARIANT_TYPES;
+    $variantLabels = [
+        $variantTypes['size'] => 'Size',
+        $variantTypes['storage_capacity'] => 'Storage Capacity',
+        $variantTypes['instalment'] => 'Instalment',
+        $variantTypes['case_size'] => 'Case Size',
+    ];
 @endphp
 <div id="printable-area">
     <div class="invoice-header d-flex justify-content-between align-items-center">
@@ -87,11 +96,18 @@
                             <td>
                                 <img src="{{ asset($item->products->thumbnail) }}" class="rounded" width="24px" alt="image">
                                 {{ $item->product_name }}
-                                @if($item->color)
-                                    <span class="color">(Color: {{ $item->color->color_name  ?? ''}}) </span>
+                                
+                                @if(!empty($item->color) && !empty($item->color->color_name))
+                                    <span class="color">(Color: {{ $item->color->color_name }})</span>
                                 @endif
-                                @if($item->size)
-                                    <span class="size">(Size: {{ $item->size->variant_value  ?? ''}}) </span>
+
+                                @if(!empty($item->size) && !empty($item->size->variant_type) && !empty($item->size->variant_value))
+                                    @php
+                                        $label = $variantLabels[$item->size->variant_type] ?? null;
+                                    @endphp
+                                    @if($label)
+                                        <span>({{ $label }}: {{ $item->size->variant_value }})</span>
+                                    @endif
                                 @endif
 
                             </td>

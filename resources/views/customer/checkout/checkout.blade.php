@@ -144,8 +144,6 @@
                                         </div>
                                     </div>
 
-
-
                                     <div id="shippingBillingCollapse" class="collapse">
                                         <div class="panel panel-default">
                                             <div class="panel-heading  bg-light d-flex justify-content-between">
@@ -193,41 +191,110 @@
                                         </div>
                                     </div>
 
-                                    {{-- cart items  --}}
-                                    <div class="panel panel-default">
-                                        <div class="panel-heading cart-heading bg-light">
-                                        </div>
-                                        <div class="panel-body cart-items">
-                                            {{-- <div class="row product-items">
-                                                <div class="col-sm-2">
-                                                    <img src="https://img.lazcdn.com/3rd/q/aHR0cHM6Ly9zdGF0aWMtMDEuZGFyYXouY29tLmJkL3AvOGYwOTk0MTMzMTFjZjBmNmZiMjM2NDQ1NDY5MWQ1NTcuanBn_2200x2200q75.png_.webp" class="img-responsive" alt="Product Image">
-                                                </div>
-                                                <div class="col-sm-10" style="padding-left: 0;">
+                                    @if (!empty($buyNowItem))
 
-                                                    <div class="row d-flex align-items-center">
-                                                        <div class="col-xs-7">
-                                                            <a href="#">Product Name</a>
-                                                            <p class="text-muted">Brand: Brand Name</p>
-                                                            <p class="text-muted">Price: $100</p>
-                                                            <a href="#" class="text-muted small">Move to Wishlist</a>
-                                                        </div>
-                                                        <div class="col-xs-3">
-                                                            <div class="d-flex align-items-center">
-                                                                <button type="button" class="btn btn-sm decrement">-</button>
-                                                                <input type="text" class="form-control input-sm text-center" id="quantity" min="1" value="1">
-                                                                <button type="button" class="btn btn-sm increment">+</button>
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading cart-heading bg-light">
+                                            </div>
+
+                                            @if (!empty($buyNowItem['deliveryType']) && is_array($buyNowItem['deliveryType']))
+                                                @if (!empty($buyNowItem['deliveryType']['id']))
+                                                    <input type="text" id="bnDeliveryType" value="{{ $buyNowItem['deliveryType']['id'] }}">
+                                                @endif
+
+                                                @if (!empty($buyNowItem['deliveryType']['name']))
+                                                    <input type="text" id="bnDeliveryName" value="{{ $buyNowItem['deliveryType']['name'] }}">
+                                                @endif
+
+                                                @if (!empty($buyNowItem['deliveryType']['amount']))
+                                                    <input type="text" id="bnDeliveryAmount" value="{{ $buyNowItem['deliveryType']['amount'] }}">
+                                                @endif
+
+                                                @if (!empty($buyNowItem['deliveryType']['time']))
+                                                    <input type="text" id="bnDeliveryTime" value="{{ $buyNowItem['deliveryType']['time'] }}">
+                                                @endif
+
+                                                @if (!empty($buyNowItem['deliveryType']['time2']))
+                                                    <input type="text" id="bnDeliveryTime2" value="{{ $buyNowItem['deliveryType']['time2'] }}">
+                                                @endif
+
+                                            @endif
+                                                
+                                            @if (!empty($buyNowItem['total_price']))
+                                                <input type="text" id="bnSubTotal" value="{{ $buyNowItem['total_price'] }}">
+                                            @endif
+
+                                            <div class="panel-body buy-now-items">
+
+                                                <div class="row product-items">
+                                                    <div class="col-sm-2">
+                                                        <img src="{{ asset($buyNowItem['product_thumbnail']) }}" class="img-responsive" alt="{{ $buyNowItem['product_name'] }}">
+                                                    </div>
+                                                    <div class="col-sm-10" style="padding-left: 0;">
+                                                        <div class="row d-flex align-items-center">
+                                                            <div class="col-xs-7">
+                                                                <a href="${item.product_url}">{{ $buyNowItem['product_name'] }}</a>
+                                                                <p class="text-muted">Brand: {{ $buyNowItem['brand_name'] }}</p>
+                                                                <p class="text-muted">Price: {{ country()->symbol }}{{ $buyNowItem['price'] }}</p>
+                                                                <a href="#" class="text-muted small">Move to Wishlist</a>
                                                             </div>
-
-                                                        </div>
-                                                        <div class="col-xs-2">
-                                                            <a href="#" class="text-danger small">Remove</a>
+                                                            <div class="col-xs-3">
+                                                                <div class="d-flex align-items-center">
+                                                                    <button type="button" class="btn btn-sm decrement" onclick="decrement({{ $buyNowItem['product_id'] }})">-</button>
+                                                                    <input type="text" class="form-control input-sm text-center quantity" min="1" value="{{ $buyNowItem['quantity'] }}">
+                                                                    <button type="button" class="btn btn-sm increment" onclick="increment({{ $buyNowItem['product_id'] }})">+</button>
+                                                                </div>
+                                                                <span class="stockOut text-danger" style="display: none;"></span>
+                                                            </div>
+                                                            <div class="col-xs-2">
+                                                                <a href="javascript:void(0);" class="text-danger small" onclick="removeCartItem({{ $buyNowItem['product_id'] }})">Remove</a>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div> --}}
+                                            </div>
                                         </div>
-                                    </div>
-                                    <!-- Repeat this panel for each product -->
+                                    
+                                    @else 
+                                    
+
+                                        {{-- cart items  --}}
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading cart-heading bg-light">
+                                            </div>
+                                            <div class="panel-body cart-items">
+                                                {{-- <div class="row product-items">
+                                                    <div class="col-sm-2">
+                                                        <img src="https://img.lazcdn.com/3rd/q/aHR0cHM6Ly9zdGF0aWMtMDEuZGFyYXouY29tLmJkL3AvOGYwOTk0MTMzMTFjZjBmNmZiMjM2NDQ1NDY5MWQ1NTcuanBn_2200x2200q75.png_.webp" class="img-responsive" alt="Product Image">
+                                                    </div>
+                                                    <div class="col-sm-10" style="padding-left: 0;">
+
+                                                        <div class="row d-flex align-items-center">
+                                                            <div class="col-xs-7">
+                                                                <a href="#">Product Name</a>
+                                                                <p class="text-muted">Brand: Brand Name</p>
+                                                                <p class="text-muted">Price: $100</p>
+                                                                <a href="#" class="text-muted small">Move to Wishlist</a>
+                                                            </div>
+                                                            <div class="col-xs-3">
+                                                                <div class="d-flex align-items-center">
+                                                                    <button type="button" class="btn btn-sm decrement">-</button>
+                                                                    <input type="text" class="form-control input-sm text-center" id="quantity" min="1" value="1">
+                                                                    <button type="button" class="btn btn-sm increment">+</button>
+                                                                </div>
+
+                                                            </div>
+                                                            <div class="col-xs-2">
+                                                                <a href="#" class="text-danger small">Remove</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div> --}}
+                                            </div>
+                                        </div>
+                                        <!-- Repeat this panel for each product -->
+                                    
+                                    @endif
                                 </div>
 
                                 <div class="col-md-12 collapse" id="confirmOrder">
@@ -585,6 +652,29 @@
             }
         });
     }
+
+    window.addEventListener("pageshow", function (event) {
+        // Check if page was loaded from bfcache (back/forward button)
+        if (event.persisted) {
+            if (localStorage.getItem("buy_now_valid")) {
+                // Remove flag so next time it doesn't exist
+                localStorage.removeItem("buy_now_valid");
+                
+                let url = "{{ route('cart.buy.now.session.clear') }}";
+                $.ajax({
+                    url: url,
+                    type: "POST",
+                    dataType: "json",
+                    success: function(data) {
+                        window.location.href = "{{ route('checkout.submission.expired') }}";
+                    }
+                });
+            }
+        }
+    });
+
+    
+
 
 
 

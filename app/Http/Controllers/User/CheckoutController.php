@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 class CheckoutController extends Controller
 {
 
-    public function index() {
+    public function index(Request $request) {
         $pageTitle = 'Checkout';
 
         $categories       = Category::with('subcategories.products')->get();
@@ -30,7 +30,7 @@ class CheckoutController extends Controller
 
         $address = null;
         $addresses = []; // null array for guest users
-
+        $buyNowItem = null;
 
         if (auth()->check()) {
             $address = Address::where('user_id', auth()->user()->id)
@@ -39,6 +39,12 @@ class CheckoutController extends Controller
 
             $addresses = Address::where('user_id', auth()->user()->id)->get();
         }
+        if ($request->path() == 'buy-now' && !session()->has('buy_now_item')) {
+            return redirect()->route('checkout.submission.expired'); // Custom error page
+        }else {
+            $buyNowItem = session('buy_now_item');
+        }
+
         return view('customer.checkout.checkout', [
             'address'              => $address,
             'addresses'            => $addresses,
@@ -48,6 +54,7 @@ class CheckoutController extends Controller
             'brands'               => $brands,
             'partnerships'         => $partnerships,
             'breadcrumbs'          => $breadcrumbs,
+            'buyNowItem'           => $buyNowItem,
         ]);
     }
 
@@ -79,7 +86,10 @@ class CheckoutController extends Controller
                          ->first();
         return view('customer.checkout.components.address', compact('address'));
     }
-
+    public function submissionExpired() {
+        
+        return view('customer.checkout.error_page');
+    }
 
 
 }

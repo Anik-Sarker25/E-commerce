@@ -101,4 +101,17 @@ function availableStock($productId) {
 }
 
 
+//  this two sell_price are related if product has variant
+//  then variant sell price else product sell price 
+function productVariantSellPrice($variantId)
+{
+    return VariantOption::where('id', $variantId)
+        ->value('sell_price');
+}
+
+function productSellPrice($productId)
+{
+    return Product::where('id', $productId)
+        ->value('sell_price');
+}
 
