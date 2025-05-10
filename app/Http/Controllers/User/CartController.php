@@ -266,11 +266,15 @@ class CartController extends Controller
             $time2 = Constant::ESTIMATED_TIME['within 24 hours'];
         }
 
+        $productUrl = route('product.show', $product->slug) . '?itemcode=' . $product->item_code . '&pro=' . $product->id;
+        $imageUrl = asset($product->thumbnail);
+
         // Store temporary "buy now" session item
         session(['buy_now_item' => [
             'product_id' => $product->id,
             'product_name' => $product->name,
-            'product_thumbnail' => $product->thumbnail,
+            'productUrl' => $productUrl,
+            'product_thumbnail' => $imageUrl,
             'brand_name' => $product->brand->name ?? '',
             'quantity' => $request->quantity,
             'color' => $request->color,

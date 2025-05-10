@@ -192,57 +192,60 @@
                                     </div>
 
                                     @if (!empty($buyNowItem))
-
+                                        {{-- for buy now data process --}}
                                         <div class="panel panel-default">
-                                            <div class="panel-heading cart-heading bg-light">
+                                            <div class="panel-heading buy-heading bg-light">
                                             </div>
 
                                             @if (!empty($buyNowItem['deliveryType']) && is_array($buyNowItem['deliveryType']))
                                                 @if (!empty($buyNowItem['deliveryType']['id']))
-                                                    <input type="text" id="bnDeliveryType" value="{{ $buyNowItem['deliveryType']['id'] }}">
+                                                    <input type="hidden" id="bnDeliveryType" value="{{ $buyNowItem['deliveryType']['id'] }}">
                                                 @endif
 
                                                 @if (!empty($buyNowItem['deliveryType']['name']))
-                                                    <input type="text" id="bnDeliveryName" value="{{ $buyNowItem['deliveryType']['name'] }}">
+                                                    <input type="hidden" id="bnDeliveryName" value="{{ $buyNowItem['deliveryType']['name'] }}">
                                                 @endif
 
                                                 @if (!empty($buyNowItem['deliveryType']['amount']))
-                                                    <input type="text" id="bnDeliveryAmount" value="{{ $buyNowItem['deliveryType']['amount'] }}">
+                                                    <input type="hidden" id="bnDeliveryAmount" value="{{ $buyNowItem['deliveryType']['amount'] }}">
                                                 @endif
 
                                                 @if (!empty($buyNowItem['deliveryType']['time']))
-                                                    <input type="text" id="bnDeliveryTime" value="{{ $buyNowItem['deliveryType']['time'] }}">
+                                                    <input type="hidden" id="bnDeliveryTime" value="{{ $buyNowItem['deliveryType']['time'] }}">
                                                 @endif
 
                                                 @if (!empty($buyNowItem['deliveryType']['time2']))
-                                                    <input type="text" id="bnDeliveryTime2" value="{{ $buyNowItem['deliveryType']['time2'] }}">
+                                                    <input type="hidden" id="bnDeliveryTime2" value="{{ $buyNowItem['deliveryType']['time2'] }}">
                                                 @endif
 
                                             @endif
                                                 
                                             @if (!empty($buyNowItem['total_price']))
-                                                <input type="text" id="bnSubTotal" value="{{ $buyNowItem['total_price'] }}">
+                                                <input type="hidden" id="bnSubTotal" value="{{ $buyNowItem['total_price'] }}">
+                                            @endif
+                                            @if (!empty($buyNowItem['total_price']))
+                                                <input type="hidden" id="bnTotal" value="{{ $buyNowItem['price'] }}">
                                             @endif
 
                                             <div class="panel-body buy-now-items">
 
                                                 <div class="row product-items">
                                                     <div class="col-sm-2">
-                                                        <img src="{{ asset($buyNowItem['product_thumbnail']) }}" class="img-responsive" alt="{{ $buyNowItem['product_name'] }}">
+                                                        <img src="{{ $buyNowItem['product_thumbnail'] }}" class="img-responsive" alt="{{ $buyNowItem['product_name'] }}">
                                                     </div>
                                                     <div class="col-sm-10" style="padding-left: 0;">
                                                         <div class="row d-flex align-items-center">
                                                             <div class="col-xs-7">
-                                                                <a href="${item.product_url}">{{ $buyNowItem['product_name'] }}</a>
+                                                                <a href="{{ $buyNowItem['productUrl'] }}">{{ $buyNowItem['product_name'] }}</a>
                                                                 <p class="text-muted">Brand: {{ $buyNowItem['brand_name'] }}</p>
                                                                 <p class="text-muted">Price: {{ country()->symbol }}{{ $buyNowItem['price'] }}</p>
                                                                 <a href="#" class="text-muted small">Move to Wishlist</a>
                                                             </div>
                                                             <div class="col-xs-3">
                                                                 <div class="d-flex align-items-center">
-                                                                    <button type="button" class="btn btn-sm decrement" onclick="decrement({{ $buyNowItem['product_id'] }})">-</button>
-                                                                    <input type="text" class="form-control input-sm text-center quantity" min="1" value="{{ $buyNowItem['quantity'] }}">
-                                                                    <button type="button" class="btn btn-sm increment" onclick="increment({{ $buyNowItem['product_id'] }})">+</button>
+                                                                    <button type="button" class="btn btn-sm decrement">-</button>
+                                                                    <input type="text" class="form-control input-sm text-center" id="bnQty" min="1" value="{{ $buyNowItem['quantity'] }}">
+                                                                    <button type="button" class="btn btn-sm increment">+</button>
                                                                 </div>
                                                                 <span class="stockOut text-danger" style="display: none;"></span>
                                                             </div>
@@ -256,8 +259,7 @@
                                         </div>
                                     
                                     @else 
-                                    
-
+                                        {{-- for cart item data process --}}
                                         {{-- cart items  --}}
                                         <div class="panel panel-default">
                                             <div class="panel-heading cart-heading bg-light">
@@ -571,6 +573,8 @@
         let estimated_delivery_date = $('#estimated_delivery_date').val();
         let shipping_fee = $('#shipping_fee').val();
 
+        let bnQuantity = $('#bnQty').val();
+
         let formData = new FormData();
         formData.append('name', name);
         formData.append('email', email);
@@ -580,6 +584,7 @@
         formData.append('delivery_type', delivery_type);
         formData.append('estimated_delivery_date', estimated_delivery_date);
         formData.append('shipping_fee', shipping_fee);
+        formData.append('buy_quantity', bnQuantity);
 
         $.ajax({
             url: url,
@@ -615,6 +620,10 @@
                     });
                     cancelPaymentBtn();
                     showCartData();
+
+                    if(data.buyProduct == true) {
+                        buyNowItemViewClear();
+                    }
                 }
             },
             error: function(error) {
@@ -672,9 +681,6 @@
             }
         }
     });
-
-    
-
 
 
 

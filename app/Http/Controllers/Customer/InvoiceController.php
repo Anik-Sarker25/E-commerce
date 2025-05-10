@@ -220,7 +220,10 @@ public function store(Request $request)
 
         //  BUY NOW FLOW
         if (!empty($buyNowItem)) {
-            $totalItemPrice = $buyNowItem['total_price'];
+            $ItemPrice = $buyNowItem['price'];
+            $quantity = $request->buy_quantity ?? $buyNowItem['quantity'];
+            $totalItemPrice = $ItemPrice * $quantity;
+
             $totalPrice = $totalItemPrice + $shippingFee;
 
             $invoice = Invoice::create([
@@ -249,8 +252,8 @@ public function store(Request $request)
                 'color_id' => $buyNowItem['color'] ?? null,
                 'size_id' => $buyNowItem['size'] ?? null,
                 'price' => $buyNowItem['price'],
-                'total_price' => $buyNowItem['total_price'],
-                'quantity' => $buyNowItem['quantity'],
+                'total_price' => $totalItemPrice,
+                'quantity' => $quantity,
             ]);
 
             //  Forget Buy Now session
@@ -260,6 +263,7 @@ public function store(Request $request)
             $formattedInvoiceId = customerFormatedInvoiceId($invoice->id);
             return response()->json([
                 'status' => 'success',
+                'buyProduct' => true,
                 'message' => 'Invoice (Buy Now) generated successfully!',
                 'invoice_id' => $formattedInvoiceId,
             ]);
@@ -329,6 +333,7 @@ public function store(Request $request)
             $formattedInvoiceId = customerFormatedInvoiceId($invoice->id);
             return response()->json([
                 'status' => 'success',
+                'buyProduct' => false,
                 'message' => 'Invoice (Cart) generated successfully!',
                 'invoice_id' => $formattedInvoiceId,
             ]);

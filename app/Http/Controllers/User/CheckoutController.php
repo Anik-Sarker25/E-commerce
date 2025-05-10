@@ -10,6 +10,7 @@ use App\Models\Category;
 use App\Models\Partnership;
 use App\Models\PaymentMethod;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 class CheckoutController extends Controller
 {
@@ -39,11 +40,22 @@ class CheckoutController extends Controller
 
             $addresses = Address::where('user_id', auth()->user()->id)->get();
         }
-        if ($request->path() == 'buy-now' && !session()->has('buy_now_item')) {
-            return redirect()->route('checkout.submission.expired'); // Custom error page
-        }else {
-            $buyNowItem = session('buy_now_item');
+        
+        $routeName = Route::currentRouteName();
+
+        if (!in_array($routeName, ['checkout.buy-now', 'customer.order.store'])) {
+            session()->forget('buy_now_item');
         }
+
+        // If we are on buy-now but session is missing, redirect
+        if ($routeName === 'checkout.buy-now' && !session()->has('buy_now_item')) {
+            return redirect()->route('checkout.submission.expired');
+        }
+
+        // Otherwise, access the session
+        $buyNowItem = session('buy_now_item');
+
+
 
         return view('customer.checkout.checkout', [
             'address'              => $address,

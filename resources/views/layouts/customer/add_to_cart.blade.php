@@ -426,34 +426,103 @@
     }
 
     function buyNowDeliveryTypeSet() {
-
+        let bnQty = parseInt($('#bnQty').val()) || 1;
         let bnDeliveryType = $('#bnDeliveryType').val();
         let bnDeliveryName = $('#bnDeliveryName').val();
-        let bnDeliveryAmount = $('#bnDeliveryAmount').val();
+        let bnDeliveryAmount = parseFloat($('#bnDeliveryAmount').val()) || 0;
         let bnDeliveryTime = $('#bnDeliveryTime').val();
         let bnDeliveryTime2 = $('#bnDeliveryTime2').val();
-        let bnSubTotal = $('#bnSubTotal').val();
+        let bnSubTotal = parseFloat($('#bnSubTotal').val()) || 0;
+        let bnTotal = parseFloat($('#bnTotal').val()) || 0;
 
-        bnDeliveryType = `
-                    <input type="hidden" id="delivery_type" value="${bnDeliveryType}">
-                    <input type="hidden" id="estimated_delivery_date" value="${bnDeliveryTime2}">
-                    <input type="hidden" id="shipping_fee" value="${bnDeliveryAmount}">
-                    <p id="dvAmount">{{ country()->symbol }}${bnDeliveryAmount}</p>
-                    <p id="dvName">${bnDeliveryName || 'Standard Delivery'}</p>
-                    <p class="mb-0" id="dvTime">${bnDeliveryTime}</p>
-                `;
-        $('label.standard_delivery .right').html(bnDeliveryType);
-        $('.order_shipping_fee').text(`{{ country()->symbol }}${bnDeliveryAmount}`);
-        $('.order_subtotal').text(`{{ country()->symbol }}${bnSubTotal}`);
-        
-        let bnTotalPrice = Number(bnSubTotal) || 0;
-        let bnTotalShippingFee = Number(bnDeliveryAmount) || 0;
-        let bnTotalOrderPrice = bnTotalPrice + bnTotalShippingFee;
+        let totalPrice = bnTotal * bnQty;
+        let totalOrder = totalPrice + bnDeliveryAmount;
 
-        $('.order_total').text(`{{ country()->symbol }}${bnTotalOrderPrice}`);
+        $('label.standard_delivery .right').html(`
+            <input type="hidden" id="delivery_type" value="${bnDeliveryType}">
+            <input type="hidden" id="estimated_delivery_date" value="${bnDeliveryTime2}">
+            <input type="hidden" id="shipping_fee" value="${bnDeliveryAmount}">
+            <p id="dvAmount">{{ country()->symbol }}${bnDeliveryAmount.toFixed(2)}</p>
+            <p id="dvName">${bnDeliveryName || 'Standard Delivery'}</p>
+            <p class="mb-0" id="dvTime">${bnDeliveryTime}</p>
+        `);
+
+        $('.order_shipping_fee').text(`{{ country()->symbol }}${bnDeliveryAmount.toFixed(2)}`);
+        $('.order_subtotal').text(`{{ country()->symbol }}${totalPrice.toFixed(2)}`);
+        $('.order_total').text(`{{ country()->symbol }}${totalOrder.toFixed(2)}`);
+        $('.panel-heading.buy-heading').html(`<h3 class="panel-title">Buy Now Items(${bnQty})</h3>`);
+        $('.order-summery .sub_label').text(`Subtotal(${bnQty} items) :`);
 
         $('.proceedToPayBtn, .couponApply').prop('disabled', false);
+    }
 
+    // Quantity control
+    $(document).on('click', '.increment', function () {
+        let qtyInput = $('#bnQty');
+        let qty = parseInt(qtyInput.val()) || 1;
+        qtyInput.val(qty + 1);
+        buyNowDeliveryTypeSet(); // Recalculate
+    });
+
+    $(document).on('click', '.decrement', function () {
+        let qtyInput = $('#bnQty');
+        let qty = parseInt(qtyInput.val()) || 1;
+        if (qty > 1) {
+            qtyInput.val(qty - 1);
+            buyNowDeliveryTypeSet(); // Recalculate
+        }
+    });
+
+
+    // function buyNowDeliveryTypeSet() {
+
+    //     let bnQty = parseInt($('#bnQty').val()) || 1;
+    //     let bnDeliveryType = $('#bnDeliveryType').val();
+    //     let bnDeliveryName = $('#bnDeliveryName').val();
+    //     let bnDeliveryAmount = $('#bnDeliveryAmount').val();
+    //     let bnDeliveryTime = $('#bnDeliveryTime').val();
+    //     let bnDeliveryTime2 = $('#bnDeliveryTime2').val();
+    //     let bnSubTotal = $('#bnSubTotal').val();
+
+    //     bnDeliveryType = `
+    //         <input type="hidden" id="delivery_type" value="${bnDeliveryType}">
+    //         <input type="hidden" id="estimated_delivery_date" value="${bnDeliveryTime2}">
+    //         <input type="hidden" id="shipping_fee" value="${bnDeliveryAmount}">
+    //         <p id="dvAmount">{{ country()->symbol }}${bnDeliveryAmount}</p>
+    //         <p id="dvName">${bnDeliveryName || 'Standard Delivery'}</p>
+    //         <p class="mb-0" id="dvTime">${bnDeliveryTime}</p>
+    //     `;
+    //     $('label.standard_delivery .right').html(bnDeliveryType);
+    //     $('.order_shipping_fee').text(`{{ country()->symbol }}${bnDeliveryAmount}`);
+    //     $('.order_subtotal').text(`{{ country()->symbol }}${bnSubTotal}`);
+
+    //     let buyNowHeadingCount = `
+    //         <h3 class="panel-title">Buy Now Items(1)</h3>
+    //     `;
+    //     $('.panel-heading.buy-heading').html(buyNowHeadingCount);
+    //     $('.order-summery .sub_label').text(`Subtotal(1 items) :`);
+        
+    //     let bnTotalPrice = Number(bnSubTotal) || 0;
+    //     let bnTotalShippingFee = Number(bnDeliveryAmount) || 0;
+    //     let bnTotalOrderPrice = bnTotalPrice + bnTotalShippingFee;
+
+    //     $('.order_total').text(`{{ country()->symbol }}${bnTotalOrderPrice}`);
+
+    //     $('.proceedToPayBtn, .couponApply').prop('disabled', false);
+
+    // }
+
+    function buyNowItemViewClear() {
+        BuyNowItemsHTML = `
+            <div class="row product-items">
+                <div class="col-sm-12 text-center">
+                    <p class="text-muted">There are no items in this cart.</p>
+                    <a href="{{ route('shop') }}" class="btn btn-default mt-20">Continue Shopping</a>
+                </div>
+            </div>
+        `;
+        
+        $('.panel-body.buy-now-items').html(BuyNowItemsHTML);
     }
 
 
