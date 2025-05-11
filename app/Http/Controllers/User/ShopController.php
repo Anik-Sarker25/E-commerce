@@ -397,6 +397,7 @@ class ShopController extends Controller
             'pageTitle'            => $pageTitle,
             'categories'           => $categories,
             'product'              => $product,
+            'products'             => $product,
             'paymentMethods'       => $paymentMethods,
             'brands'               => $brands,
             'partnerships'         => $partnerships,

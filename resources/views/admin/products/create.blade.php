@@ -342,8 +342,8 @@
                                     <div class="form-group mb-3">
                                         <label class="form-label" for="product_return">Return Policy [Default ( <small>Non-returnable</small> )]</label>
                                         <select class="form-control select2" name="product_return" id="product_return">
-                                            @foreach ($returns as $return)
-                                                <option value="{{ $return }}" {{ isset($data->return) && ($data->return === $return) ? 'selected' : '' }}>{{ ucfirst($return) }}</option>
+                                            @foreach ($returns as $return => $key)
+                                                <option value="{{ $key }}" {{ isset($data->return) && ($data->return === $key) ? 'selected' : '' }}>{{ ucfirst($return) }}</option>
                                             @endforeach
                                         </select>
                                         <span class="text-danger" id="productReturnError"></span>
@@ -355,8 +355,8 @@
                                     <div class="form-group mb-3">
                                         <label class="form-label" for="warranty">Warranty [Default ( <small>No Warranty</small> )]</label>
                                         <select class="form-control select2" name="warranty" id="warranty">
-                                            @foreach ($warranties as $warranty)
-                                                <option value="{{ $warranty }}" {{ isset($data->warranty) && ($data->warranty === $warranty) ? 'selected' : '' }}>{{ ucfirst($warranty) }}</option>
+                                            @foreach ($warranties as $warranty => $key)
+                                                <option value="{{ $key }}" {{ isset($data->warranty) && ($data->warranty === $key) ? 'selected' : '' }}>{{ ucfirst($warranty) }}</option>
                                             @endforeach
                                         </select>
                                         <span class="text-danger" id="warrantyError"></span>

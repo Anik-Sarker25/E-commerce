@@ -35,22 +35,22 @@ class Constant {
     ];
 
     const PRODUCT_RETURNS = [
-        'This item is non-returnable',
-        '3 days easy return',
-        '7 days easy return',
-        '14 days easy return',
-        '30 days easy return',
+        'This item is non-returnable' => '1',
+        '3 days easy return' => '2',
+        '7 days easy return' => '3',
+        '14 days easy return' => '4',
+        '30 days easy return' => '5',
     ];
 
     const PRODUCT_WARRANTY = [
-        'No warranty available',
-        '6 month brand warranty',
-        '1 year brand warranty',
-        '2 year brand warranty',
-        '3 year brand warranty',
-        '10 year brand warranty',
-        'Extended warranty',
-        'Lifetime warranty',
+        'No warranty available' => '1',
+        '6 month brand warranty' => '2',
+        '1 year brand warranty' => '3',
+        '2 year brand warranty' => '4',
+        '3 year brand warranty' => '5',
+        '10 year brand warranty' => '6',
+        'Extended warranty' => '7',
+        'Lifetime warranty' => '8',
     ];
 
     const CURRENCY = [

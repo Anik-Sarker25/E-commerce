@@ -65,6 +65,7 @@
                                             <table class="table itemTable mb-0">
                                                 <tbody>
                                                     @foreach ($invoice->invoiceItem as $key => $item)
+                                                    @if (!empty($item))
                                                         <tr style="{{ $loop->last ? '' : 'border-bottom: 10px solid transparent;' }}">
                                                             <td class="text-left" style="width: 40%;">
                                                                 <div class="d-flex">
@@ -74,14 +75,48 @@
                                                                         $tradeOrderId = $invoice->id;
 
                                                                     @endphp
-                                                                    <p>
-                                                                        <a href="{{ route('customer.order.invoice.view', [
-                                                                            'orderGroupKey' => $orderGroupKey,
-                                                                            'tradeOrderId' => $tradeOrderId
-                                                                        ]) }}">
-                                                                            {{ $item->products->name }}
-                                                                        </a>
-                                                                    </p>
+                                                                    <div class="context">
+                                                                        <p>
+                                                                            <a href="{{ route('customer.order.invoice.view', [
+                                                                                'orderGroupKey' => $orderGroupKey,
+                                                                                'tradeOrderId' => $tradeOrderId
+                                                                            ]) }}">
+                                                                                {{ $item->products->name }}
+                                                                            </a>
+                                                                        </p>
+                                                                        @if(!empty($item->color->color_name))
+                                                                            <span class="text-muted">
+                                                                                Color-Family: {{ $item->color->color_name }},
+                                                                            </span>
+                                                                        @endif
+                                                                        @php
+                                                                            $variant = $item->size ?? null;
+                                                                            $label = null;
+
+                                                                            if ($variant && $variant->variant_type && $variant->variant_value) {
+                                                                                switch ($variant->variant_type) {
+                                                                                    case \App\Helpers\Constant::VARIANT_TYPES['size']:
+                                                                                        $label = 'Size';
+                                                                                        break;
+                                                                                    case \App\Helpers\Constant::VARIANT_TYPES['storage_capacity']:
+                                                                                        $label = 'Storage Capacity';
+                                                                                        break;
+                                                                                    case \App\Helpers\Constant::VARIANT_TYPES['instalment']:
+                                                                                        $label = 'Instalment';
+                                                                                        break;
+                                                                                    case \App\Helpers\Constant::VARIANT_TYPES['case_size']:
+                                                                                        $label = 'Case Size';
+                                                                                        break;
+                                                                                }
+                                                                            }
+                                                                        @endphp
+
+                                                                        @if ($label && !empty($variant->variant_value))
+                                                                            <span class="text-muted">{{ $label }}: {{ $variant->variant_value }}</span>
+                                                                        @endif
+
+
+                                                                    </div>
                                                                 </div>
                                                             </td>
                                                             <td class="text-center" style="width: 30%;">
@@ -92,6 +127,7 @@
                                                                 {{ country()->symbol . number_format2($item->total_price) }}
                                                             </td>
                                                         </tr>
+                                                    @endif
                                                     @endforeach
                                                 </tbody>
                                             </table>

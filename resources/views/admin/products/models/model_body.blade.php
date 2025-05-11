@@ -189,7 +189,7 @@
 <div class="row mb-2">
     <div class="col-4">
         <p class="text-muted small mb-0">Stock Quantity:</p>
-        <p class="fw-bold small {{ $stocksWithoutVariant->stock ? '' : 'text-danger' }}">
+        <p class="fw-bold small {{ $subTotalStock ? '' : 'text-danger' }}">
             {{ $subTotalStock ? 'Total Stock: ' . $subTotalStock . ' ' . $unit : 'Out of Stock' }}
         </p>
     </div>

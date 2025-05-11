@@ -35,4 +35,8 @@ class Invoice extends Model
         return $this->hasMany(InvoiceItem::class);
     }
 
+    public function deliveryType(){
+        return $this->belongsTo(DeliveryOption::class, 'delivery_type');
+    }
+
 }

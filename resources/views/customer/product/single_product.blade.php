@@ -1,3 +1,6 @@
+@php
+    use App\Helpers\Constant;
+@endphp
 @extends('layouts.customer.app')
 @push('css')
 <style>
@@ -64,7 +67,7 @@
 
     .block-content.delivery .content .delivery-text {
         font-weight: bold;
-        margin: 0 0 5px;
+        margin: 0 0 0;
     }
 
     .block-content.delivery .content small {
@@ -226,7 +229,7 @@
                             <div class="product-info-main">
 
                                 <h1 class="page-title">
-                                    {{ $product->name }}
+                                    {{ $product->name }} {{ $product->id }}
                                 </h1>
                                 <div class="product-reviews-summary">
                                     <div class="rating-summary">
@@ -549,11 +552,36 @@
                                 <i class="fa fa-truck"></i>
                             </div>
                             <div class="content">
-                                <p class="delivery-text">Standard Delivery</p>
-                                <p><small>Guaranteed by 2-7 dec</small></p>
+                                <p class="delivery-text">{{ $products->deliveryType->name ?? 'Standard Delivery' }}</p>
+                                @php
+                                    use Carbon\Carbon;
+
+                                    $guaranteeText = '';
+                                    $estimated = $products->deliveryType->estimated_time ?? null;
+
+                                    $label = array_search($estimated, Constant::ESTIMATED_TIME);
+
+                                    if ($label === 'within 24 hours') {
+                                        $guaranteeText = 'Guaranteed by 24 hours';
+                                    } elseif ($label === '1 to 3 days') {
+                                        $start = Carbon::now()->format('d');
+                                        $end = Carbon::now()->addDays(3)->format('d');
+                                        $month = Carbon::now()->format('M'); // Short month name (e.g., May)
+                                        $guaranteeText = "Guaranteed by {$start}-{$end} {$month}";
+                                    } elseif ($label === '3 to 7 days') {
+                                        $start = Carbon::now()->addDays(2)->format('d');
+                                        $end = Carbon::now()->addDays(7)->format('d');
+                                        $month = Carbon::now()->format('M');
+                                        $guaranteeText = "Guaranteed by {$start}-{$end} {$month}";
+                                    }
+                                @endphp
+
+                                @if ($guaranteeText)
+                                    <p><small>{{ $guaranteeText }}</small></p>
+                                @endif
                             </div>
                             <div class="price">
-                                <span>{{ country()->symbol . '60' }}</span>
+                                <span>{{ country()->symbol . number_format2($products->deliveryType->cost) ?? '60' }}</span>
                             </div>
                         </div>
                         <div class="block-content delivery">
@@ -570,19 +598,32 @@
                         </div>
                         <div class="block-content delivery">
                             <div class="icon">
-                                <span class="circle-days">7</span>
+                                @php
+                                    $returnLabel = array_search($products->return, Constant::PRODUCT_RETURNS);
+                                @endphp
+
+                                @if ($returnLabel === 'This item is non-returnable')
+                                    <span class="circle-days">x</span>
+                                @elseif ($returnLabel && preg_match('/\d+/', $returnLabel, $matches))
+                                    <span class="circle-days">{{ $matches[0] }}</span>
+                                @endif
+
+
                             </div>
                             <div class="content">
-                                <p class="delivery-text">7 days easy return</p>
+                                <p class="delivery-text">{{ array_search($products->return, Constant::PRODUCT_RETURNS) ?? '7 days easy return' }}</p>
                             </div>
                         </div>
                         <div class="block-content delivery">
                             <div class="icon">
-                                {{-- <i class="fa-regular fa-circle-check"></i> --}}
-                                <i class="fa-regular fa-circle-xmark"></i>
+                                @if ($products->warranty == Constant::PRODUCT_WARRANTY['No warranty available'])
+                                    <i class="fa-regular fa-circle-xmark"></i>
+                                @else 
+                                    <i class="fa-solid fa-shield"></i>
+                                @endif
                             </div>
                             <div class="content">
-                                <p class="delivery-text">Warranty not Available</p>
+                                <p class="delivery-text mb-0 text-capitalize"> {{ array_search($products->warranty, Constant::PRODUCT_WARRANTY) ?? 'Warranty Not Available' }}</p>
                             </div>
                         </div>
                         <hr>
@@ -607,7 +648,7 @@
 
                             </div>
                             <div class="price">
-                                <a href="#">Change</a>
+                                <a href="{{ route('customer.addressBook.index') }}">Change</a>
                             </div>
                         </div>
 

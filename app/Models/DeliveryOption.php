@@ -22,4 +22,7 @@ class DeliveryOption extends Model
     public function products() {
         return $this->hasMany(Product::class, 'delivery_type');
     }
+    public function Invoice() {
+        return $this->hasMany(Invoice::class, 'delivery_type');
+    }
 }

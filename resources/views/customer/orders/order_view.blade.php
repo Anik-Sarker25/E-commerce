@@ -12,6 +12,37 @@
             border-radius: 5px;
             margin-right: 10px;
         }
+        .section-title {
+            margin-block: 5px;
+        }
+        .timeline_items span {
+            font-size: 13px;
+            display: block;
+            margin-bottom: 3px;
+        }
+        .paidR {
+            margin-top: 10px;
+            font-size: 13px;
+        }
+        hr {
+            margin-bottom: 10px;
+        }
+        /* .summary-box {
+            border-left: 3px solid #eee;
+            padding-left: 10px;
+        } */
+        .track-package-box {
+            background: #F4F4F4;
+            padding: 12px;
+            border-radius: 5px;
+            widows: 100%;
+        }
+        .track-btn-wrapper {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(50%);
+        }
     </style>
 
 @endpush
@@ -56,32 +87,141 @@
                                     </span>
                                 </div>
                                 <div class="panel-body">
+                                    @if($invoice->status !== Constant::ORDER_STATUS['pending'])
+                                        <div class="track-package-box">
+                                            <div class="row" style="position: relative;">
+                                                <div class="col-sm-8">
+                                                    <p>{{ $invoice->deliveryType->name }} <strong>{{ $invoice->tracking_code }}</strong></p>
+                                                    <p>Yay! Your order has been delivered, we hope you like it 10 May</p>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <div class="track-btn-wrapper">
+                                                        <a href="javascript:;" class="btn btn-sm text-capitalize btn-default">Track Package</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
                                     <div class="table-responsive mt-0">
                                         <table class="table itemTable mb-0">
                                             <tbody>
+                                                @php
+                                                    $subtotal = 0;
+                                                @endphp
                                                 @foreach ($invoice->invoiceItem as $key => $item)
                                                     <tr style="{{ $loop->last ? '' : 'border-bottom: 10px solid transparent;' }}">
                                                         <td class="text-left" style="width: 40%;">
                                                             <div class="d-flex">
                                                                 <img src="{{ asset($item->products->thumbnail) }}" alt="image" class="product-image" width="64px">
-                                                                <p><a href="{{ route('customer.order.invoice.view') }}">{{ $item->products->name }}</a></p>
+                                                                <div class="context">
+                                                                    <p><a href="{{ route('product.show', $item->products->slug) }}?itemcode={{ $item->products->item_code }}&pro={{ $item->products->id }}">{{ $item->products->name }}</a></p>
+                                                                    @if(!empty($item->color->color_name))
+                                                                        <span class="text-muted">
+                                                                            Color-Family: {{ $item->color->color_name }},
+                                                                        </span>
+                                                                    @endif
+                                                                    @php
+                                                                        $variant = $item->size ?? null;
+                                                                        $label = null;
+
+                                                                        if ($variant && $variant->variant_type && $variant->variant_value) {
+                                                                            switch ($variant->variant_type) {
+                                                                                case \App\Helpers\Constant::VARIANT_TYPES['size']:
+                                                                                    $label = 'Size';
+                                                                                    break;
+                                                                                case \App\Helpers\Constant::VARIANT_TYPES['storage_capacity']:
+                                                                                    $label = 'Storage Capacity';
+                                                                                    break;
+                                                                                case \App\Helpers\Constant::VARIANT_TYPES['instalment']:
+                                                                                    $label = 'Instalment';
+                                                                                    break;
+                                                                                case \App\Helpers\Constant::VARIANT_TYPES['case_size']:
+                                                                                    $label = 'Case Size';
+                                                                                    break;
+                                                                            }
+                                                                        }
+                                                                    @endphp
+
+                                                                    @if ($label && !empty($variant->variant_value))
+                                                                        <span class="text-muted">{{ $label }}: {{ $variant->variant_value }}</span>
+                                                                    @endif
+                                                                </div>
                                                             </div>
                                                         </td>
                                                         <td class="text-center" style="width: 30%;">
                                                             Qty:
                                                             {{ $item->quantity }}
                                                         </td>
+                                                        @php
+                                                            $itemPrice = $item->price * $item->quantity;
+                                                            $subtotal += $itemPrice;
+                                                        @endphp
                                                         <td class="text-center" style="width: 30%;">
-                                                            {{ country()->symbol . number_format2($item->total_price) }}
+                                                            {{ country()->symbol . ' ' . number_format2($itemPrice) }}
                                                         </td>
                                                     </tr>
                                                 @endforeach
                                             </tbody>
                                         </table>
                                     </div>
+                                
+                                    <hr>
 
+                                    <!-- Order Timeline -->
+                                    <div class="section-title">Order Timeline</div>
+                                    <div class="timeline_items">
+                                        <span class="text-muted">Placed On {{ $invoice->created_at->format('d M Y h:i:s A') }}</span>
+                                        <span class="text-muted">Placed On {{ $invoice->created_at->format('d M Y h:i:s A') }}</span>
+                                        <span class="text-muted">Placed On {{ $invoice->created_at->format('d M Y h:i:s A') }}</span>
+                                        <span class="text-muted">Placed On {{ $invoice->created_at->format('d M Y h:i:s A') }}</span>
+                                    </div>
+                                    <p class="paidR">Paid By Rocket</p>
+
+                                    <hr>
+
+                                    <div class="row">
+                                        <!-- Shipping Info -->
+                                        <div class="col-sm-8">
+                                            <div class="section-title">Shipping Info</div>
+
+
+                                            <p>{{ $address->name }} <i class="fa fa-phone" style="color: #999;"></i> {{ $address->phone ?? '' }}</p>
+
+                                             <p class="delivery-text address">
+                                                @if ($address)
+                                                    @if ($address && $address->delivery_place == App\Helpers\Constant::DELIVERY_PLACE['home'])
+                                                        <span class="label label-success">Home</span>
+                                                    @elseif ($address && $address->delivery_place == App\Helpers\Constant::DELIVERY_PLACE['office'])
+                                                        <span class="label label-primary">Office</span>
+                                                    @endif
+
+                                                    {{ $address->address ? $address->address . ', ' : '' }}
+                                                    {{ optional($address->upazilas)->name ? optional($address->upazilas)->name . ', ' : '' }}
+                                                    {{ optional($address->district)->name ? optional($address->district)->name . ', ' : '' }}
+                                                    {{ optional($address->division)->name ?? 'Set Your Address' }}
+                                                @else
+                                                    <div class="text-center">Set Your Address</div>
+                                                @endif
+                                            </p>
+                                        </div>
+                                        @php
+                                            $grandTotal = $subtotal + $invoice->shipping_cost;
+                                        @endphp
+                                        <!-- Total Summary -->
+                                        <div class="col-sm-4">
+                                            <div class="summary-box">
+                                                <div class="section-title">Total Summary</div>
+                                                <p>Subtotal: {{ country()->symbol . ' ' . $subtotal }}</p>
+                                                <p>Shipping Fee: {{ country()->symbol . ' ' . $invoice->shipping_cost }}</p>
+                                                <hr>
+                                                <p class="total">Total: {{ country()->symbol . ' ' . $grandTotal }}</p>
+                                                <p>Paid via: DBBL Wallet</p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+
                         </div>
                     </div>
 

@@ -29,7 +29,8 @@ function dateFormat2($date) {
     return date('d-m-Y', $date);
 }
 function number_format2($value) {
-    return rtrim(rtrim($value, '0'), '.');
+    $value = (float) $value; // Ensure it's treated as a float
+    return rtrim(rtrim(number_format($value, 2, '.', ''), '0'), '.');
 }
 function numberToWord($number) {
     $f = new \NumberFormatter("en", \NumberFormatter::SPELLOUT);

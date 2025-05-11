@@ -51,6 +51,8 @@ class InvoiceController extends Controller
         $partnerships     = Partnership::orderBy('id', 'ASC')->get();
         $user             = auth()->user();
         $invoice          = Invoice::find($id);
+        $addressId        = $invoice->shipping_address_id;
+        $address          = Address::find($addressId);
 
         return view('customer.orders.order_view', [
             'pageTitle'            => $pageTitle,
@@ -60,6 +62,7 @@ class InvoiceController extends Controller
             'partnerships'         => $partnerships,
             'user'                 => $user,
             'invoice'              => $invoice,
+            'address'              => $address,
         ]);
 
     }
