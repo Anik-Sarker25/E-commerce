@@ -12,6 +12,10 @@ class Constant {
         'active' => 0,
         'deactive' => 1
     ];
+    const AGENT_STATUS = [
+        'free' => 1,
+        'engaged' => 2
+    ];
 
     const USER_TYPE = [
         'admin' => 0,

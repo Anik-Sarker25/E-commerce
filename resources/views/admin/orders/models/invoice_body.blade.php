@@ -144,6 +144,27 @@
                             @endif
                         </td>
                     </tr>
+                    {{-- @php
+                        $final_delivery_date = '---';
+
+                        if ($invoice->estimated_delivery_date) {
+                            $estimatedDate = $invoice->estimated_delivery_date;
+                            $createdDate = $invoice->created_at ? \Carbon\Carbon::parse($invoice->created_at)->startOfDay() : now()->startOfDay();
+
+                            if ($estimatedDate == \App\Helpers\Constant::ESTIMATED_TIME['within 24 hours']) {
+                                $final_delivery_date = $createdDate->addHours(24)->format('d-m-Y');
+                            } elseif ($estimatedDate == \App\Helpers\Constant::ESTIMATED_TIME['1 to 3 days']) {
+                                $final_delivery_date = $createdDate->addDays(3)->format('d-m-Y');
+                            } elseif ($estimatedDate == \App\Helpers\Constant::ESTIMATED_TIME['3 to 7 days']) {
+                                $final_delivery_date = $createdDate->addDays(7)->format('d-m-Y');
+                            }
+                        }
+                    @endphp
+                    <tr>
+                        <td>Estimated Delivery Date: </td>
+                        <td>:</td>
+                        <td>{{ $final_delivery_date }}</td>
+                    </tr> --}}
                     <tr>
                         <td>Approved By</td>
                         <td>:</td>

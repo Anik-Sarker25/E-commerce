@@ -88,6 +88,12 @@
             padding: 5px 0;
         }
 
+        .table-borderless > thead > tr > th,
+        .table-borderless > tbody > tr > td,
+        .table-borderless > tfoot > tr > td {
+            border: none;
+        }
+
         .me-1 {
             margin-right: 5px;
         }

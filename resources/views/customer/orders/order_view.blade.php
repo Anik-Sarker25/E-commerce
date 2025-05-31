@@ -20,6 +20,10 @@
             display: block;
             margin-bottom: 3px;
         }
+        .unpaid {
+            color: #f36;
+            text-transform: capitalize;
+        }
         .paidR {
             margin-top: 10px;
             font-size: 13px;
@@ -96,7 +100,14 @@
                                                 </div>
                                                 <div class="col-sm-4">
                                                     <div class="track-btn-wrapper">
-                                                        <a href="javascript:;" class="btn btn-sm text-capitalize btn-default">Track Package</a>
+                                                        @php
+                                                            $orderTRkKey = "TOrRDerK_" . $invoice->tracking_code . "_" . rand(1000, 9999) . "_TRKC" . time();
+                                                            $tradeOrderId = $invoice->id;
+                                                        @endphp
+                                                        <a href="{{ route('customer.order.track.package', [
+                                                            'orderTRkKey' => $orderTRkKey,
+                                                            'TrkOrdErId' => $tradeOrderId
+                                                        ]) }}" class="btn btn-sm text-capitalize btn-default">Track Package</a>
                                                     </div>
                                                 </div>
                                             </div>
@@ -126,16 +137,16 @@
 
                                                                         if ($variant && $variant->variant_type && $variant->variant_value) {
                                                                             switch ($variant->variant_type) {
-                                                                                case \App\Helpers\Constant::VARIANT_TYPES['size']:
+                                                                                case Constant::VARIANT_TYPES['size']:
                                                                                     $label = 'Size';
                                                                                     break;
-                                                                                case \App\Helpers\Constant::VARIANT_TYPES['storage_capacity']:
+                                                                                case Constant::VARIANT_TYPES['storage_capacity']:
                                                                                     $label = 'Storage Capacity';
                                                                                     break;
-                                                                                case \App\Helpers\Constant::VARIANT_TYPES['instalment']:
+                                                                                case Constant::VARIANT_TYPES['instalment']:
                                                                                     $label = 'Instalment';
                                                                                     break;
-                                                                                case \App\Helpers\Constant::VARIANT_TYPES['case_size']:
+                                                                                case Constant::VARIANT_TYPES['case_size']:
                                                                                     $label = 'Case Size';
                                                                                     break;
                                                                             }
@@ -175,7 +186,16 @@
                                         <span class="text-muted">Placed On {{ $invoice->created_at->format('d M Y h:i:s A') }}</span>
                                         <span class="text-muted">Placed On {{ $invoice->created_at->format('d M Y h:i:s A') }}</span>
                                     </div>
-                                    <p class="paidR">Paid By Rocket</p>
+                                    @php
+                                        $media = $invoice->payment_method == Constant::PAYMENT_METHOD['cod'] ? 'Cash On Delivery' : '';
+                                        $statusLabel = array_flip(Constant::PAYMENT_STATUS)[$invoice->payment_status];
+                                    @endphp
+
+                                    @if ($invoice->payment_status == Constant::PAYMENT_STATUS['unpaid'])
+                                        <p class="unpaid">{{ $statusLabel }}</p>
+                                    @else
+                                        <p class="paidR text-capitalize">Paid By {{ $media }}</p>
+                                    @endif
 
                                     <hr>
 
@@ -215,7 +235,12 @@
                                                 <p>Shipping Fee: {{ country()->symbol . ' ' . $invoice->shipping_cost }}</p>
                                                 <hr>
                                                 <p class="total">Total: {{ country()->symbol . ' ' . $grandTotal }}</p>
-                                                <p>Paid via: DBBL Wallet</p>
+
+                                                @if ($invoice->payment_status == Constant::PAYMENT_STATUS['unpaid'])
+                                                    <p class="unpaid">{{ $statusLabel }}</p>
+                                                @else
+                                                    <p class="text-capitalize">Paid via: {{ $media }}</p>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>
