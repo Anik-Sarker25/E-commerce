@@ -247,7 +247,7 @@
 									<span class="menu-text">Partnerships</span>
 								</a>
 							</div>
-							<div class="menu-item {{ Request::is('admin/settings/paymentMethods') ? 'active' : '' }}">
+							<div class="menu-item {{ Request::is('admin/settings/payment-methods') ? 'active' : '' }}">
 								<a href="{{ route('admin.settings.paymentMethods.index') }}" class="menu-link">
 									<span class="menu-text">Payment Method</span>
 								</a>
@@ -273,6 +273,12 @@
 						<a href="{{ route('admin.services.index') }}" class="menu-link">
 							<span class="menu-icon"><i class="bi bi-sliders"></i></span>
 							<span class="menu-text">Services</span>
+						</a>
+					</div>
+					<div class="menu-item {{ (Request::is('admin/delivery-agents')) ? 'active' : '' }}">
+						<a href="{{ route('admin.deliveryAgents.index') }}" class="menu-link">
+							<span class="menu-icon"><i class="bi bi-sliders"></i></span>
+							<span class="menu-text">Delivery Agents</span>
 						</a>
 					</div>
 					<div class="menu-item">

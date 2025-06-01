@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AgentController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ChildCategoryController;
@@ -183,6 +184,15 @@ Route::prefix('admin')->as('admin.')->middleware('auth:admin')->group(function (
         Route::get('/edit/{id}', [ServiceController::class, 'edit'])->name('edit');
         Route::post('/update/{id}', [ServiceController::class, 'update'])->name('update');
         Route::delete('/destroy/{id}', [ServiceController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('delivery-agents')->as('deliveryAgents.')->group(function () {
+
+        Route::get('/', [AgentController::class, 'index'])->name('index');
+        // Route::post('/store', [AgentController::class,'store'])->name('store');
+        // Route::get('/edit/{id}', [AgentController::class, 'edit'])->name('edit');
+        // Route::post('/update/{id}', [AgentController::class, 'update'])->name('update');
+        // Route::delete('/destroy/{id}', [AgentController::class, 'destroy'])->name('destroy');
     });
 
 

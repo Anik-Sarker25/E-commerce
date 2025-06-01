@@ -51,7 +51,7 @@
                                                 @case('processing') label-primary @break
                                                 @case('shipped') label-default @break
                                                 @case('delivered') label-success @break
-                                                @case('canceled') label-danger @break
+                                                @case('cancelled') label-danger @break
                                                 @case('refunded') label-default @break
                                                 @case('returned') label-default @break
                                                 @default label-default

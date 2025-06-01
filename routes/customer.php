@@ -50,6 +50,7 @@ Route::prefix('customer')->as('customer.')->middleware(['auth', 'verified'])->gr
         Route::get('/view', [InvoiceController::class, 'invoiceView'])->name('invoice.view');
         Route::post('/store', [InvoiceController::class,'store'])->name('store');
         Route::get('/track/package', [InvoiceController::class, 'trackPackage'])->name('track.package');
+        Route::get('/track/cancelation', [InvoiceController::class, 'trackCancelation'])->name('track.cancelation');
     });
 
 

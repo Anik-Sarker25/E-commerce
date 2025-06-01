@@ -68,7 +68,7 @@ class InvoiceController extends Controller
     }
 
     public function trackPackage(Request $request) {
-        // $id = $request->query('tradeOrderId');
+        // $id = $request->query('TrkOrdErId');
         $pageTitle        = 'Tracking Details';
         $categories       = Category::with('subcategories.products')->get();
         $paymentMethods   = PaymentMethod::orderBy('id', 'DESC')->get();
@@ -76,8 +76,6 @@ class InvoiceController extends Controller
         $partnerships     = Partnership::orderBy('id', 'ASC')->get();
         $user             = auth()->user();
         // $invoice          = Invoice::find($id);
-        // $addressId        = $invoice->shipping_address_id;
-        // $address          = Address::find($addressId);
 
         return view('customer.orders.track_package', [
             'pageTitle'            => $pageTitle,
@@ -87,7 +85,28 @@ class InvoiceController extends Controller
             'partnerships'         => $partnerships,
             'user'                 => $user,
             // 'invoice'              => $invoice,
-            // 'address'              => $address,
+        ]);
+
+    }
+
+    public function trackCancelation(Request $request) {
+        $id = $request->query('TrkOrdErId');
+        $pageTitle        = 'Tracking Details';
+        $categories       = Category::with('subcategories.products')->get();
+        $paymentMethods   = PaymentMethod::orderBy('id', 'DESC')->get();
+        $brands           = Brand::orderBy('id', 'ASC')->get();
+        $partnerships     = Partnership::orderBy('id', 'ASC')->get();
+        $user             = auth()->user();
+        $invoice          = Invoice::find($id);
+
+        return view('customer.orders.cancelation_track', [
+            'pageTitle'            => $pageTitle,
+            'categories'           => $categories,
+            'paymentMethods'       => $paymentMethods,
+            'brands'               => $brands,
+            'partnerships'         => $partnerships,
+            'user'                 => $user,
+            'invoice'              => $invoice,
         ]);
 
     }

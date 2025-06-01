@@ -24,7 +24,7 @@ class InvoiceController extends Controller
             'processing_orders' => 'Processing Orders',
             'shipped_orders' => 'Shipped Orders',
             'delivered_orders' => 'Delivered Orders',
-            'canceled_orders' => 'Canceled Orders',
+            'cancelled_orders' => 'cancelled Orders',
             'refunded_orders' => 'Refunded Orders',
             'returned_orders' => 'Returned Orders'
         ];
@@ -58,8 +58,8 @@ class InvoiceController extends Controller
             else if (request()->has('delivered_orders'))  {
                 $data = $data->where('status', Constant::ORDER_STATUS['delivered']);
             }
-            else if (request()->has('canceled_orders'))  {
-                $data = $data->where('status', Constant::ORDER_STATUS['canceled']);
+            else if (request()->has('cancelled_orders'))  {
+                $data = $data->where('status', Constant::ORDER_STATUS['cancelled']);
             }
             else if (request()->has('refunded_orders'))  {
                 $data = $data->where('status', Constant::ORDER_STATUS['refunded']);
@@ -224,12 +224,12 @@ class InvoiceController extends Controller
 
         // Define allowed status transitions
         $validTransitions = [
-            Constant::ORDER_STATUS['pending'] => [Constant::ORDER_STATUS['confirmed'], Constant::ORDER_STATUS['canceled']],
-            Constant::ORDER_STATUS['confirmed'] => [Constant::ORDER_STATUS['processing'], Constant::ORDER_STATUS['canceled']],
-            Constant::ORDER_STATUS['processing'] => [Constant::ORDER_STATUS['shipped'], Constant::ORDER_STATUS['canceled']],
+            Constant::ORDER_STATUS['pending'] => [Constant::ORDER_STATUS['confirmed'], Constant::ORDER_STATUS['cancelled']],
+            Constant::ORDER_STATUS['confirmed'] => [Constant::ORDER_STATUS['processing'], Constant::ORDER_STATUS['cancelled']],
+            Constant::ORDER_STATUS['processing'] => [Constant::ORDER_STATUS['shipped'], Constant::ORDER_STATUS['cancelled']],
             Constant::ORDER_STATUS['shipped'] => [Constant::ORDER_STATUS['delivered']],
             Constant::ORDER_STATUS['delivered'] => [Constant::ORDER_STATUS['returned'], Constant::ORDER_STATUS['refunded']],
-            Constant::ORDER_STATUS['canceled'] => [],
+            Constant::ORDER_STATUS['cancelled'] => [],
             Constant::ORDER_STATUS['refunded'] => [],
             Constant::ORDER_STATUS['returned'] => [Constant::ORDER_STATUS['refunded']],
         ];

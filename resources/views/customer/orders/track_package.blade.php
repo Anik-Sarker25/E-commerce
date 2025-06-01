@@ -30,13 +30,15 @@
     .status-list .status-item .desc-item .label {
         color: #000;
         position: absolute;
-        top: -25px;
-        left: 0;
+        top: -25%;
+        left: 50%;
         font-size: 12px;
+        transform: translate(-50%, -50%);
+        white-space: nowrap;
     }
     .status-list .status-item .desc-item .sicon svg{
-        width: 36px;
-        height: 36px;
+        width: 24px;
+        height: 24px;
         background: #000;
         color: #fff;
         border-radius: 50%;
@@ -186,20 +188,28 @@
                                                         <table class="table table-borderless">
                                                             <tbody>
                                                                 <tr>
-                                                                    <td>Delivery partner: </td>
+                                                                    <td>Delivery partner</td>
+                                                                    <td>:</td>
                                                                     <td>REDX</td>
                                                                 </tr>
                                                                 <tr>
-                                                                    <td>Courier Person: </td>
+                                                                    <td>Courier Person</td>
+                                                                    <td>:</td>
                                                                     <td>Motiur Rahman - Sl23</td>
                                                                 </tr>
                                                                 <tr>
-                                                                    <td>Tracking Number: </td>
+                                                                    <td>Tracking Number</td>
+                                                                    <td>:</td>
                                                                     <td onclick="copyToClipboard(this)">
                                                                         <a href="javascript::" style="color: #f36;">
                                                                             TRK-DYUYRP-3420250510
                                                                         </a>
                                                                     </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>Current Status</td>
+                                                                    <td>:</td>
+                                                                    <td class="text-success">Processing</td>
                                                                 </tr>
                                                             </tbody>
                                                         </table>
@@ -221,10 +231,6 @@
                                                     <li class="completed">
                                                         <div class="status">Ready For Shipping <span class="timestamp">11 May 2025 - 12:00 PM</span></div>
                                                         <div class="message">Your order is processed! It's ready to shipped.</div>
-                                                    </li>
-                                                    <li class="completed">
-                                                        <div class="status">Canceled <span class="timestamp">11 May 2025 - 9:00 AM</span></div>
-                                                        <div class="message">Your order is canceled.</div>
                                                     </li>
                                                     <li class="completed">
                                                         <div class="status">Shipped <span class="timestamp">11 May 2025 - 9:00 AM</span></div>

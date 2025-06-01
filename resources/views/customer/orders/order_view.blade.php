@@ -81,7 +81,7 @@
                                             @case('processing') label-primary @break
                                             @case('shipped') label-default @break
                                             @case('delivered') label-success @break
-                                            @case('canceled') label-danger @break
+                                            @case('cancelled') label-danger @break
                                             @case('refunded') label-default @break
                                             @case('returned') label-default @break
                                             @default label-default
@@ -91,7 +91,7 @@
                                     </span>
                                 </div>
                                 <div class="panel-body">
-                                    @if($invoice->status !== Constant::ORDER_STATUS['pending'])
+                                    @if($invoice->status !== Constant::ORDER_STATUS['pending'] && $invoice->status !== Constant::ORDER_STATUS['cancelled'])
                                         <div class="track-package-box">
                                             <div class="row" style="position: relative;">
                                                 <div class="col-sm-8">
@@ -113,6 +113,7 @@
                                             </div>
                                         </div>
                                     @endif
+
                                     <div class="table-responsive mt-0">
                                         <table class="table itemTable mb-0">
                                             <tbody>
@@ -156,6 +157,20 @@
                                                                     @if ($label && !empty($variant->variant_value))
                                                                         <span class="text-muted">{{ $label }}: {{ $variant->variant_value }}</span>
                                                                     @endif
+
+                                                                    @if ($invoice->status == Constant::ORDER_STATUS['cancelled'])
+                                                                    @php
+                                                                        $orderTRkKey = "TOrRDerK_" . $invoice->tracking_code . "_" . rand(1000, 9999) . "_TRKC" . time();
+                                                                        $tradeOrderId = $invoice->id;
+                                                                    @endphp
+                                                                        <p class="cancel-details text-capitalize">
+                                                                            {{ array_flip(Constant::ORDER_STATUS)[$invoice->status] }} - 
+                                                                            <a href="{{ route('customer.order.track.cancelation', [
+                                                                                'orderTRkKey' => $orderTRkKey,
+                                                                                'TrkOrdErId' => $tradeOrderId
+                                                                            ]) }}" class="color">View Details</a>
+                                                                        </p>
+                                                                    @endif
                                                                 </div>
                                                             </div>
                                                         </td>
@@ -195,7 +210,7 @@
                                         <p class="unpaid">{{ $statusLabel }}</p>
                                     @else
                                         <p class="paidR text-capitalize">Paid By {{ $media }}</p>
-                                    @endif
+                                    @endif 
 
                                     <hr>
 

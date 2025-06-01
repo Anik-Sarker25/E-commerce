@@ -68,7 +68,7 @@ class Constant {
         'processing' => 3,
         'shipped' => 4,
         'delivered' => 5,
-        'canceled' => 6,
+        'cancelled' => 6,
         'refunded' => 7,
         'returned' => 8,
     ];
