@@ -23,8 +23,8 @@ return new class extends Migration
             $table->string('address')->nullable();
             $table->string('marital_status')->nullable();
             $table->string('date_of_birth')->nullable();
-            $table->tinyInteger('active')->default(Constant::STATUS['active']);
-            $table->tinyinteger('status')->default(Constant::AGENT_STATUS['free']); // engage or free
+            $table->tinyInteger('active_status')->default(Constant::STATUS['active']);
+            $table->tinyinteger('work_status')->default(Constant::AGENT_STATUS['free']); // engage or free
             $table->foreignId('order_id')->nullable()->constrained('invoices')->onDelete('set null'); // agent is engaged with this order
             $table->timestamps();
         });

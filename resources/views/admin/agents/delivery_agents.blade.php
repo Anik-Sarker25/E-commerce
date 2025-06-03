@@ -18,7 +18,7 @@
                 <div class="d-flex justify-content-between">
                     <h1 class="page-header text-capitalize mb-0">{{ $pageTitle }}</h1>
                     <div class="btn-group">
-                        <button type="button" onclick="showSubCategoryForm();" class="btn btn-outline-success">
+                        <button type="button" onclick="showDeliveryAgentForm();" class="btn btn-outline-success">
                             Add New
                         </button>
                     </div>
@@ -27,14 +27,14 @@
                 <hr class="mb-4">
 
                 <!-- BEGIN Notice Form -->
-                <div class="collapse mb-4" id="subCategoryFormBox">
+                <div class="collapse mb-4" id="DeliveryAgentFormBox">
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="text-capitalize" id="addSubcategoryTitle">add agent</h4>
-                            <h4 class="text-capitalize d-none" id="updateSubcategoryTitle">update agent</h4>
+                            <h4 class="text-capitalize" id="addDeliveryAgentTitle">add agent</h4>
+                            <h4 class="text-capitalize d-none" id="updateDeliveryAgentTitle">update agent</h4>
                         </div>
                         <div class="card-body pb-2">
-                            <form id="subCategoryForm">
+                            <form id="deliveryAgentForm">
                                 <div class="row">
                                     <div class="col-xl-2">
                                         <div class="card">
@@ -54,7 +54,7 @@
                                         <div class="row">
                                             <div class="col-xl-4">
                                                 <div class="form-group mb-3">
-                                                    <label class="form-label" for="name">Delivery Agent Name</label>
+                                                    <label class="form-label" for="name">Delivery Agent Name <span class="text-danger">*</span></label>
                                                     <input type="hidden" id="update_id" value="">
                                                     <input type="text" name="name" class="form-control" id="name" placeholder="Enter Name...">
                                                     <span class="text-danger" id="nameError"></span>
@@ -62,14 +62,14 @@
                                             </div>
                                             <div class="col-xl-4">
                                                 <div class="form-group mb-3">
-                                                    <label class="form-label" for="phone_number">Phone Number</label>
+                                                    <label class="form-label" for="phone_number">Phone Number <span class="text-danger">*</span></label>
                                                     <input type="tel" name="phone_number" class="form-control" id="phone_number" placeholder="01XXXXXXXXX">
                                                     <span class="text-danger" id="phone_numberError"></span>
                                                 </div>
                                             </div>
                                             <div class="col-xl-4">
                                                 <div class="form-group mb-3">
-                                                    <label class="form-label" for="vehicle_number">Vehicle  number ( <small>Dhaka-Metro-Gha 11-5432</small> )</label>
+                                                    <label class="form-label" for="vehicle_number">Vehicle  number ( <small>Dhaka-Metro-Gha 11-5432</small> ) <span class="text-danger">*</span></label>
                                                     <input type="text" name="vehicle_number" class="form-control" id="vehicle_number" placeholder="Enter Vehicle Number..."> 
                                                     <span class="text-danger" id="vehicle_numberError"></span>
                                                 </div>
@@ -107,7 +107,7 @@
                                             </div>
                                             <div class="col-xl-4">
                                                 <div class="form-group mb-3">
-                                                    <label class="form-label" for="address">Address <span class="text-danger">*</span></label>
+                                                    <label class="form-label" for="address">Address</label>
                                                     <textarea name="address" class="form-control" id="address" rows="1" placeholder="Enter Address..."></textarea>
                                                     <span class="text-danger" id="addressError"></span>
                                                 </div>
@@ -156,9 +156,9 @@
 
                                         
                                         <div class="mb-3">
-                                            <button type="button" onclick="addSubCategory();" class="btn btn-outline-success"id="addSubCategoryBtn"><i class="fa fa-plus me-2"></i>Add Sub Category</button>
-                                            <button type="button" onclick="updateSubCategory();" class="btn btn-outline-success d-none me-2" id="updateSubCategoryBtn"><i class="fa fa-share me-2"></i>Update Sub Category</button>
-                                            <button type="button" onclick="resetSubCategory();" class="btn btn-outline-danger d-none" id="cancelSubCategoryBtn"><i class="fa fa-times me-2"></i>Cencel</button>
+                                            <button type="button" onclick="addDeliveryAgent();" class="btn btn-outline-success"id="addDeliveryAgentBtn"><i class="fa fa-plus me-2"></i>Add Agent</button>
+                                            <button type="button" onclick="updateDeliveryAgent();" class="btn btn-outline-success d-none me-2" id="updateDeliveryAgentBtn"><i class="fa fa-share me-2"></i>Update Agent</button>
+                                            <button type="button" onclick="resetDeliveryAgent();" class="btn btn-outline-danger d-none" id="cancelDeliveryAgentBtn"><i class="fa fa-times me-2"></i>Cencel</button>
                                         </div>
                                     </div>
 
@@ -181,9 +181,11 @@
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>Sub Category Name</th>
-                                        <th>Category Name</th>
                                         <th>Image</th>
+                                        <th>Name</th>
+                                        <th>Phone Number</th>
+                                        <th>Active Status</th>
+                                        <th>Work Status</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -233,10 +235,6 @@
     });
 
 
-    $(document).ready(function () {
-        getCategory();
-    });
-
     $(function() {
         var dataTable;
 
@@ -279,6 +277,13 @@
                     orderable: true
                 },
                 {
+                    data: 'image',
+                    name: 'image',
+                    className: 'text-center',
+                    searchable: true,
+                    orderable: true
+                },
+                {
                     data: 'name',
                     name: 'name',
                     className: 'text-left',
@@ -286,16 +291,23 @@
                     orderable: true
                 },
                 {
-                    data: 'category_id',
-                    name: 'category_id',
-                    className: 'text-left',
+                    data: 'phone',
+                    name: 'phone',
+                    className: 'text-center',
                     searchable: true,
                     orderable: true
                 },
                 {
-                    data: 'image',
-                    name: 'image',
-                    className: 'text-left',
+                    data: 'active_status',
+                    name: 'active_status',
+                    className: 'text-center',
+                    searchable: true,
+                    orderable: true
+                },
+                {
+                    data: 'work_status',
+                    name: 'work_status',
+                    className: 'text-center',
                     searchable: true,
                     orderable: true
                 },
@@ -320,42 +332,83 @@
         }
     };
 
-    function showSubCategoryForm() {
-        $('#subCategoryFormBox').collapse('toggle');
+    function showDeliveryAgentForm() {
+        $('#DeliveryAgentFormBox').collapse('toggle');
 
         $('#update_id').val('');
         $('#nameError').text('');
         $('#name').val('');
         $('#name').removeClass('is-invalid');
 
-        $('#categoryError').text('');
-        $('#category_id').val('').trigger('change');
+        $('#phone_numberError').text('');
+        $('#phone_number').val('');
+        $('#phone_number').removeClass('is-invalid');
+
+        $('#vehicle_numberError').text('');
+        $('#vehicle_number').val('');
+        $('#vehicle_number').removeClass('is-invalid');
 
         $('#imageError').text('');
         $('#image').val('');
         $('#image').removeClass('is-invalid');
         $('#imagePreview').attr('src', '');
 
-        $('#addSubcategoryTitle').removeClass('d-none');
-        $('#updateSubcategoryTitle').addClass('d-none');
+        $('#nid_numberError').text('');
+        $('#nid_number').val('');
+        $('#nid_number').removeClass('is-invalid');
 
-        $('#addSubCategoryBtn').removeClass('d-none');
-        $('#updateSubCategoryBtn').addClass('d-none');
-        $('#cancelSubCategoryBtn').addClass('d-none');
+        $('#blood_groupError').text('');
+        $('#blood_group').val('');
+        $('#blood_group').val('').trigger('change');
+
+        $('#addressError').text('');
+        $('#address').val('');
+        $('#address').removeClass('is-invalid');
+
+        $('#marital_statusError').text('');
+        $('#marital_status').val('');
+        $('#marital_status').val('').trigger('change');
+
+        $('#birthdayError').text('');
+        $('#birthday').val('');
+        $('#birthday').removeClass('is-invalid');
+
+        $('#addDeliveryAgentTitle').removeClass('d-none');
+        $('#updateDeliveryAgentTitle').addClass('d-none');
+
+        $('#addDeliveryAgentBtn').removeClass('d-none');
+        $('#updateDeliveryAgentBtn').addClass('d-none');
+        $('#cancelDeliveryAgentBtn').addClass('d-none');
     }
 
-    function addSubCategory() {
-        let url = "{{ route('admin.subcategories.store') }}";
+    function addDeliveryAgent() {
+        let url = "{{ route('admin.deliveryAgents.store') }}";
 
-        let category_id = $('#category_id').val();
         let name = $('#name').val();
+        let phone_number = $('#phone_number').val();
+        let vehicle_number = $('#vehicle_number').val();
         let image = $('#image')[0].files[0];
+        let nid_number = $('#nid_number').val();
+        let blood_group = $('#blood_group').val();
+        let address = $('#address').val();
+        let marital_status = $('#marital_status').val();
+        let birthday = $('#birthday').val();
+        let status = $('#status').val();
+        let engage_status = $('#engage_status').val();
 
         // Prepare form data
         let formData = new FormData();
-        formData.append('category_id', category_id);
         formData.append('name', name);
+        formData.append('phone_number', phone_number);
+        formData.append('vehicle_number', vehicle_number);
         formData.append('image', image);
+        formData.append('nid_number', nid_number);
+        formData.append('blood_group', blood_group);
+        formData.append('address', address);
+        formData.append('marital_status', marital_status);
+        formData.append('birthday', birthday);
+        formData.append('status', status);
+        formData.append('engage_status', engage_status);
 
         $.ajax({
             url: url,
@@ -364,75 +417,114 @@
             processData: false,
             contentType: false,
             success: function(response) {
-                resetSubCategory();
-                show_success('Sub Category Added Successfully!');
+                resetDeliveryAgent();
+                show_success('Delivery Agent Added Successfully!');
 
                 $('.DataTable').DataTable().ajax.reload();
             },
             error: function(error) {
-                let errors = error.responseJSON.errors;
-                if(errors.category_id) {
-                    $('#categoryError').text(errors.category_id);
-                    $('#category_id').val('').trigger('change');
-                }
-                if(errors.name) {
-                    $('#nameError').text(errors.name);
-                    $('#name').val('');
-                    $('#name').addClass('is-invalid');
-                }
-                if(errors.image) {
-                    $('#imageError').text(errors.image);
-                    $('#image').val('');
-                    $('#image').addClass('is-invalid');
+
+                $('[id$="Error"]').html(''); // Clear all error message containers
+                $('.is-invalid').removeClass('is-invalid');
+
+                // Handle Laravel validation errors (422)
+                if (error.status === 422 && error.responseJSON && error.responseJSON.errors) {
+                    let errors = error.responseJSON.errors;
+                    for (let key in errors) {
+                        if ($(`#${key}`).is('select')) {
+                            $(`#${key}Error`).html(errors[key]);
+                        } else {
+                            $(`#${key}Error`).html(errors[key]);
+                            $(`#${key}`).val('');
+                            $(`#${key}`).addClass('is-invalid');
+                        }
+                    }
+                } else {
+                    // Handle other server errors like 500 or database constraint issues
+                    let message = 'An unexpected error occurred.';
+
+                    show_error(message);
                 }
             }
         });
     }
 
     function edit(id){
-        var url = "{{ route('admin.subcategories.edit', ':id') }}";
+        var url = "{{ route('admin.deliveryAgents.edit', ':id') }}";
         url = url.replace(':id', id);
         $.ajax({
             type: "GET",
             url: url,
-            success: function(data) {
-
-                $('#subCategoryFormBox').addClass('show');
+            success: function(response) {
+                let data = response.data;
+                let birthday = response.birthday;
+                $('#DeliveryAgentFormBox').addClass('show');
                 $('#update_id').val(data.id);
                 $('#category_id').val(data.category_id).trigger('change');
                 $('#name').val(data.name);
+                $('#phone_number').val(data.phone);
+                $('#vehicle_number').val(data.vehicle_number);
+                $('#nid_number').val(data.nid_number);
+                $('#blood_group').val(data.blood_group).trigger('change');
+                $('#address').val(data.address);
+                $('#marital_status').val(data.marital_status).trigger('change');
+                $('#birthday').val(birthday);
+                $('#status').val(data.active_status).trigger('change');
+                $('#engage_status').val(data.work_status).trigger('change');
+                $('#birthday').val();
+
                 if (data.image) {
                     let baseUrl = "{{ asset('') }}";
                     let fullImageUrl = baseUrl + data.image;
                     $('#imagePreview').attr('src', fullImageUrl);
+                }else {
+                    $('#imagePreview').attr('src', '');
                 }
 
-                $('#addSubcategoryTitle').addClass('d-none');
-                $('#updateSubcategoryTitle').removeClass('d-none');
+                $('#addDeliveryAgentTitle').addClass('d-none');
+                $('#updateDeliveryAgentTitle').removeClass('d-none');
 
-                $('#addSubCategoryBtn').addClass('d-none');
-                $('#updateSubCategoryBtn').removeClass('d-none');
-                $('#cancelSubCategoryBtn').removeClass('d-none');
+                $('#addDeliveryAgentBtn').addClass('d-none');
+                $('#updateDeliveryAgentBtn').removeClass('d-none');
+                $('#cancelDeliveryAgentBtn').removeClass('d-none');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
         });
     }
 
-    function updateSubCategory() {
+    function updateDeliveryAgent() {
         let update_id = $('#update_id').val();
-        let url = "{{ route('admin.subcategories.update', ':id') }}";
+        let url = "{{ route('admin.deliveryAgents.update', ':id') }}";
         url = url.replace(':id', update_id);
 
-        let category_id = $('#category_id').val();
+
         let name = $('#name').val();
+        let phone_number = $('#phone_number').val();
+        let vehicle_number = $('#vehicle_number').val();
         let image = $('#image')[0].files[0];
+        let nid_number = $('#nid_number').val();
+        let blood_group = $('#blood_group').val();
+        let address = $('#address').val();
+        let marital_status = $('#marital_status').val();
+        let birthday = $('#birthday').val();
+        let status = $('#status').val();
+        let engage_status = $('#engage_status').val();
 
         // Prepare form data
         let formData = new FormData();
-        formData.append('category_id', category_id);
         formData.append('name', name);
+        formData.append('phone_number', phone_number);
+        formData.append('vehicle_number', vehicle_number);
         formData.append('image', image);
+        formData.append('nid_number', nid_number);
+        formData.append('blood_group', blood_group);
+        formData.append('address', address);
+        formData.append('marital_status', marital_status);
+        formData.append('birthday', birthday);
+        formData.append('status', status);
+        formData.append('engage_status', engage_status);
+
 
         $.ajax({
             url: url,
@@ -441,26 +533,32 @@
             processData: false,
             contentType: false,
             success: function(response) {
-                resetSubCategory();
-                show_success('Sub Category Updated Successfully!');
+                resetDeliveryAgent();
+                show_success('Delivery Agent Updated Successfully!');
 
                 $('.DataTable').DataTable().ajax.reload();
             },
             error: function(error) {
-                let errors = error.responseJSON.errors;
-                if(errors.category_id) {
-                    $('#categoryError').text(errors.category_id);
-                    $('#category_id').val('').trigger('change');
-                }
-                if(errors.name) {
-                    $('#nameError').text(errors.name);
-                    $('#name').val('');
-                    $('#name').addClass('is-invalid');
-                }
-                if(errors.image) {
-                    $('#imageError').text(errors.image);
-                    $('#image').val('');
-                    $('#image').addClass('is-invalid');
+                $('[id$="Error"]').html(''); // Clear all error message containers
+                $('.is-invalid').removeClass('is-invalid');
+
+                // Handle Laravel validation errors (422)
+                if (error.status === 422 && error.responseJSON && error.responseJSON.errors) {
+                    let errors = error.responseJSON.errors;
+                    for (let key in errors) {
+                        if ($(`#${key}`).is('select')) {
+                            $(`#${key}Error`).html(errors[key]);
+                        } else {
+                            $(`#${key}Error`).html(errors[key]);
+                            $(`#${key}`).val('');
+                            $(`#${key}`).addClass('is-invalid');
+                        }
+                    }
+                } else {
+                    // Handle other server errors like 500 or database constraint issues
+                    let message = 'An unexpected error occurred.';
+
+                    show_error(message);
                 }
             }
         });
@@ -471,7 +569,7 @@
         let preview = $('#imagePreview').attr('src');
 
         if(id !== null && id !== '' && preview !== '') {
-            let url = "{{ route('admin.subcategories.removeImage', ':id') }}";
+            let url = "{{ route('admin.deliveryAgents.removeImage', ':id') }}";
             url = url.replace(':id', id);
 
             Swal.fire({
@@ -513,7 +611,7 @@
     }
 
     function destroy(id) {
-        let url = "{{ route('admin.subcategories.destroy', ':id') }}";
+        let url = "{{ route('admin.deliveryAgents.destroy', ':id') }}";
         url = url.replace(':id', id);
 
         Swal.fire({
@@ -536,10 +634,10 @@
                     dataType: 'JSON',
                     success: function(data) {
                         if(data == 'have_data') {
-                            show_error('Cannot delete the subcategory because it has related child category.');
+                            show_error('Cannot delete the agent because it has related data.');
                             return;
                         }else {
-                            show_success('Subcategory deleted successfully!');
+                            show_success('Agent deleted successfully!');
                             $('.DataTable').DataTable().ajax.reload();
                         }
                     },
@@ -547,7 +645,7 @@
                         if (error.responseJSON.error) {
                             show_error(error.responseJSON.error);
                         }else {
-                            show_error('Failed to delete the subcategory. Please try again.');
+                            show_error('Failed to delete the agent. Please try again.');
                         }
                     }
                 });
@@ -555,28 +653,54 @@
         });
     }
 
-    function resetSubCategory() {
+    function resetDeliveryAgent() {
         $('#update_id').val('');
-        $('#categoryError').text('');
-        $('#category_id').val('').trigger('change');
 
         $('#nameError').text('');
         $('#name').val('');
         $('#name').removeClass('is-invalid');
+
+        $('#phone_numberError').text('');
+        $('#phone_number').val('');
+        $('#phone_number').removeClass('is-invalid');
+
+        $('#vehicle_numberError').text('');
+        $('#vehicle_number').val('');
+        $('#vehicle_number').removeClass('is-invalid');
 
         $('#imageError').text('');
         $('#image').val('');
         $('#image').removeClass('is-invalid');
         $('#imagePreview').attr('src', '');
 
-        $('#subCategoryFormBox').removeClass('show');
+        $('#nid_numberError').text('');
+        $('#nid_number').val('');
+        $('#nid_number').removeClass('is-invalid');
 
-        $('#addSubcategoryTitle').removeClass('d-none');
-        $('#updateSubcategoryTitle').addClass('d-none');
+        $('#blood_groupError').text('');
+        $('#blood_group').val('');
+        $('#blood_group').val('').trigger('change');
 
-        $('#addSubCategoryBtn').removeClass('d-none');
-        $('#updateSubCategoryBtn').addClass('d-none');
-        $('#cancelSubCategoryBtn').addClass('d-none');
+        $('#addressError').text('');
+        $('#address').val('');
+        $('#address').removeClass('is-invalid');
+
+        $('#marital_statusError').text('');
+        $('#marital_status').val('');
+        $('#marital_status').val('').trigger('change');
+
+        $('#birthdayError').text('');
+        $('#birthday').val('');
+        $('#birthday').removeClass('is-invalid');
+
+        $('#DeliveryAgentFormBox').removeClass('show');
+
+        $('#addDeliveryAgentTitle').removeClass('d-none');
+        $('#updateDeliveryAgentTitle').addClass('d-none');
+
+        $('#addDeliveryAgentBtn').removeClass('d-none');
+        $('#updateDeliveryAgentBtn').addClass('d-none');
+        $('#cancelDeliveryAgentBtn').addClass('d-none');
     }
 
 

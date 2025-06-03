@@ -25,9 +25,14 @@ function country() {
 function dateFormat($date) {
     return date('d M Y', $date);
 }
-function dateFormat2($date) {
-    return date('d-m-Y', $date);
+function dateFormat2($timestamp) {
+    if (empty($timestamp) || !is_numeric($timestamp)) {
+        return "";
+    }
+    return date('d-m-Y', $timestamp);
 }
+
+
 function number_format2($value) {
     $value = (float) $value; // Ensure it's treated as a float
     return rtrim(rtrim(number_format($value, 2, '.', ''), '0'), '.');

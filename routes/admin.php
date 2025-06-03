@@ -189,10 +189,11 @@ Route::prefix('admin')->as('admin.')->middleware('auth:admin')->group(function (
     Route::prefix('delivery-agents')->as('deliveryAgents.')->group(function () {
 
         Route::get('/', [AgentController::class, 'index'])->name('index');
-        // Route::post('/store', [AgentController::class,'store'])->name('store');
-        // Route::get('/edit/{id}', [AgentController::class, 'edit'])->name('edit');
-        // Route::post('/update/{id}', [AgentController::class, 'update'])->name('update');
-        // Route::delete('/destroy/{id}', [AgentController::class, 'destroy'])->name('destroy');
+        Route::post('/store', [AgentController::class,'store'])->name('store');
+        Route::get('/edit/{id}', [AgentController::class, 'edit'])->name('edit');
+        Route::post('/update/{id}', [AgentController::class, 'update'])->name('update');
+        Route::delete('/destroy/{id}', [AgentController::class, 'destroy'])->name('destroy');
+        Route::delete('/delete/image/{id}', [AgentController::class, 'removeImage'])->name('removeImage');
     });
 
 
