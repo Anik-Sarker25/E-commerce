@@ -116,28 +116,45 @@
         const symbolInput = $('#symbol');
         const timezoneInput = $('#timezone');
 
-        // Fetch country data from REST Countries API
-        fetch('https://restcountries.com/v3.1/all')
+        // Fetch all countries from REST Countries API
+        fetch('https://restcountries.com/v3.1/all?fields=name,currencies,timezones')
             .then(response => response.json())
             .then(data => {
-                // Loop through data to populate country dropdown and store additional info
+                // Sort countries alphabetically by name
+                data.sort((a, b) => a.name.common.localeCompare(b.name.common));
+
                 data.forEach(country => {
-                    // Create option element
-                    const option = new Option(country.name.common, country.name.common);
-                    $(option).data('info', {
-                        currency: country.currencies ? Object.keys(country.currencies)[0] : 'N/A',
-                        symbol: country.currencies ? Object.values(country.currencies)[0].symbol : 'N/A',
-                        timezone: country.timezones ? country.timezones[0] : 'N/A'
-                    });
-                    countryDropdown.append(option);
+                    try {
+                        // Get currency code and symbol safely
+                        const currencyCode = country.currencies ? Object.keys(country.currencies)[0] : 'N/A';
+                        const currencySymbol = country.currencies && country.currencies[currencyCode]?.symbol
+                            ? country.currencies[currencyCode].symbol
+                            : 'N/A';
+
+                        // Get timezone safely
+                        const timezone = country.timezones && country.timezones.length
+                            ? country.timezones[0]
+                            : 'N/A';
+
+                        // Create and append the option
+                        const option = new Option(country.name.common, country.name.common);
+                        $(option).data('info', {
+                            currency: currencyCode,
+                            symbol: currencySymbol,
+                            timezone: timezone
+                        });
+
+                        countryDropdown.append(option);
+                    } catch (err) {
+                        console.warn('Failed to process country:', country.name?.common, err);
+                    }
                 });
 
-                // Initialize select2
             })
             .catch(error => console.error('Error fetching country data:', error));
 
         // Update fields based on selected country
-        countryDropdown.on('change', function() {
+        countryDropdown.on('change', function () {
             const selectedOption = $(this).find(':selected');
             const countryInfo = selectedOption.data('info');
 
@@ -152,7 +169,6 @@
             }
         });
     });
-
 
     $(function() {
         var dataTable;

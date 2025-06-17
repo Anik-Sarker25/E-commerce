@@ -69,6 +69,7 @@ Route::prefix('admin')->as('admin.')->middleware('auth:admin')->group(function (
         Route::get('/single/user/view/{id}', [InvoiceController::class, 'singleUserView'])->name('userView');
         Route::get('/single/invoice/view/{id}', [InvoiceController::class, 'singleInvoiceView'])->name('invoiceView');
         Route::post('/update/status/{id}', [InvoiceController::class, 'updateStatus'])->name('updateStatus');
+        Route::post('/update/agent/{id}', [InvoiceController::class, 'updateAgent'])->name('updateAgent');
         // Route::delete('/destroy/{id}', [InvoiceController::class, 'destroy'])->name('destroy');
     });
 
@@ -107,12 +108,11 @@ Route::prefix('admin')->as('admin.')->middleware('auth:admin')->group(function (
 
     });
 
-    // Order routes
+    // Order routes 
 
     // Settings routes
     Route::prefix('settings')->as('settings.')->group(function () {
         Route::get('/', [SettingsController::class, 'index'])->name('index');
-        Route::post('/general/settings', [SettingsController::class, 'storeOrUpdate'])->name('storeOrUpdate');
         Route::post('/general/settings', [SettingsController::class, 'storeOrUpdate'])->name('storeOrUpdate');
         Route::post('/remove', [SettingsController::class, 'removeImage'])->name('removeImage');
 
@@ -187,10 +187,10 @@ Route::prefix('admin')->as('admin.')->middleware('auth:admin')->group(function (
     });
 
     Route::prefix('delivery-agents')->as('deliveryAgents.')->group(function () {
-
         Route::get('/', [AgentController::class, 'index'])->name('index');
         Route::post('/store', [AgentController::class,'store'])->name('store');
         Route::get('/edit/{id}', [AgentController::class, 'edit'])->name('edit');
+        Route::get('/engage/view/{id}', [AgentController::class, 'engageView'])->name('engageView');
         Route::post('/update/{id}', [AgentController::class, 'update'])->name('update');
         Route::delete('/destroy/{id}', [AgentController::class, 'destroy'])->name('destroy');
         Route::delete('/delete/image/{id}', [AgentController::class, 'removeImage'])->name('removeImage');

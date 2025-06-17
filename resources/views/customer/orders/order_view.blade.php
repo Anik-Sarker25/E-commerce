@@ -196,11 +196,33 @@
                                     <!-- Order Timeline -->
                                     <div class="section-title">Order Timeline</div>
                                     <div class="timeline_items">
-                                        <span class="text-muted">Placed On {{ $invoice->created_at->format('d M Y h:i:s A') }}</span>
-                                        <span class="text-muted">Placed On {{ $invoice->created_at->format('d M Y h:i:s A') }}</span>
-                                        <span class="text-muted">Placed On {{ $invoice->created_at->format('d M Y h:i:s A') }}</span>
-                                        <span class="text-muted">Placed On {{ $invoice->created_at->format('d M Y h:i:s A') }}</span>
+                                        @php
+                                            $steps = [
+                                                'confirmed_at' => 'Confirmed',
+                                                'processed_at' => 'Processed',
+                                                'shipped_at' => 'Shipped',
+                                                'delivered_at' => 'Delivered',
+                                                'cancelled_at' => 'Cancelled',
+                                                'returned_at' => 'Returned',
+                                                'refund_at' => 'Refunded',
+                                            ];
+                                        @endphp
+
+                                        <span class="text-muted">Placed on {{ \Carbon\Carbon::parse($invoice->created_at)->format('d M Y h:i:s A') }}</span>
+
+                                        @foreach ($steps as $field => $label)
+                                            @php
+                                                $value = $shipment->$field ?? null;
+                                            @endphp
+
+                                            @if ($value)
+                                                <span class="text-muted">
+                                                    {{ $label }} on {{ \Carbon\Carbon::parse($value)->format('d M Y h:i:s A') }}
+                                                </span>
+                                            @endif
+                                        @endforeach
                                     </div>
+
                                     @php
                                         $media = $invoice->payment_method == Constant::PAYMENT_METHOD['cod'] ? 'Cash On Delivery' : '';
                                         $statusLabel = array_flip(Constant::PAYMENT_STATUS)[$invoice->payment_status];

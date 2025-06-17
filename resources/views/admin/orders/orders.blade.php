@@ -62,6 +62,7 @@
                                         <th>Date</th>
                                         <th>Final_D_Date</th>
                                         <th>Status</th>
+                                        <th>Assign Agent</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -106,8 +107,8 @@
             url += "?shipped_orders";
         @elseif (request()->has('delivered_orders'))
             url += "?delivered_orders";
-        @elseif (request()->has('canceled_orders'))
-            url += "?canceled_orders";
+        @elseif (request()->has('cancelled_orders'))
+            url += "?cancelled_orders";
         @elseif (request()->has('refunded_orders'))
             url += "?refunded_orders";
         @elseif (request()->has('returned_orders'))
@@ -118,7 +119,7 @@
             processing: true,
             serverSide: true,
             lengthMenu: [5, 10, 25, 50, 100],
-            pageLength: 10,
+            pageLength: 5,
             dom: 'lBfrtip',
             buttons: [
                 // 'copy',
@@ -213,6 +214,13 @@
                     name: 'status',
                     className: 'text-center',
                     orderable: false
+                },
+                {
+                    data: 'assign_agent',
+                    name: 'assign_agent',
+                    className: 'text-center',
+                    searchable: true,
+                    orderable: true
                 },
                 {
                     data: 'action',
@@ -527,6 +535,8 @@
                                 show_warning('You are not allowed to change to the same status.');
                             } else if (data === 'invalid_transition') {
                                 show_warning('This status change is not allowed.');
+                            } else if (data === 'delivery_agent_missing') {
+                                show_warning('Delivery agent missing please assign a delivery agent first.');
                             } else {
                                 show_warning('An unexpected error occurred.');
                             }
@@ -544,6 +554,46 @@
                             show_error(error.responseJSON.error);
                         } else {
                             show_error('Failed to update the order status. Please try again.');
+                        }
+                    }
+                });
+            }
+        });
+
+    }
+
+    function assignAgent(agent_id, invoice_id) {
+        let url = "{{ route('admin.orders.updateAgent', ':id') }}";
+        url = url.replace(':id', invoice_id);
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You want to assign this agent for this order!",
+            showCancelButton: true,
+            confirmButtonColor: 'transparent',
+            cancelButtonColor: 'transparent',
+            confirmButtonText: 'Yes',
+            customClass: {
+                popup: 'my-custom-popup',
+                confirmButton: 'my-custom-confirm',
+                cancelButton: 'my-custom-cancel',
+            },
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: { agent_id: agent_id },
+                    dataType: 'JSON',
+                    success: function(data) {
+                        show_success(`Order assigned successfully!`);
+                        $('.DataTable').DataTable().ajax.reload();
+                    },
+                    error: function(error) {
+                        if (error.responseJSON.error) {
+                            show_error(error.responseJSON.error);
+                        } else {
+                            show_error('Failed to assign agent. Please try again.');
                         }
                     }
                 });

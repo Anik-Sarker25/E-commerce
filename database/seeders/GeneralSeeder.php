@@ -24,6 +24,7 @@ class GeneralSeeder extends Seeder
                 'admin_logo' => 'uploads/settings/admin-logo.png',
                 'copyright' => 'Copyright © 2010. All rights reserved by',
                 'site_title' => 'Company Title',
+                'delivery_partner' => 'CDPF',
                 'company_motto' => 'Company Motto',
                 'meta_description' => 'Company about information',
                 'meta_keywords' => 'site-name, company-name etc.',

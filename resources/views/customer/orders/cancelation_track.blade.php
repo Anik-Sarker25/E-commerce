@@ -77,7 +77,12 @@
                                     <h5 class="panel-title">{{ $pageTitle ?? '' }}</h5>
                                 </div>
                                 <div class="panel-heading border_bottom d-flex align-items-center justify-content-between">
-                                    <h5 class="panel-title"><i class="fas fa-barcode"></i> {{ customerFormatedInvoiceId($invoice->id) }} <small class="text-muted ">Cancelled On 26 Feb 2025 11:37:17</small> </h5>
+                                    <h5 class="panel-title"><i class="fas fa-barcode"></i> {{ customerFormatedInvoiceId($invoice->id) }} <small class="text-muted ">Cancelled On 
+                                        @if ($cancellation)
+                                            {{ \Carbon\Carbon::parse($cancellation)->format('d M Y h:i:s A') }}
+                                            
+                                        @endif
+                                    </small> </h5>
                                     @php
                                         $statusLabel = array_search($invoice->status, Constant::ORDER_STATUS);
                                     @endphp

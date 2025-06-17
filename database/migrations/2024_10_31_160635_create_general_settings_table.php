@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('favicon')->nullable();
             $table->string('admin_logo')->nullable();
             $table->string('copyright')->nullable();
+            $table->string('delivery_partner')->nullable();
             $table->string('site_title')->nullable();
             $table->string('meta_description')->nullable();
             $table->string('meta_keywords')->nullable();

@@ -7,6 +7,7 @@ use App\Helpers\Traits\RowIndex;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AgentStoreRequest;
 use App\Models\DeliveryAgent;
+use App\Models\Invoice;
 use Illuminate\Http\Request;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
@@ -49,7 +50,7 @@ class AgentController extends Controller
                     if($row->work_status ==  Constant::AGENT_STATUS['free']) {
                         $work_status = '<button type="button" class="btn btn-sm btn-outline-light">Free</button>';
                     }else {
-                        $work_status = '<button type="button" class="btn btn-sm btn-outline-theme">Engage</button>';
+                        $work_status = '<button type="button" onclick="engageView('.$row->id.');" class="btn btn-sm btn-outline-theme">Engage</button>';
                     }
                     return $work_status;
                 })
@@ -149,6 +150,22 @@ class AgentController extends Controller
             return response()->json(['success' => false,'message' => $e->getMessage()]);
         }
 
+    }
+
+    public function engageView($id) {
+        $modalTitle = "Engage Details";
+
+        // Load agent with their shipment trackings
+        $data = DeliveryAgent::with('shipmentTrackings')->find($id);
+
+        if (!$data) {
+            return response()->json(['error' => 'Agent not found'], 404);
+        }
+
+        return response()->json([
+            'view' => view('admin.agents.modals.engage_view_modal_body', compact('data'))->render(),
+            'modalTitle' => $modalTitle
+        ]);
     }
 
     public function destroy($id){

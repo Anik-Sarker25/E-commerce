@@ -158,7 +158,7 @@
                                         <div class="mb-3">
                                             <button type="button" onclick="addDeliveryAgent();" class="btn btn-outline-success"id="addDeliveryAgentBtn"><i class="fa fa-plus me-2"></i>Add Agent</button>
                                             <button type="button" onclick="updateDeliveryAgent();" class="btn btn-outline-success d-none me-2" id="updateDeliveryAgentBtn"><i class="fa fa-share me-2"></i>Update Agent</button>
-                                            <button type="button" onclick="resetDeliveryAgent();" class="btn btn-outline-danger d-none" id="cancelDeliveryAgentBtn"><i class="fa fa-times me-2"></i>Cencel</button>
+                                            <button type="button" onclick="resetDeliveryAgent();" class="btn btn-outline-danger" id="cancelDeliveryAgentBtn"><i class="fa fa-times me-2"></i>Cencel</button>
                                         </div>
                                     </div>
 
@@ -378,7 +378,6 @@
 
         $('#addDeliveryAgentBtn').removeClass('d-none');
         $('#updateDeliveryAgentBtn').addClass('d-none');
-        $('#cancelDeliveryAgentBtn').addClass('d-none');
     }
 
     function addDeliveryAgent() {
@@ -458,7 +457,7 @@
             success: function(response) {
                 let data = response.data;
                 let birthday = response.birthday;
-                $('#DeliveryAgentFormBox').addClass('show');
+                $('#DeliveryAgentFormBox').collapse('toggle');
                 $('#update_id').val(data.id);
                 $('#category_id').val(data.category_id).trigger('change');
                 $('#name').val(data.name);
@@ -486,7 +485,6 @@
 
                 $('#addDeliveryAgentBtn').addClass('d-none');
                 $('#updateDeliveryAgentBtn').removeClass('d-none');
-                $('#cancelDeliveryAgentBtn').removeClass('d-none');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
@@ -693,14 +691,33 @@
         $('#birthday').val('');
         $('#birthday').removeClass('is-invalid');
 
-        $('#DeliveryAgentFormBox').removeClass('show');
+        $('#DeliveryAgentFormBox').collapse('toggle');
 
         $('#addDeliveryAgentTitle').removeClass('d-none');
         $('#updateDeliveryAgentTitle').addClass('d-none');
 
         $('#addDeliveryAgentBtn').removeClass('d-none');
         $('#updateDeliveryAgentBtn').addClass('d-none');
-        $('#cancelDeliveryAgentBtn').addClass('d-none');
+    }
+
+    function engageView(id){
+        let url = "{{ route('admin.deliveryAgents.engageView', ':id') }}";
+        url = url.replace(':id', id);
+        $.ajax({
+            type: "GET",
+            url: url,
+            success: function(response) {
+                $('.viewBody').html('');
+                $('.modal-title').html(response.modalTitle); // Set modal title dynamically
+                $('.viewBody').html(response.view); // Inject the view
+                $('#viewModel').modal('show');
+                $('#print-btn').addClass('d-none').removeClass('d-block');
+
+            },
+            error: function(){
+                show_warning('Product Data Not Found!');
+            }
+        });
     }
 
 

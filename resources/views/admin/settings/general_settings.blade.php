@@ -54,6 +54,11 @@
                                         <span class="text-danger" id="addressError"></span>
                                     </div>
                                     <div class="form-group mb-3">
+                                        <label class="form-label" for="delivery_partner">Delivery Partner</label>
+                                        <input name="delivery_partner" id="delivery_partner"  placeholder="Enter Partner Name...." class="form-control" value="{{ $data->delivery_partner ?? '' }}">
+                                        <span class="text-danger" id="delivery_partnerError"></span>
+                                    </div>
+                                    <div class="form-group mb-3">
                                         <label class="form-label" for="map">Google Map Embed link</label>
                                         <input type="link" name="map" class="form-control" id="map" placeholder="https://www.google.com/maps/embed?.." value="{{ $data->map ?? '' }}">
                                         <span class="text-danger" id="mapError"></span>
@@ -212,6 +217,7 @@
         let phone_number = $('#phone_number').val();
         let email = $('#email').val();
         let address = $('#address').val();
+        let delivery_partner = $('#delivery_partner').val();
         let map = $('#map').val();
         let timezone = $('#timezone').val();
         let system_name = $('#system_name').val();
@@ -231,6 +237,7 @@
         formData.append('phone_number', phone_number);
         formData.append('email', email);
         formData.append('address', address);
+        formData.append('delivery_partner', delivery_partner);
         formData.append('map', map);
         formData.append('timezone', timezone);
         formData.append('system_name', system_name);

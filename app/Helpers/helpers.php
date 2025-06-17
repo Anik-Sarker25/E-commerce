@@ -11,6 +11,7 @@ use App\Models\Country;
 use App\Models\GeneralSettings;
 use App\Models\Invoice;
 use App\Models\Product;
+use App\Models\ShipmentTracking;
 use App\Models\SocialMedia;
 use App\Models\VariantOption;
 use Illuminate\Support\Facades\Request;
@@ -30,6 +31,15 @@ function dateFormat2($timestamp) {
         return "";
     }
     return date('d-m-Y', $timestamp);
+}
+
+ function formatDateTime($datetime) {
+    if($datetime) {
+        $data =  \Carbon\Carbon::parse($datetime)->format('d M Y - h:i A');
+    }else {
+        $data = '---';
+    }
+    return $data;
 }
 
 
@@ -121,3 +131,47 @@ function productSellPrice($productId)
         ->value('sell_price');
 }
 
+function updateShipmentTrackingStatus($order, $newStatus)
+{
+    $statusTimestamps = [
+        Constant::ORDER_STATUS['confirmed'] => 'confirmed_at',
+        Constant::ORDER_STATUS['processing'] => 'processed_at',
+        Constant::ORDER_STATUS['shipped'] => 'shipped_at',
+        Constant::ORDER_STATUS['delivered'] => 'delivered_at',
+        Constant::ORDER_STATUS['cancelled'] => 'cancelled_at',
+        Constant::ORDER_STATUS['refunded'] => 'refund_at',
+        Constant::ORDER_STATUS['returned'] => 'returned_at',
+    ];
+
+    // Step 1: Update order
+    $order->status = $newStatus;
+    $order->save();
+
+    // Step 2: Get existing tracking (if any)
+    $tracking = ShipmentTracking::where('invoice_id', $order->id)->first();
+
+    if ($tracking) {
+        foreach ($statusTimestamps as $statusValue => $timestampField) {
+            if ($statusValue <= $newStatus && is_null($tracking->$timestampField)) {
+                $tracking->$timestampField = now();
+            }
+        }
+        $tracking->status = $newStatus;
+        $tracking->save();
+    } else {
+        // Create new tracking
+        $createData = [
+            'invoice_id' => $order->id,
+            'tracking_number' => $order->tracking_code,
+            'status' => $newStatus,
+        ];
+
+        foreach ($statusTimestamps as $statusValue => $timestampField) {
+            if ($statusValue <= $newStatus) {
+                $createData[$timestampField] = now();
+            }
+        }
+
+        ShipmentTracking::create($createData);
+    }
+}

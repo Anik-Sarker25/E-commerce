@@ -98,7 +98,7 @@
 
                         <div class="menu-submenu">
                             <!-- Requested Orders: Active if no query parameters match the ones for the other statuses -->
-                            <div class="menu-item {{ (($queryString != 'confirmed_orders') && ($queryString != 'processing_orders') && ($queryString != 'shipped_orders') && ($queryString != 'delivered_orders') && ($queryString != 'canceled_orders') && ($queryString != 'refunded_orders') && ($queryString != 'returned_orders')) ? 'active' : '' }}">
+                            <div class="menu-item {{ (($queryString != 'confirmed_orders') && ($queryString != 'processing_orders') && ($queryString != 'shipped_orders') && ($queryString != 'delivered_orders') && ($queryString != 'cancelled_orders') && ($queryString != 'refunded_orders') && ($queryString != 'returned_orders')) ? 'active' : '' }}">
                                 <a href="{{ route('admin.orders.index') }}" class="menu-link">
                                     <span class="menu-text">Requested Orders</span>
                                 </a>
@@ -133,9 +133,9 @@
                             </div>
 
                             <!-- Canceled Orders -->
-                            <div class="menu-item {{ ($queryString == 'canceled_orders') ? 'active' : '' }}">
-                                <a href="{{ route('admin.orders.index') }}?canceled_orders" class="menu-link">
-                                    <span class="menu-text">Canceled Orders</span>
+                            <div class="menu-item {{ ($queryString == 'cancelled_orders') ? 'active' : '' }}">
+                                <a href="{{ route('admin.orders.index') }}?cancelled_orders" class="menu-link">
+                                    <span class="menu-text">Cancelled Orders</span>
                                 </a>
                             </div>
 
@@ -275,12 +275,14 @@
 							<span class="menu-text">Services</span>
 						</a>
 					</div>
+
 					<div class="menu-item {{ (Request::is('admin/delivery-agents')) ? 'active' : '' }}">
 						<a href="{{ route('admin.deliveryAgents.index') }}" class="menu-link">
 							<span class="menu-icon"><i class="bi bi-sliders"></i></span>
 							<span class="menu-text">Delivery Agents</span>
 						</a>
 					</div>
+
 					<div class="menu-item">
 						<a href="javascript:;" onclick="event.preventDefault(); document.getElementById('adminLogoutForm').submit();" class="menu-link">
 							<span class="menu-icon"><i class="bi bi-box-arrow-in-right"></i></span>

@@ -8,11 +8,13 @@ use App\Models\Address;
 use App\Models\Brand;
 use App\Models\Cart;
 use App\Models\Category;
+use App\Models\DeliveryAgent;
 use App\Models\DeliveryOption;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Partnership;
 use App\Models\PaymentMethod;
+use App\Models\ShipmentTracking;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -51,6 +53,7 @@ class InvoiceController extends Controller
         $partnerships     = Partnership::orderBy('id', 'ASC')->get();
         $user             = auth()->user();
         $invoice          = Invoice::find($id);
+        $shipmentTracking = ShipmentTracking::where('invoice_id', $id)->first();
         $addressId        = $invoice->shipping_address_id;
         $address          = Address::find($addressId);
 
@@ -62,13 +65,16 @@ class InvoiceController extends Controller
             'partnerships'         => $partnerships,
             'user'                 => $user,
             'invoice'              => $invoice,
+            'shipment'             => $shipmentTracking,
             'address'              => $address,
         ]);
 
     }
 
     public function trackPackage(Request $request) {
-        // $id = $request->query('TrkOrdErId');
+        $id = $request->query('TrkOrdErId');
+        $shipmentTracking = ShipmentTracking::where('invoice_id', $id)->first();
+        $assigned_agent = DeliveryAgent::find(optional($shipmentTracking)->delivery_agent_id);
         $pageTitle        = 'Tracking Details';
         $categories       = Category::with('subcategories.products')->get();
         $paymentMethods   = PaymentMethod::orderBy('id', 'DESC')->get();
@@ -84,6 +90,8 @@ class InvoiceController extends Controller
             'brands'               => $brands,
             'partnerships'         => $partnerships,
             'user'                 => $user,
+            'agent'                => $assigned_agent,
+            'shipment'             => $shipmentTracking,
             // 'invoice'              => $invoice,
         ]);
 
@@ -92,6 +100,8 @@ class InvoiceController extends Controller
     public function trackCancelation(Request $request) {
         $id = $request->query('TrkOrdErId');
         $pageTitle        = 'Tracking Details';
+        $shipmentTracking = ShipmentTracking::where('invoice_id', $id)->first();
+        $cancellation     = optional($shipmentTracking)->cancelled_at;
         $categories       = Category::with('subcategories.products')->get();
         $paymentMethods   = PaymentMethod::orderBy('id', 'DESC')->get();
         $brands           = Brand::orderBy('id', 'ASC')->get();
@@ -107,6 +117,7 @@ class InvoiceController extends Controller
             'partnerships'         => $partnerships,
             'user'                 => $user,
             'invoice'              => $invoice,
+            'cancellation'         => $cancellation,
         ]);
 
     }

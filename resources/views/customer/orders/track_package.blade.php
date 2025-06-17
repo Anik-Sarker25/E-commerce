@@ -190,26 +190,32 @@
                                                                 <tr>
                                                                     <td>Delivery partner</td>
                                                                     <td>:</td>
-                                                                    <td>REDX</td>
+                                                                    <td>{{ siteInfo()->delivery_partner ?? '' }}</td>
                                                                 </tr>
                                                                 <tr>
                                                                     <td>Courier Person</td>
                                                                     <td>:</td>
-                                                                    <td>Motiur Rahman - Sl23</td>
+                                                                    <td>{{ $agent?->name ?? 'Not Assigned Yet!' }}</td>
+
                                                                 </tr>
                                                                 <tr>
                                                                     <td>Tracking Number</td>
                                                                     <td>:</td>
                                                                     <td onclick="copyToClipboard(this)">
                                                                         <a href="javascript::" style="color: #f36;">
-                                                                            TRK-DYUYRP-3420250510
+                                                                            {{ $shipment->tracking_number ?? '' }}
                                                                         </a>
                                                                     </td>
                                                                 </tr>
                                                                 <tr>
                                                                     <td>Current Status</td>
                                                                     <td>:</td>
-                                                                    <td class="text-success">Processing</td>
+                                                                    <td class="text-success text-capitalize">
+                                                                        @php
+                                                                            $statusLabel = array_flip(Constant::ORDER_STATUS)[$shipment->status];
+                                                                        @endphp
+                                                                        {{ $statusLabel ?? '' }}
+                                                                    </td>
                                                                 </tr>
                                                             </tbody>
                                                         </table>
@@ -217,9 +223,75 @@
                                                 </div>
                                             </div>
                                         </div>
+
+                                        @php
+                                            $statuses = [
+                                                'Confirmed'       => $shipment->confirmed_at,
+                                                'Processing'      => $shipment->processed_at,
+                                                'Ready For Shipping' => $shipment->processed_at,
+                                                'Shipped'         => $shipment->shipped_at,
+                                                'Out for Delivery'=> $shipment->delivered_at, // flow with deliverred
+                                                'Delivered'       => $shipment->delivered_at,
+                                                'Returned'        => $shipment->returned_at,
+                                                'Refunded'        => $shipment->refund_at,
+                                            ];
+
+                                            $stepReached = false;
+                                        @endphp
+
                                         <div class="col-md-8">
                                             <div class="track-container">
                                                 <ul class="track-timeline">
+                                                    @foreach ($statuses as $label => $timestamp)
+                                                        @php
+                                                            $isCompleted = !is_null($timestamp);
+                                                            $isCurrent = !$stepReached && is_null($timestamp);
+                                                            $stepReached = $stepReached || $isCurrent;
+
+                                                            $class = $isCompleted ? 'completed' : ($isCurrent ? 'current' : '');
+                                                            $timeText = formatDateTime($timestamp);
+                                                        @endphp
+
+                                                        <li class="{{ $class }}">
+                                                            <div class="status">
+                                                                {{ $label }}
+                                                                @if ($timeText)
+                                                                    <span class="timestamp">{{ $timeText }}</span>
+                                                                @endif
+                                                            </div>
+                                                            <div class="message">
+                                                                @switch($label)
+                                                                    @case('Confirmed')
+                                                                        We’ve received your order and will start processing it soon.
+                                                                        @break
+                                                                    @case('Processing')
+                                                                        Your order is processing.
+                                                                        @break
+                                                                    @case('Ready For Shipping')
+                                                                        Your order is processed! It's ready to be shipped.
+                                                                        @break
+                                                                    @case('Shipped')
+                                                                        Your order is on the move! It’s one step away from your doorstep.
+                                                                        @break
+                                                                    @case('Out for Delivery')
+                                                                        Our delivery agent is on the way. Get ready to receive your package today!
+                                                                        @break
+                                                                    @case('Delivered')
+                                                                        Your package has been delivered to your address.
+                                                                        @break
+                                                                    @case('Returned')
+                                                                        Your return is in progress. We'll keep you posted.
+                                                                        @break
+                                                                    @case('Refunded')
+                                                                        Refund processed. It should reflect in your account soon.
+                                                                        @break
+                                                                @endswitch
+                                                            </div>
+                                                        </li>
+                                                    @endforeach
+                                                </ul>
+                                                {{-- <ul class="track-timeline">
+
                                                     <li class="completed">
                                                         <div class="status">Confirmed <span class="timestamp">10 May 2025 - 4:40 PM</span></div>
                                                         <div class="message">We’ve received your order and will start processing it soon.</div>
@@ -252,7 +324,7 @@
                                                         <div class="status">Refunded <span class="timestamp">13 May 2025 - 5:00 PM</span></div>
                                                         <div class="message">Refund processed. It should reflect in your account soon.</div>
                                                     </li>
-                                                </ul>
+                                                </ul> --}}
                                             </div>
                                         </div>
                                     </div>

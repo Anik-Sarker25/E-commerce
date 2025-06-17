@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\Constant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -22,4 +23,11 @@ class DeliveryAgent extends Model
         'status',
         'order_id',
     ];
+
+    public function shipmentTrackings()
+    {
+        return $this->hasMany(ShipmentTracking::class, 'delivery_agent_id');
+    }
+
+
 }

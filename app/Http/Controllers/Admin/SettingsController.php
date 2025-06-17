@@ -111,6 +111,7 @@ class SettingsController extends Controller
                 'phone_number'  => 'phone',
                 'email'         => 'email',
                 'address'       => 'address',
+                'delivery_partner'       => 'delivery_partner',
                 'map'           => 'map',
                 'timezone'      => 'timezone',
                 'system_name'   => 'system_name',

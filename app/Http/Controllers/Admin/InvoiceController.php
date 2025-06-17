@@ -6,8 +6,10 @@ use App\Helpers\Constant;
 use App\Helpers\Traits\RowIndex;
 use App\Http\Controllers\Controller;
 use App\Models\Address;
+use App\Models\DeliveryAgent;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
+use App\Models\ShipmentTracking;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
@@ -77,7 +79,7 @@ class InvoiceController extends Controller
                 })
                 ->addColumn('invoice_id', function ($row) {
                     if ($row->id) {
-                        return '<a href="javascript:void(0);" onclick="invoiceView(' . $row->id . ')">' . adminFormatedInvoiceId($row->id) . '</a>';
+                        return '<div style="width: 120px;"><a href="javascript:void(0);" onclick="invoiceView(' . $row->id . ')">' . adminFormatedInvoiceId($row->id) . '</a></div>';
                     } else {
                         return '---';
                     }
@@ -91,7 +93,7 @@ class InvoiceController extends Controller
                 })
                 ->addColumn('tracking_code', function ($row) {
                     if ($row->tracking_code) {
-                        return '<a href="javascript:void(0)" onclick="copyToClipboard(\'' . e($row->tracking_code) . '\')" style="cursor: pointer;">' . e($row->tracking_code) . '<i class="fa fa-copy ms-2"></i></a>';
+                        return '<div style="width: 150px;"><a href="javascript:void(0)" onclick="copyToClipboard(\'' . e($row->tracking_code) . '\')" style="cursor: pointer;">' . e($row->tracking_code) . '<i class="fa fa-copy ms-2"></i></a></div>';
                     } else {
                         return '---';
                     }
@@ -159,25 +161,43 @@ class InvoiceController extends Controller
                         return '---';
                     }
                 })
+                ->addColumn('assign_agent', function ($row) {
+                    $agents = DeliveryAgent::all();
+
+                    $shipmentData = ShipmentTracking::where('invoice_id', $row->id)->first();
+
+                    $currentAgentId = optional($shipmentData)->delivery_agent_id;
+                    $select = '<select name="select_agent" class="form-select" ' . ($row->status == Constant::ORDER_STATUS['cancelled'] ? 'disabled' : '') . ' style="width: 150px;" onchange="assignAgent(this.value, ' . $row->id . ')">';
+                    $select .= '<option value="">Assign Agent</option>';
+
+                    foreach ($agents as $agent) {
+                        $selected = ($currentAgentId == $agent->id) ? 'selected' : '';
+                        $select .= '<option '.$selected.' value="' . $agent->id . '">' . $agent->name . ' (' . $agent->id . ')</option>';
+                    }
+
+                    $select .= '</select>';
+                    return $select;
+                })
                 ->addColumn('action', function ($row) {
                     $orderStatuses = Constant::ORDER_STATUS;
-
                     $dropdowns = '<div class="dropdown">
-                    <button class="btn btn-outline-success dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                        Change Status
-                    </button>
-                    <ul class="dropdown-menu custom-dropdown-menu">';
+                        <button class="btn btn-outline-success dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            Change Status
+                        </button>
+                        <ul class="dropdown-menu custom-dropdown-menu">';
 
                     foreach ($orderStatuses as $status => $value) {
                         $activeClass = ($row->status == $value) ? 'active' : '';
-                        $dropdowns .= '<li><a class="dropdown-item  ' . $activeClass . '" href="javascript:void(0);" onclick="changeOrderStatus(' . $row->id . ', ' . $value . ')">' . $status . '</a></li>';
+                        $dropdowns .= '
+                            <li><a class="dropdown-item  ' . $activeClass . '" href="javascript:void(0);" onclick="changeOrderStatus(' . $row->id . ', ' . $value . ')">' . $status . '</a></li>
+                        ';
                     }
 
                     $dropdowns .= '</ul></div>';
 
                     return $dropdowns;
                 })
-                ->rawColumns(['sl', 'invoice_id', 'username', 'tracking_code', 'total_price', 'payment_method', 'payment_status', 'created_date', 'final_d_date', 'status', 'action'])
+                ->rawColumns(['sl', 'invoice_id', 'username', 'tracking_code', 'total_price', 'payment_method', 'payment_status', 'created_date', 'final_d_date', 'status', 'assign_agent', 'action'])
                 ->make(true);
         }
 
@@ -211,40 +231,132 @@ class InvoiceController extends Controller
     }
 
     public function updateStatus(Request $request, $id) {
-        $order = Invoice::find($id);
 
-        if (!$order) {
-            return response()->json(['error' => 'Order not found'], 404);
+        try {
+            $order = Invoice::find($id);
+
+            if (!$order) {
+                return response()->json(['error' => 'Order not found'], 404);
+            }
+
+            // Prevent updating to the same status
+            if ($order->status == $request->status) {
+                return response()->json('already_exist');
+            }
+
+            // Define allowed status transitions
+            $validTransitions = [
+                Constant::ORDER_STATUS['pending'] => [Constant::ORDER_STATUS['confirmed'], Constant::ORDER_STATUS['cancelled']],
+                Constant::ORDER_STATUS['confirmed'] => [Constant::ORDER_STATUS['processing'], Constant::ORDER_STATUS['cancelled']],
+                Constant::ORDER_STATUS['processing'] => [Constant::ORDER_STATUS['shipped'], Constant::ORDER_STATUS['cancelled']],
+                Constant::ORDER_STATUS['shipped'] => [Constant::ORDER_STATUS['delivered']],
+                Constant::ORDER_STATUS['delivered'] => [Constant::ORDER_STATUS['returned'], Constant::ORDER_STATUS['refunded']],
+                Constant::ORDER_STATUS['cancelled'] => [],
+                Constant::ORDER_STATUS['refunded'] => [],
+                Constant::ORDER_STATUS['returned'] => [Constant::ORDER_STATUS['refunded']],
+            ];
+
+            // Check if the transition is valid
+            if (!isset($validTransitions[$order->status]) || !in_array($request->status, $validTransitions[$order->status])) {
+                return response()->json('invalid_transition');
+            }
+
+            $newStatus = $request->status;
+
+            $statusTimestamps = [
+                Constant::ORDER_STATUS['confirmed'] => 'confirmed_at',
+                Constant::ORDER_STATUS['processing'] => 'processed_at',
+                Constant::ORDER_STATUS['shipped'] => 'shipped_at',
+                Constant::ORDER_STATUS['delivered'] => 'delivered_at',
+                Constant::ORDER_STATUS['cancelled'] => 'cancelled_at',
+                Constant::ORDER_STATUS['refunded'] => 'refund_at',
+                Constant::ORDER_STATUS['returned'] => 'returned_at',
+            ];
+
+            // Get or check tracking
+            $tracking = ShipmentTracking::where('invoice_id', $order->id)->first();
+            // // Check for delivery agent before allowing shipped status
+            if ($newStatus == Constant::ORDER_STATUS['shipped']) {
+                if (!$tracking->delivery_agent_id) {
+                    return response()->json('delivery_agent_missing');
+                }
+            }
+
+            // Prepare update data
+            $updateData = [
+                'invoice_id' => $order->id,
+                'status' => $newStatus,
+            ];
+
+            // Only fill the current status timestamp
+            if (isset($statusTimestamps[$newStatus])) {
+                $updateData[$statusTimestamps[$newStatus]] = now();
+            }
+
+
+            if ($tracking) {
+                if (isset($statusTimestamps[$newStatus]) && is_null($tracking->{$statusTimestamps[$newStatus]})) {
+                    $tracking->{$statusTimestamps[$newStatus]} = now();
+                }
+
+                $tracking->status = $newStatus;
+                $tracking->save();
+            } else {
+
+                $updateData['tracking_number'] = $order->tracking_code;
+                $updateData['estimated_delivery_date'] = $order->estimated_delivery_date;
+                ShipmentTracking::create($updateData);
+            }
+
+            // Save order status
+            $order->status = $newStatus;
+            // Automatically set payment_status to 'paid' if status is delivered
+            if ($newStatus == Constant::ORDER_STATUS['delivered']) {
+                $order->payment_status = Constant::PAYMENT_STATUS['paid'];
+                // transection code will be placed in here 
+                
+            }
+            $order->save();
+
+            return response()->json(['status' => array_search($request->status, Constant::ORDER_STATUS)]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false,'message' => $e->getMessage()]);
         }
-
-        // Prevent updating to the same status
-        if ($order->status == $request->status) {
-            return response()->json('already_exist');
-        }
-
-        // Define allowed status transitions
-        $validTransitions = [
-            Constant::ORDER_STATUS['pending'] => [Constant::ORDER_STATUS['confirmed'], Constant::ORDER_STATUS['cancelled']],
-            Constant::ORDER_STATUS['confirmed'] => [Constant::ORDER_STATUS['processing'], Constant::ORDER_STATUS['cancelled']],
-            Constant::ORDER_STATUS['processing'] => [Constant::ORDER_STATUS['shipped'], Constant::ORDER_STATUS['cancelled']],
-            Constant::ORDER_STATUS['shipped'] => [Constant::ORDER_STATUS['delivered']],
-            Constant::ORDER_STATUS['delivered'] => [Constant::ORDER_STATUS['returned'], Constant::ORDER_STATUS['refunded']],
-            Constant::ORDER_STATUS['cancelled'] => [],
-            Constant::ORDER_STATUS['refunded'] => [],
-            Constant::ORDER_STATUS['returned'] => [Constant::ORDER_STATUS['refunded']],
-        ];
-
-        // Check if the transition is valid
-        if (!isset($validTransitions[$order->status]) || !in_array($request->status, $validTransitions[$order->status])) {
-            return response()->json('invalid_transition');
-        }
-
-        // Update order status
-        $order->status = $request->status;
-        $order->save();
-
-        return response()->json(['status' => array_search($request->status, Constant::ORDER_STATUS)]);
     }
+
+    public function updateAgent(Request $request, $id) {
+        try {
+            $request->validate([
+                'agent_id' => ['required', 'numeric'],
+            ]);
+
+            $shipment = ShipmentTracking::where('invoice_id', $id)->first();
+
+            if (!$shipment) {
+                return response()->json(['error' => 'Shipment not found please confirm the order first!'], 404);
+            }
+
+            // Update the agent ID
+            $shipment->delivery_agent_id = $request->agent_id;
+            $shipment->save();
+
+            // If shipment updated successfully, update agent status
+            $delivery_agent = DeliveryAgent::find($request->agent_id);
+            if ($delivery_agent) {
+                $delivery_agent->work_status = Constant::AGENT_STATUS['engaged'];
+                $delivery_agent->save();
+            }
+
+            return response()->json('success');
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
 
 }
 
