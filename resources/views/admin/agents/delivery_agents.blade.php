@@ -91,7 +91,7 @@
                                             <div class="col-xl-4">
                                                 <div class="form-group mb-3">
                                                     <label class="form-label" for="blood_group">Blood Group</label>
-                                                    <select class="form-select" name="blood_group" id="blood_group">
+                                                    <select class="form-control select2" name="blood_group" id="blood_group">
                                                         <option value="">Select Option</option>
                                                         <option value="A+">A+</option>
                                                         <option value="A-">A-</option>
@@ -115,7 +115,7 @@
                                             <div class="col-xl-4">
                                                 <div class="form-group mb-3">
                                                     <label class="form-label" for="marital_status">Marital Status</label>
-                                                    <select name="marital_status" id="marital_status" class="form-select">
+                                                    <select name="marital_status" id="marital_status" class="form-control select2">
                                                         <option value="">Select Option</option>
                                                         <option value="Married">Married</option>
                                                         <option value="Unmarried">Unmarried</option>
@@ -133,7 +133,7 @@
                                             <div class="col-xl-4">
                                                 <div class="form-group mb-3">
                                                     <label class="form-label" for="status">Active Status (default active)</label>
-                                                    <select class="form-select" name="status" id="status">
+                                                    <select class="form-control select2" name="status" id="status">
                                                         @foreach ($activeStatus as $status => $key)
                                                             <option value="{{ $key }}">{{ ucfirst($status) }}</option>
                                                         @endforeach
@@ -144,7 +144,7 @@
                                             <div class="col-xl-4">
                                                 <div class="form-group mb-3">
                                                     <label class="form-label" for="engage_status">Engage Status (default Free)</label>
-                                                    <select class="form-select" name="engage_status" id="engage_status">
+                                                    <select class="form-control select2" name="engage_status" id="engage_status">
                                                         @foreach ($engageStatus as $status => $key)
                                                             <option value="{{ $key }}">{{ ucfirst($status) }}</option>
                                                         @endforeach
@@ -457,7 +457,7 @@
             success: function(response) {
                 let data = response.data;
                 let birthday = response.birthday;
-                $('#DeliveryAgentFormBox').collapse('toggle');
+                $('#DeliveryAgentFormBox').addClass('show');
                 $('#update_id').val(data.id);
                 $('#category_id').val(data.category_id).trigger('change');
                 $('#name').val(data.name);

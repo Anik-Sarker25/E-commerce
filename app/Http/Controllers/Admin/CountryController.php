@@ -17,8 +17,7 @@ class CountryController extends Controller
     public function index() {
         $pageTitle = "Countries";
         $breadcrumbs = [
-            ['url' => route('admin.settings.index'), 'title' => 'settings'],
-            ['url' => route('admin.settings.countries.index'), 'title' => 'counties'],
+            ['url' => route('admin.countries.index'), 'title' => 'counties'],
         ];
 
         if (request()->ajax()) {
@@ -37,7 +36,7 @@ class CountryController extends Controller
                 ->make(true);
         }
 
-        return view('admin.settings.country', compact('pageTitle', 'breadcrumbs'));
+        return view('admin.country_settings.country', compact('pageTitle', 'breadcrumbs'));
     }
 
     public function edit($id) {

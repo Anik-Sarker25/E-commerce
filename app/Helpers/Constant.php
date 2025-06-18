@@ -38,6 +38,12 @@ class Constant {
         'Latest_deals' => 3,
     ];
 
+    const TRANSACTION_TYPE = [
+        'credit' => '1',
+        'debit' => '2',
+        'refund' => '3',
+    ];
+
     const PRODUCT_RETURNS = [
         'This item is non-returnable' => '1',
         '3 days easy return' => '2',

@@ -63,7 +63,7 @@
                                         <div class="mb-3">
                                             <button type="button" onclick="addCategory();" class="btn btn-outline-success"id="addCategoryBtn"><i class="fa fa-plus me-2"></i>Add Category</button>
                                             <button type="button" onclick="updateCategory();" class="btn btn-outline-success d-none me-2" id="updateCategoryBtn"><i class="fa fa-share me-2"></i>Update Category</button>
-                                            <button type="button" onclick="resetCategory();" class="btn btn-outline-danger d-none" id="cancelCategoryBtn"><i class="fa fa-times me-2"></i>Cencel</button>
+                                            <button type="button" onclick="resetCategory();" class="btn btn-outline-danger" id="cancelCategoryBtn"><i class="fa fa-times me-2"></i>Cencel</button>
                                         </div>
                                     </div>
                                 </div>
@@ -229,7 +229,6 @@
 
         $('#addCategoryBtn').removeClass('d-none');
         $('#updateCategoryBtn').addClass('d-none');
-        $('#cancelCategoryBtn').addClass('d-none');
     }
 
     function addCategory() {
@@ -280,7 +279,7 @@
             success: function(data) {
 
                 $('#imagePreview').attr('src', '');
-                $('#categoryFormBox').addClass('show');
+                $('#categoryFormBox').collapse('toggle');
                 $('#update_id').val(data.id);
                 $('#name').val(data.name);
                 if (data.image) {
@@ -292,7 +291,6 @@
                 $('#updateCategoryTitle').removeClass('d-none');
                 $('#addCategoryBtn').addClass('d-none');
                 $('#updateCategoryBtn').removeClass('d-none');
-                $('#cancelCategoryBtn').removeClass('d-none');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
@@ -440,14 +438,13 @@
         $('#name').val('');
         $('#name').removeClass('is-invalid');
 
-        $('#categoryFormBox').removeClass('show');
+        $('#categoryFormBox').collapse('toggle');
 
         $('#addCategoryTitle').removeClass('d-none');
         $('#updateCategoryTitle').addClass('d-none');
 
         $('#addCategoryBtn').removeClass('d-none');
         $('#updateCategoryBtn').addClass('d-none');
-        $('#cancelCategoryBtn').addClass('d-none');
     }
 
 

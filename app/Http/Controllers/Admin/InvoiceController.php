@@ -10,9 +10,11 @@ use App\Models\DeliveryAgent;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\ShipmentTracking;
+use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Str;
 
 class InvoiceController extends Controller
 {
@@ -313,7 +315,20 @@ class InvoiceController extends Controller
             // Automatically set payment_status to 'paid' if status is delivered
             if ($newStatus == Constant::ORDER_STATUS['delivered']) {
                 $order->payment_status = Constant::PAYMENT_STATUS['paid'];
-                // transection code will be placed in here 
+
+                // Create transaction record
+                Transaction::create([
+                    'user_id'           => $order->user_id,
+                    'order_id'          => $order->id,
+                    'payment_method'    => $order->payment_method ?? 'cash',
+                    'transaction_type'  => Constant::TRANSACTION_TYPE['credit'],
+                    'amount'            => $order->total_price,
+                    'currency'          => country()->currency,
+                    'transaction_status'=> 'completed',
+                    'transaction_id'    => 'TRX-' . strtoupper(Str::random(10)),
+                    'remarks'           => 'Auto-generated on delivery confirmation.',
+                    'gateway_response'  => null, // because transaction is from delivered status
+                ]);
                 
             }
             $order->save();

@@ -214,10 +214,10 @@
 							</div>
 						</div>
 					</div>
-					<div class="menu-item {{ (Request::is('admin/dashboard')) ? 'active' : '' }}">
-						<a href="{{ route('admin.dashboard') }}" class="menu-link">
+					<div class="menu-item {{ (Request::is('admin/transactions')) ? 'active' : '' }}">
+						<a href="{{ route('admin.transactions.index') }}" class="menu-link">
 							<span class="menu-icon"><i class="bi bi-credit-card"></i></span>
-							<span class="menu-text">Transection</span>
+							<span class="menu-text">Transections</span>
 						</a>
 					</div>
 
@@ -262,9 +262,44 @@
 									<span class="menu-text">Notice</span>
 								</a>
 							</div>
-							<div class="menu-item {{ Request::is('admin/settings/countries') ? 'active' : '' }}">
-								<a href="{{ route('admin.settings.countries.index') }}" class="menu-link">
+						</div>
+					</div>
+
+					<div class="menu-item has-sub {{ Request::is('admin/countries*') ? 'expand' : '' }}">
+						<a href="#" class="menu-link">
+							<span class="menu-icon"><i class="bi bi-globe"></i></span>
+							<span class="menu-text">Country Settings</span>
+							<span class="menu-caret"><b class="caret"></b></span>
+						</a>
+						<div class="menu-submenu">
+							<div class="menu-item {{ Request::is('admin/countries') ? 'active' : '' }}">
+								<a href="{{ route('admin.countries.index') }}" class="menu-link">
 									<span class="menu-text">Country</span>
+								</a>
+							</div>
+							<div class="menu-item {{ Request::is('admin/countries/divisions') ? 'active' : '' }}">
+								<a href="{{ route('admin.countries.divisions.index') }}" class="menu-link">
+									<span class="menu-text">Devisions</span>
+								</a>
+							</div>
+							<div class="menu-item {{ Request::is('admin/countries/districts') ? 'active' : '' }}">
+								<a href="{{ route('admin.countries.districts.index') }}" class="menu-link">
+									<span class="menu-text">Districts</span>
+								</a>
+							</div>
+							<div class="menu-item {{ Request::is('admin/countries/upazilas') ? 'active' : '' }}">
+								<a href="{{ route('admin.countries.upazilas.index') }}" class="menu-link">
+									<span class="menu-text">Upazilas</span>
+								</a>
+							</div>
+							<div class="menu-item {{ Request::is('admin/countries/unions') ? 'active' : '' }}">
+								<a href="{{ route('admin.countries.unions.index') }}" class="menu-link">
+									<span class="menu-text">Unions</span>
+								</a>
+							</div>
+							<div class="menu-item {{ Request::is('admin/countries/villages') ? 'active' : '' }}">
+								<a href="{{ route('admin.countries.villages.index') }}" class="menu-link">
+									<span class="menu-text">Villages</span>
 								</a>
 							</div>
 						</div>

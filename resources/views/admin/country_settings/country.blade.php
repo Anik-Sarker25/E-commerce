@@ -261,7 +261,7 @@
     };
 
     function edit(id) {
-        var url = "{{ route('admin.settings.countries.edit', ':id') }}";
+        var url = "{{ route('admin.countries.edit', ':id') }}";
         url = url.replace(':id', id);
 
         $.ajax({
@@ -282,7 +282,7 @@
 
     function updateCountry() {
         let update_id = $('#update_id').val();
-        let url = "{{ route('admin.settings.countries.update', ':id') }}";
+        let url = "{{ route('admin.countries.update', ':id') }}";
         url = url.replace(':id', update_id);
 
         let country = $('#country').val();
