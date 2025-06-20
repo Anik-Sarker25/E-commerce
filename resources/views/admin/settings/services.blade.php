@@ -12,11 +12,12 @@
     }
     .iconpicker .iconpicker-item {
         color: #333;
-    }input.form-control.iconpicker-search {
-    border: 1px solid #333;
-    color: #333;
-    box-shadow: 0 0 0 1px #ddd;
-}
+    }
+    input.form-control.iconpicker-search {
+        border: 1px solid #333;
+        color: #333;
+        box-shadow: 0 0 0 1px #ddd;
+    }
 </style>
 
 @endpush
@@ -78,7 +79,7 @@
                                 <div class="mb-3">
                                     <button type="button" onclick="addService();" class="btn btn-outline-success"id="addServiceBtn"><i class="fa fa-plus me-2"></i>Add Service</button>
                                     <button type="button" onclick="updateService();" class="btn btn-outline-success d-none me-2" id="updateServiceBtn"><i class="fa fa-share me-2"></i>Update Service</button>
-                                    <button type="button" onclick="resetService();" class="btn btn-outline-danger d-none" id="cancelServiceBtn"><i class="fa fa-times me-2"></i>Cencel</button>
+                                    <button type="button" onclick="resetService();" class="btn btn-outline-danger" id="cancelServiceBtn"><i class="fa fa-times me-2"></i>Cencel</button>
                                 </div>
 
                             </form>
@@ -245,11 +246,10 @@
 
         $('#addServiceBtn').removeClass('d-none');
         $('#updateServiceBtn').addClass('d-none');
-        $('#cancelServiceBtn').addClass('d-none');
     }
 
     function addService() {
-        let url = "{{ route('admin.services.store') }}";
+        let url = "{{ route('admin.settings.services.store') }}";
 
         let name = $('#name').val();
         let icon = $('#icon').val();
@@ -295,7 +295,7 @@
     }
 
     function edit(id){
-        var url = "{{ route('admin.services.edit', ':id') }}";
+        var url = "{{ route('admin.settings.services.edit', ':id') }}";
         url = url.replace(':id', id);
         $.ajax({
             type: "GET",
@@ -311,7 +311,6 @@
                 $('#updateServiceTitle').removeClass('d-none');
                 $('#addServiceBtn').addClass('d-none');
                 $('#updateServiceBtn').removeClass('d-none');
-                $('#cancelServiceBtn').removeClass('d-none');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
@@ -320,7 +319,7 @@
 
     function updateService() {
         let update_id = $('#update_id').val();
-        let url = "{{ route('admin.services.update', ':id') }}";
+        let url = "{{ route('admin.settings.services.update', ':id') }}";
         url = url.replace(':id', update_id);
 
         let name = $('#name').val();
@@ -367,7 +366,7 @@
     }
 
     function destroy(id) {
-        let url = "{{ route('admin.services.destroy', ':id') }}";
+        let url = "{{ route('admin.settings.services.destroy', ':id') }}";
         url = url.replace(':id', id);
 
         Swal.fire({
@@ -417,14 +416,13 @@
         $('#description').val('');
         $('#description').removeClass('is-invalid');
 
-        $('#ServiceFormBox').removeClass('show');
+        $('#ServiceFormBox').collapse('toggle');
 
         $('#addServiceTitle').removeClass('d-none');
         $('#updateServiceTitle').addClass('d-none');
 
         $('#addServiceBtn').removeClass('d-none');
         $('#updateServiceBtn').addClass('d-none');
-        $('#cancelServiceBtn').addClass('d-none');
     }
 
 

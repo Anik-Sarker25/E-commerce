@@ -262,6 +262,11 @@
 									<span class="menu-text">Notice</span>
 								</a>
 							</div>
+							<div class="menu-item {{ Request::is('admin/settings/services') ? 'active' : '' }}">
+								<a href="{{ route('admin.settings.services.index') }}" class="menu-link">
+									<span class="menu-text">Services</span>
+								</a>
+							</div>
 						</div>
 					</div>
 
@@ -304,11 +309,20 @@
 							</div>
 						</div>
 					</div>
-					<div class="menu-item {{ (Request::is('admin/services')) ? 'active' : '' }}">
-						<a href="{{ route('admin.services.index') }}" class="menu-link">
-							<span class="menu-icon"><i class="bi bi-sliders"></i></span>
-							<span class="menu-text">Services</span>
+
+					<div class="menu-item has-sub {{ Request::is('admin/feedback-hub*') ? 'expand' : '' }}">
+						<a href="#" class="menu-link">
+							<span class="menu-icon"><i class="bi bi-star-half"></i></span>
+							<span class="menu-text">Feedback Hub</span>
+							<span class="menu-caret"><b class="caret"></b></span>
 						</a>
+						<div class="menu-submenu">
+							<div class="menu-item {{ Request::is('admin/feedback-hub/reviews') ? 'active' : '' }}">
+								<a href="{{ route('admin.feedbackHub.reviews.index') }}" class="menu-link">
+									<span class="menu-text">Reviews & Ratings</span>
+								</a>
+							</div>
+						</div>
 					</div>
 
 					<div class="menu-item {{ (Request::is('admin/delivery-agents')) ? 'active' : '' }}">

@@ -114,6 +114,17 @@
         padding: 2px 5px 5px !important;
     }
 
+    /* for star rating */
+    .star-filled {
+        color: #f1c40f; /* Gold */
+        transition: color 0.2s;
+    }
+
+    .star-empty {
+        color: #ccc; /* Light gray */
+        transition: color 0.2s;
+    }
+
 </style>
 
 @endpush
@@ -390,12 +401,68 @@
                             </div>
                             <div role="tabpanel" class="tab-pane" id="reviews">
                                 <div class="block-content">
-                                    <div class="text-center">
-                                        <i class="fa-regular fa-star"></i>
-                                        <i class="fa-regular fa-star"></i>
-                                        <i class="fa-regular fa-star"></i>
-                                        <p>There are no reviews yet. <i class="fa-regular fa-face-frown"></i></p>
+
+                                    <div class="d-flex rating-summary">
+                                        <div class="left-side" style="margin-right: 100px;">
+                                            <h4>
+                                                <span style="font-size: 2rem; font-weight: bold;">{{ number_format($average_rating, 1) }}</span>
+                                                <span style="color: #555;">out of 5 stars</span>
+                                            </h4>
+    
+                                            <div style="font-size: 20px; margin-bottom: 10px;">
+                                                {{-- Average Rating Stars --}}
+                                                @for ($i = 1; $i <= 5; $i++)
+                                                    @if ($i <= floor($average_rating))
+                                                        <i class="fa fa-star star-filled"></i>
+                                                    @elseif ($i - $average_rating < 1)
+                                                        <i class="fa fa-half-star star-filled"></i> {{-- You can customize this for half-star --}}
+                                                    @else
+                                                        <i class="fa fa-star star-empty"></i>
+                                                    @endif
+                                                @endfor
+                                            </div>
+    
+                                            <small class="text-muted">Based on {{ $total_reviews }} reviews</small>
+                                        </div>   
+                                        <div class="right-side">
+                                            @foreach(array_reverse($ratings, true) as $star => $count)
+                                                <div class="d-flex" style="margin-bottom: 6px;">
+                                                    <div style="width: 190px;">
+                                                        <span style="color: #FFD700; font-size: 16px;">
+                                                            @for ($i = 1; $i <= $star; $i++) <i class="fa fa-star"></i>  @endfor
+                                                        </span>
+                                                    </div>
+                                                    <div style="color: #444;">{{ $count }}</div>
+                                                </div>
+                                            @endforeach
+                                        
+                                        </div> 
+
                                     </div>
+
+                                    @forelse ($productReviews as $key => $review)
+                                        <h5>Product Reviews</h5>
+                                        <hr>
+                                        <div id="star-rating" class="flex items-center space-x-2">
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                <i class="fa fa-star {{ $i <= $review->rating ? 'star-filled' : 'star-empty' }}"></i>
+                                            @endfor
+                                            <span style="margin-left: 10px;">{{ $review->rating }} out of 5</span>
+                                        </div>
+                                        <strong>{{ $review->user->name . ' - ' }}</strong>
+                                        <ins>{{ \Carbon\Carbon::parse($review->created_at)->format('d M Y h:i:s A') }}</ins>
+                                        <p>{{ $review->review }}</p>
+                                        <img src="{{ asset($review->image) }}" width="100px" alt="image">
+                                        
+                                    @empty
+                                        
+                                        <div class="text-center">
+                                            <i class="fa-regular fa-star"></i>
+                                            <i class="fa-regular fa-star"></i>
+                                            <i class="fa-regular fa-star"></i>
+                                            <p>There are no reviews yet. <i class="fa-regular fa-face-frown"></i></p>
+                                        </div>
+                                    @endforelse
                                 </div>
                             </div>
                             <div role="tabpanel" class="tab-pane" id="questions">

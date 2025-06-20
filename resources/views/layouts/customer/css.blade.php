@@ -112,6 +112,18 @@
         .mb-0 {
             margin-bottom: 0;
         }
+        .mt-4 {
+            margin-top: 16px;
+        }
+        .mt-2 {
+            margin-top: 8px;
+        }
+        .mb-4 {
+            margin-bottom: 16px;
+        }
+        .mb-2 {
+            margin-bottom: 8px;
+        }
         .mt-0 {
             margin-top: 0;
         }

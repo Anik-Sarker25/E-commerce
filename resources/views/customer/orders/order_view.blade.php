@@ -174,7 +174,7 @@
                                                                 </div>
                                                             </div>
                                                         </td>
-                                                        <td class="text-center" style="width: 30%;">
+                                                        <td class="text-center" style="width: 20%;">
                                                             Qty:
                                                             {{ $item->quantity }}
                                                         </td>
@@ -182,8 +182,25 @@
                                                             $itemPrice = $item->price * $item->quantity;
                                                             $subtotal += $itemPrice;
                                                         @endphp
-                                                        <td class="text-center" style="width: 30%;">
+                                                        <td class="text-center" style="width: 20%;">
                                                             {{ country()->symbol . ' ' . number_format2($itemPrice) }}
+                                                        </td>
+                                                        @php
+                                                            $orderRevKey = "OrRDerRv_" . $invoice->tracking_code . "_" . rand(1000, 9999) . "_TRKC" . time();
+                                                            $revOrderId = $invoice->id;
+                                                            $revProId = $item->product_id;
+                                                        @endphp
+                                                        <td class="text-center" style="width: 20%;">
+                                                            <a href="javascript::">Cancel</a> <br>
+
+                                                           @if (in_array($invoice->status, [Constant::ORDER_STATUS['delivered'], Constant::ORDER_STATUS['refunded'], Constant::ORDER_STATUS['returned']]))
+                                                                <a href="{{ route('customer.order.review', [
+                                                                    'orderRevKey' => $orderRevKey,
+                                                                    'revOrderId' => $revOrderId,
+                                                                    'revProId' => $revProId
+                                                                ]) }}" class="color">Write a Review</a>
+                                                            @endif
+
                                                         </td>
                                                     </tr>
                                                 @endforeach

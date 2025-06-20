@@ -14,11 +14,15 @@ use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Partnership;
 use App\Models\PaymentMethod;
+use App\Models\Product;
+use App\Models\ProductReview;
 use App\Models\ShipmentTracking;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
 use Yajra\DataTables\Facades\DataTables;
 
 class InvoiceController extends Controller
@@ -45,7 +49,7 @@ class InvoiceController extends Controller
     }
 
     public function invoiceView(Request $request) {
-        $id = $request->query('tradeOrderId');
+        $id = $request->query('tradeOrderId'); // invoice Id
         $pageTitle        = 'Order Details';
         $categories       = Category::with('subcategories.products')->get();
         $paymentMethods   = PaymentMethod::orderBy('id', 'DESC')->get();
@@ -71,8 +75,109 @@ class InvoiceController extends Controller
 
     }
 
+    public function myReview(Request $request) {
+        $id = $request->query('revOrderId'); // invoice Id
+        $product_id = $request->query('revProId'); // invoice Id
+        $pageTitle        = 'My Reviews';
+        $categories       = Category::with('subcategories.products')->get();
+        $paymentMethods   = PaymentMethod::orderBy('id', 'DESC')->get();
+        $brands           = Brand::orderBy('id', 'ASC')->get();
+        $partnerships     = Partnership::orderBy('id', 'ASC')->get();
+        $user             = auth()->user();
+        $item             = InvoiceItem::where('invoice_id', $id)->where('product_id', $product_id)->first();
+        
+        $invoices         = Invoice::where('user_id', auth()->id())->whereIn('status', [Constant::ORDER_STATUS['delivered'], Constant::ORDER_STATUS['returned'], Constant::ORDER_STATUS['refunded'] ])->orderBy('id', 'DESC')->get();
+
+        return view('customer.orders.my_reviews', [
+            'pageTitle'            => $pageTitle,
+            'categories'           => $categories,
+            'paymentMethods'       => $paymentMethods,
+            'brands'               => $brands,
+            'partnerships'         => $partnerships,
+            'user'                 => $user,
+            'item'                 => $item,
+            'product_id'           => $product_id,
+            'invoices'              => $invoices,
+        ]);
+
+    }
+
+    public function review(Request $request) {
+        $id = $request->query('revOrderId'); // invoice Id
+        $product_id = $request->query('revProId'); // invoice Id
+        $pageTitle        = 'Write Review';
+        $categories       = Category::with('subcategories.products')->get();
+        $paymentMethods   = PaymentMethod::orderBy('id', 'DESC')->get();
+        $brands           = Brand::orderBy('id', 'ASC')->get();
+        $partnerships     = Partnership::orderBy('id', 'ASC')->get();
+        $user             = auth()->user();
+        $item             = InvoiceItem::where('invoice_id', $id)->where('product_id', $product_id)->first();
+
+        return view('customer.orders.review_order', [
+            'pageTitle'            => $pageTitle,
+            'categories'           => $categories,
+            'paymentMethods'       => $paymentMethods,
+            'brands'               => $brands,
+            'partnerships'         => $partnerships,
+            'user'                 => $user,
+            'item'                 => $item,
+            'product_id'           => $product_id,
+        ]);
+
+    }
+
+    public function reviewStore(Request $request)
+    {
+        $validated = $request->validate([
+            'invoice_id'        => ['required', 'exists:invoices,id'],
+            'product_id'        => ['required', 'exists:products,id'],
+            'user_id'           => ['required', 'exists:users,id'],
+            'quality_rating'    => ['required', 'integer', 'min:1', 'max:5'],
+            'delivery_rating'   => ['required', 'integer', 'min:1', 'max:5'],
+            'quality_review'    => ['required', 'string', 'max:1000'],
+            'delivery_review'   => ['nullable', 'string', 'max:1000'],
+            'image'             => $request->hasFile('image') ? ['image', 'mimes:jpeg,png,jpg,webp', 'max:2048'] : ['nullable'],
+        ]);
+
+        // Prevent duplicate review
+        $alreadyReviewed = ProductReview::where('user_id', $validated['user_id'])
+            ->where('product_id', $validated['product_id'])
+            ->where('invoice_id', $validated['invoice_id'])
+            ->exists();
+
+        if ($alreadyReviewed) {
+            return response()->json('already_exist');
+        }
+
+        if ($request->hasFile('image')) {
+            $manager = new ImageManager(new Driver());
+            $image = $manager->read($request->file('image'));
+            $assign_name = "review-".date('his').".".$request->file('image')->getClientOriginalExtension();
+            // $image->resize(200, 200);
+            $image->save(base_path('public/uploads/review/'.$assign_name, 80, 'png'));
+            $imagePath = '/uploads/review/'.$assign_name;
+        }else {
+            $imagePath = null;
+
+        }
+
+        ProductReview::create([
+            'invoice_id' => $validated['invoice_id'],
+            'user_id' => $validated['user_id'],
+            'product_id' => $validated['product_id'],
+            'rating' => $validated['quality_rating'],
+            'delivery_rating' => $validated['delivery_rating'],
+            'review' => $validated['quality_review'],
+            'delivery_review' => $validated['delivery_review'],
+            'image' => $imagePath,
+            'status' => Constant::REVIEW_STATUS['pending'],
+        ]);
+
+        return response()->json();
+    }
+
     public function trackPackage(Request $request) {
-        $id = $request->query('TrkOrdErId');
+        $id = $request->query('TrkOrdErId'); // invoice Id
         $shipmentTracking = ShipmentTracking::where('invoice_id', $id)->first();
         $assigned_agent = DeliveryAgent::find(optional($shipmentTracking)->delivery_agent_id);
         $pageTitle        = 'Tracking Details';
@@ -98,7 +203,7 @@ class InvoiceController extends Controller
     }
 
     public function trackCancelation(Request $request) {
-        $id = $request->query('TrkOrdErId');
+        $id = $request->query('TrkOrdErId'); // invoice Id
         $pageTitle        = 'Tracking Details';
         $shipmentTracking = ShipmentTracking::where('invoice_id', $id)->first();
         $cancellation     = optional($shipmentTracking)->cancelled_at;

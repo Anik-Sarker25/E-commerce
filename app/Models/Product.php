@@ -39,6 +39,10 @@ class Product extends Model
         return $this->hasMany(ProductFeaturedImage::class, 'product_id');
     }
 
+    public function productReviews(){
+        return $this->hasMany(ProductReview::class, 'product_id');
+    }
+
     public function category(){
         return $this->belongsTo(Category::class, 'category_id');
     }

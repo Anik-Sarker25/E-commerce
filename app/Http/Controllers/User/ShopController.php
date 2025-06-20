@@ -11,6 +11,7 @@ use App\Models\ChildCategory;
 use App\Models\Partnership;
 use App\Models\PaymentMethod;
 use App\Models\Product;
+use App\Models\ProductReview;
 use App\Models\ProductVariants;
 use App\Models\SubCategory;
 use Illuminate\Http\Request;
@@ -376,9 +377,11 @@ class ShopController extends Controller
         $category         = $product->category ?? null;
         $subcategory      = $product->subcategory ?? null;
         $childcategory    = $product->childcategory ?? null;
-        $category_id     = $product->category_id ?? null;
-        $subcategory_id  = $product->subcategory_id ?? null;
+        $category_id      = $product->category_id ?? null;
+        $subcategory_id   = $product->subcategory_id ?? null;
         $childcategory_id = $product->childcategory_id ?? null;
+        $productReviews   = ProductReview::where('product_id', $product->id)
+                            ->where('status', Constant::REVIEW_STATUS['approved'])->get();
 
         $relatedProducts = Product::where('category_id', $category_id)->where('id', '!=', $product->id)->get();
         // random product
@@ -392,6 +395,25 @@ class ShopController extends Controller
             $childcategory ? ['url' => route('childcategory.show', $childcategory->slug) . '?childcat_id=' . $childcategory_id, 'title' => $childcategory->name] : null,
             $product ? ['url' => route('product.show', $product->slug) . '?pro=' . $product_id, 'title' => $product->name] : null,
         ]);
+
+
+    $total_reviews = ProductReview::where('product_id', $product->id)->count();
+
+    // Get count per rating (1–5)
+    $star_counts = ProductReview::where('product_id', $product->id)
+        ->selectRaw('rating, COUNT(*) as total')
+        ->groupBy('rating')
+        ->pluck('total', 'rating')
+        ->toArray();
+
+    // Make sure all 1–5 ratings exist
+    $ratings = [];
+    for ($i = 1; $i <= 5; $i++) {
+        $ratings[$i] = $star_counts[$i] ?? 0;
+    }
+
+    $average_rating = ProductReview::where('product_id', $product->id)->avg('rating');
+
         return view('customer.product.single_product', [
             'address'              => $address,
             'pageTitle'            => $pageTitle,
@@ -403,7 +425,11 @@ class ShopController extends Controller
             'partnerships'         => $partnerships,
             'breadcrumbs'          => $breadcrumbs,
             'relatedProducts'      => $relatedProducts,
-            'randomProducts'      => $randomProducts,
+            'randomProducts'       => $randomProducts,
+            'productReviews'       => $productReviews,
+            'ratings'              => $ratings,
+            'total_reviews'        => $total_reviews,
+            'average_rating'       => $average_rating,
         ]);
     }
 

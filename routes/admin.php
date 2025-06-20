@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\PageSettingsController;
 use App\Http\Controllers\Admin\PartnershipController;
 use App\Http\Controllers\Admin\PaymentMethodController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ReviewController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\StockController;
@@ -179,6 +180,15 @@ Route::prefix('admin')->as('admin.')->middleware('auth:admin')->group(function (
             Route::delete('/delete/image/{id}', [PaymentMethodController::class, 'removeImage'])->name('removeImage');
         });
 
+        // Services routes
+        Route::prefix('services')->as('services.')->group(function () {
+            Route::get('/', [ServiceController::class, 'index'])->name('index');
+            Route::post('/store', [ServiceController::class,'store'])->name('store');
+            Route::get('/edit/{id}', [ServiceController::class, 'edit'])->name('edit');
+            Route::post('/update/{id}', [ServiceController::class, 'update'])->name('update');
+            Route::delete('/destroy/{id}', [ServiceController::class, 'destroy'])->name('destroy');
+        });
+
     });
 
     // Country routes
@@ -206,7 +216,7 @@ Route::prefix('admin')->as('admin.')->middleware('auth:admin')->group(function (
             Route::delete('/destroy/{id}', [DistrictController::class, 'destroy'])->name('destroy');
         });
 
-        // District routes
+        // upazila routes
         Route::prefix('upazilas')->as('upazilas.')->group(function () {
             Route::get('/', [UpazilaController::class, 'index'])->name('index');
             Route::post('/store', [UpazilaController::class,'store'])->name('store');
@@ -215,7 +225,7 @@ Route::prefix('admin')->as('admin.')->middleware('auth:admin')->group(function (
             Route::delete('/destroy/{id}', [UpazilaController::class, 'destroy'])->name('destroy');
         });
 
-        // District routes
+        // Union routes
         Route::prefix('unions')->as('unions.')->group(function () {
             Route::get('/', [UnionController::class, 'index'])->name('index');
             Route::post('/store', [UnionController::class,'store'])->name('store');
@@ -224,7 +234,7 @@ Route::prefix('admin')->as('admin.')->middleware('auth:admin')->group(function (
             Route::delete('/destroy/{id}', [UnionController::class, 'destroy'])->name('destroy');
         });
 
-        // District routes
+        // Village routes
         Route::prefix('villages')->as('villages.')->group(function () {
             Route::get('/', [VillageController::class, 'index'])->name('index');
             Route::post('/store', [VillageController::class,'store'])->name('store');
@@ -234,15 +244,26 @@ Route::prefix('admin')->as('admin.')->middleware('auth:admin')->group(function (
         });
     });
 
+    // Feedback Hub routes
+    Route::prefix('feedback-hub')->as('feedbackHub.')->group(function () {
+        // Review routes
+        Route::prefix('reviews')->as('reviews.')->group(function () {
+            Route::get('/', [ReviewController::class, 'index'])->name('index');
+            Route::post('/update/{id}', [ReviewController::class, 'updateStatus'])->name('updateStatus');
+            Route::delete('/destroy/{id}', [ReviewController::class, 'destroy'])->name('destroy');
+        });
 
-    // Services routes
-    Route::prefix('services')->as('services.')->group(function () {
-        Route::get('/', [ServiceController::class, 'index'])->name('index');
-        Route::post('/store', [ServiceController::class,'store'])->name('store');
-        Route::get('/edit/{id}', [ServiceController::class, 'edit'])->name('edit');
-        Route::post('/update/{id}', [ServiceController::class, 'update'])->name('update');
-        Route::delete('/destroy/{id}', [ServiceController::class, 'destroy'])->name('destroy');
+        // District routes
+        // Route::prefix('villages')->as('villages.')->group(function () {
+        //     Route::get('/', [VillageController::class, 'index'])->name('index');
+        //     Route::post('/store', [VillageController::class,'store'])->name('store');
+        //     Route::get('/edit/{id}', [VillageController::class, 'edit'])->name('edit');
+        //     Route::post('/update/{id}', [VillageController::class, 'update'])->name('update');
+        //     Route::delete('/destroy/{id}', [VillageController::class, 'destroy'])->name('destroy');
+        // });
     });
+
+
 
     Route::prefix('delivery-agents')->as('deliveryAgents.')->group(function () {
         Route::get('/', [AgentController::class, 'index'])->name('index');

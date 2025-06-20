@@ -24,7 +24,7 @@
                 </ul>
             </li>
             <li class="list-item">
-                <a class="upper-item" href="#">My Reviews</a>
+                <a class="upper-item {{ (Request::is('customer/order/my-review')) ? 'active' : '' }}" href="{{ route('customer.order.my.review') }}">My Reviews</a>
             </li>
             <li class="list-item">
                 <a class="upper-item" href="#">My Wishlists</a>

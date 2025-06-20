@@ -79,6 +79,12 @@ class Constant {
         'returned' => 8,
     ];
 
+    const REVIEW_STATUS = [
+        'pending' => 1,
+        'approved' => 2,
+        'rejected' => 3,
+    ];
+
     const PAYMENT_STATUS = [
         'paid' => 1,
         'unpaid' => 2,

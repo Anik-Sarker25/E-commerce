@@ -11,6 +11,7 @@ use App\Models\Country;
 use App\Models\GeneralSettings;
 use App\Models\Invoice;
 use App\Models\Product;
+use App\Models\ProductReview;
 use App\Models\ShipmentTracking;
 use App\Models\SocialMedia;
 use App\Models\VariantOption;
@@ -175,3 +176,28 @@ function updateShipmentTrackingStatus($order, $newStatus)
         ShipmentTracking::create($createData);
     }
 }
+
+function getReviewByUser($userId, $productId, $invoiceId)
+{
+    return ProductReview::where('user_id', $userId)
+        ->where('product_id', $productId)
+        ->where('invoice_id', $invoiceId)
+        ->first();
+}
+
+function limitText($text, $limit = 25)
+    {
+        if (!is_string($text) || trim($text) === '') {
+            return '----';
+        }
+
+        $text = strip_tags($text);
+        $words = preg_split('/\s+/', $text, -1, PREG_SPLIT_NO_EMPTY);
+
+        if (count($words) > $limit) {
+            $short = array_slice($words, 0, $limit);
+            return implode(' ', $short) . '...';
+        }
+
+        return $text;
+    }

@@ -14,7 +14,7 @@ class ServiceController extends Controller
     public function index() {
         $pageTitle = "services";
         $breadcrumbs = [
-            ['url' => route('admin.services.index'), 'title' => 'services'],
+            ['url' => route('admin.settings.services.index'), 'title' => 'services'],
         ];
 
         if (request()->ajax()) {
@@ -40,7 +40,7 @@ class ServiceController extends Controller
                 ->make(true);
         }
 
-        return view('admin.services.services', compact('pageTitle', 'breadcrumbs'));
+        return view('admin.settings.services', compact('pageTitle', 'breadcrumbs'));
     }
 
 

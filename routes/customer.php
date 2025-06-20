@@ -48,6 +48,9 @@ Route::prefix('customer')->as('customer.')->middleware(['auth', 'verified'])->gr
     Route::prefix('order')->as('order.')->group(function () {
         Route::get('/', [InvoiceController::class, 'index'])->name('index');
         Route::get('/view', [InvoiceController::class, 'invoiceView'])->name('invoice.view');
+        Route::get('/my-review', [InvoiceController::class, 'myReview'])->name('my.review');
+        Route::get('/review', [InvoiceController::class, 'review'])->name('review');
+        Route::post('/review/store', [InvoiceController::class, 'reviewStore'])->name('review.store');
         Route::post('/store', [InvoiceController::class,'store'])->name('store');
         Route::get('/track/package', [InvoiceController::class, 'trackPackage'])->name('track.package');
         Route::get('/track/cancelation', [InvoiceController::class, 'trackCancelation'])->name('track.cancelation');
