@@ -312,6 +312,9 @@ class InvoiceController extends Controller
 
             // Save order status
             $order->status = $newStatus;
+            if ($newStatus == Constant::ORDER_STATUS['cancelled']) {
+                $order->cancelled_by = 'admin';
+            }
             // Automatically set payment_status to 'paid' if status is delivered
             if ($newStatus == Constant::ORDER_STATUS['delivered']) {
                 $order->payment_status = Constant::PAYMENT_STATUS['paid'];

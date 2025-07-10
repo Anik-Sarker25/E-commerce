@@ -47,7 +47,9 @@ Route::prefix('customer')->as('customer.')->middleware(['auth', 'verified'])->gr
     // Order Routes
     Route::prefix('order')->as('order.')->group(function () {
         Route::get('/', [InvoiceController::class, 'index'])->name('index');
+        Route::get('/cancellations', [InvoiceController::class, 'cancellations'])->name('cancellations');
         Route::get('/view', [InvoiceController::class, 'invoiceView'])->name('invoice.view');
+        Route::post('/cancel/{id}', [InvoiceController::class, 'cancelOrder'])->name('cancel');
         Route::get('/my-review', [InvoiceController::class, 'myReview'])->name('my.review');
         Route::get('/review', [InvoiceController::class, 'review'])->name('review');
         Route::post('/review/store', [InvoiceController::class, 'reviewStore'])->name('review.store');

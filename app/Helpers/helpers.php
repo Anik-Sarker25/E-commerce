@@ -186,18 +186,26 @@ function getReviewByUser($userId, $productId, $invoiceId)
 }
 
 function limitText($text, $limit = 25)
-    {
-        if (!is_string($text) || trim($text) === '') {
-            return '----';
-        }
-
-        $text = strip_tags($text);
-        $words = preg_split('/\s+/', $text, -1, PREG_SPLIT_NO_EMPTY);
-
-        if (count($words) > $limit) {
-            $short = array_slice($words, 0, $limit);
-            return implode(' ', $short) . '...';
-        }
-
-        return $text;
+{
+    if (!is_string($text) || trim($text) === '') {
+        return '----';
     }
+
+    $text = strip_tags($text);
+    $words = preg_split('/\s+/', $text, -1, PREG_SPLIT_NO_EMPTY);
+
+    if (count($words) > $limit) {
+        $short = array_slice($words, 0, $limit);
+        return implode(' ', $short) . '...';
+    }
+
+    return $text;
+}
+
+function isReviewedByUser($userId, $orderId, $productId)
+{
+    return ProductReview::where('user_id', $userId)
+        ->where('invoice_id', $orderId)
+        ->where('product_id', $productId)
+        ->exists();
+}

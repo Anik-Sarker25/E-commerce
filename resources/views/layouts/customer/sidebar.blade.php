@@ -19,8 +19,12 @@
             <li class="list-item">
                 <a class="upper-item {{ (Request::is('customer/order')) ? 'active' : '' }}" href="{{ route('customer.order.index') }}">My Orders</a>
                 <ul>
-                    <li><a href="#">My Returns</a></li>
-                    <li><a href="#">Order Cancellations</a></li>
+                    <li>
+                        <a href="#">My Returns</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('customer.order.cancellations') }}" class="lower-item  {{ (Request::is('customer/order/cancellations')) ? 'active' : '' }}">Order Cancellations</a>
+                    </li>
                 </ul>
             </li>
             <li class="list-item">

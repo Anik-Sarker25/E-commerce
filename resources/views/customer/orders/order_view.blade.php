@@ -189,11 +189,16 @@
                                                             $orderRevKey = "OrRDerRv_" . $invoice->tracking_code . "_" . rand(1000, 9999) . "_TRKC" . time();
                                                             $revOrderId = $invoice->id;
                                                             $revProId = $item->product_id;
+                                                            $userId = $user->id;
                                                         @endphp
                                                         <td class="text-center" style="width: 20%;">
-                                                            <a href="javascript::">Cancel</a> <br>
+                                                            @if (in_array($invoice->status, [Constant::ORDER_STATUS['pending'], Constant::ORDER_STATUS['confirmed'], Constant::ORDER_STATUS['processing']]))
+                                                                <a href="javascript::" class="color " onclick="cancelOrder({{ $revOrderId }}, {{ $item->id }});">Cancel</a> <br>
+                                                            @else
+                                                                <span class="text-muted" style="cursor: not-allowed; opacity: 0.8;">Cancel</span>
+                                                            @endif
 
-                                                           @if (in_array($invoice->status, [Constant::ORDER_STATUS['delivered'], Constant::ORDER_STATUS['refunded'], Constant::ORDER_STATUS['returned']]))
+                                                           @if (in_array($invoice->status, [Constant::ORDER_STATUS['delivered'], Constant::ORDER_STATUS['refunded'], Constant::ORDER_STATUS['returned']]) && !isReviewedByUser($userId, $revOrderId, $revProId))
                                                                 <a href="{{ route('customer.order.review', [
                                                                     'orderRevKey' => $orderRevKey,
                                                                     'revOrderId' => $revOrderId,
@@ -327,3 +332,61 @@
     <!-- end MAIN -->
 
 @endsection
+
+@push('js')
+<script>
+
+    function cancelOrder(invoice_id, item_id) {
+        let url = "{{ route('customer.order.cancel', ':id') }}";
+        url = url.replace(':id', invoice_id);
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            showCancelButton: true,
+            confirmButtonColor: 'transparent',
+            cancelButtonColor: 'transparent',
+            confirmButtonText: 'Yes, delete it!',
+            customClass: {
+                popup: 'my-custom-popup',
+                confirmButton: 'my-custom-confirm',
+                cancelButton: 'my-custom-cancel',
+            },
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Prepare form data
+                let formData = new FormData();
+                formData.append('item_id', item_id);
+
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(data) {
+                        if(data == 'invoice_cancelled') {
+                            show_success('Order Cancelled successfully!');
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1500);
+                        }else {
+                            show_success('Item Cancelled successfully!');
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1500);
+                        }
+                    },
+                    error: function(error) {
+                        if (error.responseJSON.error) {
+                            show_error(error.responseJSON.error);
+                        }else {
+                            show_error('Cancellation Failed!. Please try again.');
+                        }
+                    }
+                });
+            }
+        });
+    }
+</script>
+@endpush

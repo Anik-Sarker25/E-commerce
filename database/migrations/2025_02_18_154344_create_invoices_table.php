@@ -29,6 +29,7 @@ return new class extends Migration
             $table->unsignedBigInteger('delivery_type')->nullable();
             $table->string('estimated_delivery_date')->nullable();
             $table->tinyInteger('status')->default(Constant::ORDER_STATUS['pending']);
+            $table->string('cancelled_by')->nullable();
             $table->timestamps();
         });
     }

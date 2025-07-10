@@ -144,11 +144,17 @@
                                                             @endif
                                                         </div>
                                                     @endif
+                                                  
 
                                                 </div>
 
                                                 @if ($review)
                                                     <div class="feedback">
+                                                         @if (!empty($review->image))
+                                                            <div class="image-box">
+                                                                <img src="{{ asset($review->image) }}" width="64px" alt="review-image">
+                                                            </div>
+                                                        @endif
                                                         {{ $review->review }}
                                                     </div>
                                                 @endif

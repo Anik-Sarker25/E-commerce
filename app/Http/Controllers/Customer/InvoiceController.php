@@ -47,9 +47,30 @@ class InvoiceController extends Controller
             'invoices'             => $invoices,
         ]);
     }
+    public function cancellations() {
+        $pageTitle = 'Cancelled Orders';
+        $categories       = Category::with('subcategories.products')->get();
+        $paymentMethods   = PaymentMethod::orderBy('id', 'DESC')->get();
+        $brands           = Brand::orderBy('id', 'ASC')->get();
+        $partnerships     = Partnership::orderBy('id', 'ASC')->get();
+        $user             = auth()->user();
+        $invoices         = Invoice::where('user_id', auth()->id())->where('status', Constant::ORDER_STATUS['cancelled'])->orderBy('id', 'DESC')->get();
+
+
+        return view('customer.orders.order_cancellation', [
+            'pageTitle'            => $pageTitle,
+            'categories'           => $categories,
+            'paymentMethods'       => $paymentMethods,
+            'brands'               => $brands,
+            'partnerships'         => $partnerships,
+            'user'                 => $user,
+            'invoices'             => $invoices,
+        ]);
+    }
 
     public function invoiceView(Request $request) {
         $id = $request->query('tradeOrderId'); // invoice Id
+        $product_id = $request->query('revProId'); // invoice Id
         $pageTitle        = 'Order Details';
         $categories       = Category::with('subcategories.products')->get();
         $paymentMethods   = PaymentMethod::orderBy('id', 'DESC')->get();
@@ -61,6 +82,11 @@ class InvoiceController extends Controller
         $addressId        = $invoice->shipping_address_id;
         $address          = Address::find($addressId);
 
+        $alreadyReviewed = ProductReview::where('user_id', $user)
+        ->where('invoice_id', $id)
+        ->where('product_id', $product_id)
+        ->exists();
+
         return view('customer.orders.order_view', [
             'pageTitle'            => $pageTitle,
             'categories'           => $categories,
@@ -71,7 +97,33 @@ class InvoiceController extends Controller
             'invoice'              => $invoice,
             'shipment'             => $shipmentTracking,
             'address'              => $address,
+            'alreadyReviewed'      => $alreadyReviewed,
         ]);
+
+    }
+
+    public function cancelOrder(Request $request, $id)
+    {
+        $invoice = Invoice::findOrFail($id);
+
+        $itemId = $request->item_id;
+        $totalItems = $invoice->invoiceItem()->count();
+
+        if ($totalItems > 1) {
+            $invoiceItem =  InvoiceItem::where('invoice_id', $invoice->id)
+                            ->where('id', $itemId)
+                            ->firstOrFail();
+            $invoiceItem->delete();
+
+            return response()->json('item_removed');
+        } else {
+            // Cancel entire invoice
+            $invoice->status = Constant::ORDER_STATUS['cancelled'];
+            $invoice->cancelled_by = 'customer';
+            $invoice->save();
+
+            return response()->json('invoice_cancelled');
+        }
 
     }
 

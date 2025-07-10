@@ -24,6 +24,7 @@ class Invoice extends Model
         'payment_status',
         'delivery_type',
         'estimated_delivery_date',
+        'cancelled_by',
         'status',
     ];
 
