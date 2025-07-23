@@ -43,22 +43,33 @@
                                         <h5 class="panel-title"><i class="fas fa-barcode"></i> {{ customerFormatedInvoiceId($invoice->id) }}</h5>
                                         @php
                                             $statusLabel = array_search($invoice->status, Constant::ORDER_STATUS);
+
+                                            $orderRetKey = "OrRDerRv_" . $invoice->tracking_code . "_" . rand(1000, 9999) . "_TRKC" . time();
+                                            $retOrderId = $invoice->id;
                                         @endphp
-                                        <span class="label
-                                            @switch($statusLabel)
-                                                @case('pending') label-warning @break
-                                                @case('confirmed') label-info @break
-                                                @case('processing') label-primary @break
-                                                @case('shipped') label-default @break
-                                                @case('delivered') label-success @break
-                                                @case('cancelled') label-danger @break
-                                                @case('refunded') label-default @break
-                                                @case('returned') label-default @break
-                                                @default label-default
-                                            @endswitch
-                                        ">
-                                            {{ ucfirst($statusLabel) }}
-                                        </span>
+                                        <div class="ender">
+                                            {{-- @if ($invoice->status == Constant::ORDER_STATUS['delivered'])
+                                                <a href="{{ route('customer.order.return', [
+                                                    'orderRevKey' => $orderRetKey,
+                                                    'retOrderId' => $retOrderId
+                                                ]) }}" class="color me-2">Return</a>
+                                            @endif --}}
+                                            <span class="label
+                                                @switch($statusLabel)
+                                                    @case('pending') label-warning @break
+                                                    @case('confirmed') label-info @break
+                                                    @case('processing') label-primary @break
+                                                    @case('shipped') label-default @break
+                                                    @case('delivered') label-success @break
+                                                    @case('cancelled') label-danger @break
+                                                    @case('refunded') label-default @break
+                                                    @case('returned') label-default @break
+                                                    @default label-default
+                                                @endswitch
+                                            ">
+                                                {{ ucfirst($statusLabel) }}
+                                            </span>
+                                        </div>
                                     </div>
                                     <div class="panel-body">
                                         <div class="table-responsive mt-0">

@@ -281,7 +281,7 @@
                     show_success('Thanks for your feedback!');
                     // redirect to review page 
                     setTimeout(function() {
-                        window.location.href = "{{ route('customer.order.my.review') }}";
+                        window.location.href = "{{ route('customer.order.my.reviews') }}";
                     }, 3000);
                 }
 

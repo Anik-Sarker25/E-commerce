@@ -20,7 +20,7 @@
                 <a class="upper-item {{ (Request::is('customer/order')) ? 'active' : '' }}" href="{{ route('customer.order.index') }}">My Orders</a>
                 <ul>
                     <li>
-                        <a href="#">My Returns</a>
+                        <a href="{{ route('customer.order.my.returns') }}" class="lower-item  {{ (Request::is('customer/order/my-returns')) ? 'active' : '' }}">My Returns</a>
                     </li>
                     <li>
                         <a href="{{ route('customer.order.cancellations') }}" class="lower-item  {{ (Request::is('customer/order/cancellations')) ? 'active' : '' }}">Order Cancellations</a>
@@ -28,7 +28,7 @@
                 </ul>
             </li>
             <li class="list-item">
-                <a class="upper-item {{ (Request::is('customer/order/my-review')) ? 'active' : '' }}" href="{{ route('customer.order.my.review') }}">My Reviews</a>
+                <a class="upper-item {{ (Request::is('customer/order/my-reviews')) ? 'active' : '' }}" href="{{ route('customer.order.my.reviews') }}">My Reviews</a>
             </li>
             <li class="list-item">
                 <a class="upper-item" href="#">My Wishlists</a>

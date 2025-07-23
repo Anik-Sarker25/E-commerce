@@ -129,7 +129,7 @@ class InvoiceController extends Controller
 
     public function myReview(Request $request) {
         $id = $request->query('revOrderId'); // invoice Id
-        $product_id = $request->query('revProId'); // invoice Id
+        $product_id = $request->query('revProId'); // product Id
         $pageTitle        = 'My Reviews';
         $categories       = Category::with('subcategories.products')->get();
         $paymentMethods   = PaymentMethod::orderBy('id', 'DESC')->get();
@@ -433,6 +433,31 @@ class InvoiceController extends Controller
                 'message' => 'An error occurred while processing the order. Please try again.',
             ]);
         }
+    }
+
+    public function myReturn(Request $request) {
+        // $id = $request->query('retOrderId'); // invoice Id
+        $pageTitle        = 'return product';
+        $categories       = Category::with('subcategories.products')->get();
+        $paymentMethods   = PaymentMethod::orderBy('id', 'DESC')->get();
+        $brands           = Brand::orderBy('id', 'ASC')->get();
+        $partnerships     = Partnership::orderBy('id', 'ASC')->get();
+        $user             = auth()->user();
+        
+        $invoices         = Invoice::where('user_id', auth()->id())->whereIn('status', 
+                            [Constant::ORDER_STATUS['delivered'], Constant::ORDER_STATUS['returned'], Constant::ORDER_STATUS['refunded'] ])->orderBy('id', 'DESC')->get();
+        
+
+        return view('customer.orders.return_order', [
+            'pageTitle'            => $pageTitle,
+            'categories'           => $categories,
+            'paymentMethods'       => $paymentMethods,
+            'brands'               => $brands,
+            'partnerships'         => $partnerships,
+            'user'                 => $user,
+            'invoices'              => $invoices,
+        ]);
+
     }
 
 

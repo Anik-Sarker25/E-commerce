@@ -50,12 +50,13 @@ Route::prefix('customer')->as('customer.')->middleware(['auth', 'verified'])->gr
         Route::get('/cancellations', [InvoiceController::class, 'cancellations'])->name('cancellations');
         Route::get('/view', [InvoiceController::class, 'invoiceView'])->name('invoice.view');
         Route::post('/cancel/{id}', [InvoiceController::class, 'cancelOrder'])->name('cancel');
-        Route::get('/my-review', [InvoiceController::class, 'myReview'])->name('my.review');
+        Route::get('/my-reviews', [InvoiceController::class, 'myReview'])->name('my.reviews');
         Route::get('/review', [InvoiceController::class, 'review'])->name('review');
         Route::post('/review/store', [InvoiceController::class, 'reviewStore'])->name('review.store');
         Route::post('/store', [InvoiceController::class,'store'])->name('store');
         Route::get('/track/package', [InvoiceController::class, 'trackPackage'])->name('track.package');
         Route::get('/track/cancelation', [InvoiceController::class, 'trackCancelation'])->name('track.cancelation');
+        Route::get('/my-returns', [InvoiceController::class, 'myReturn'])->name('my.returns');
     });
 
 
